@@ -19,12 +19,11 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 11
           run_install: false
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
@@ -37,6 +36,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
 
+      # LayoutProps and route types are generated into .next/types, which a fresh
+      # checkout lacks — generate them before typecheck (caught by CI on PR #3).
+      - run: pnpm exec next typegen
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test

@@ -17,9 +17,13 @@ then deploying without `--prebuilt` doubles builds and CI minutes (Vercel KB, Ju
 
 - Triggers: `pull_request` (any target) + `push` to `development` / `main`.
 - `concurrency: ci-${{ github.ref }}` with `cancel-in-progress: true`.
-- Runner `ubuntu-latest`, Node 20, `pnpm/action-setup@v4` (pinned pnpm 11 to match
-  `packageManager`), `actions/setup-node@v4` with pnpm cache, `pnpm install --frozen-lockfile`.
-- Steps in order: `pnpm typecheck` (fail fast) → `pnpm lint` → `pnpm test` → `pnpm build`.
+- Runner `ubuntu-latest`, Node 22 (pnpm 11 requires Node ≥22.13 via `node:sqlite`),
+  `pnpm/action-setup@v4` with **no `version` input**
+  (the action reads `packageManager: pnpm@11.17.0` — passing both fails with
+  `ERR_PNPM_BAD_PM_VERSION`), `actions/setup-node@v4` with pnpm cache,
+  `pnpm install --frozen-lockfile`.
+- Steps in order: `next typegen` (generates `.next/types` for `LayoutProps`, absent on
+  fresh checkouts) → `pnpm typecheck` (fail fast) → `pnpm lint` → `pnpm test` → `pnpm build`.
   `.next/cache` cached via `actions/cache@v4`.
 - No secrets required for CI. No E2E job yet (explicit out of scope).
 
