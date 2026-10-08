@@ -69,6 +69,16 @@ export async function DashboardPage() {
 - Read-your-own-write is required: after every mutation in the same task, re-read through the corresponding `data/` query (or assert the invalidated `queryKey` refetches) and confirm the UI reflects the write.
 - `schemas/` Zod validates at both edges: RHF `zodResolver` client-side + `schema.parse()` first line of the server `actions/` handler. Never trust client-validated input.
 
+### 4a. Backend-not-yet-built stubs (dummy data + contract)
+
+When the REST contract does not exist yet, ship the UI on stubs that carry the expected contract — never bare `TODO`s:
+
+- Dummy lives in a pure module: `features/<name>/data/<thing>-dummy.ts` with no `import "server-only"` (keeps it Vitest-safe). The server fetcher (`data/`) keeps `'use cache'` + `cacheLife` and returns the dummy.
+- Every stub TODO names the exact endpoint: `TODO: connect backend via lib/api-client.ts (METHOD /path)` — e.g. `(GET /member/dashboard)`. A TODO without an endpoint path is incomplete.
+- DTO interfaces live in `features/<name>/types` (single `types.ts` until 2+ types force directory form) and are copied verbatim into the move's spec doc under a DTO section.
+- A characterization test pins the dummy shape (`tests/unit/<feature>/<thing>-data.test.ts`): key fields, literal Figma values, collection lengths. The contract cannot drift silently.
+- Mutations stub the same way: the `useMutation` stub's TODO names its endpoint (e.g. `(POST /auth/sign-in)`), and request/response DTOs get the same `types` + spec + test treatment.
+
 ## 5. Schemas, types, imports, UI primitives
 
 - `schemas` and `types` may each be a file (`features/<name>/schemas.ts`) or a directory (`features/<name>/schemas/index.ts` or `schemas/<name>.ts`). Same rule for `types`. Directory form is preferred once a feature has 2+ schemas/types. Existing `features/dashboard/schemas/`, `types/` empty-dir scaffold follows this rule.
