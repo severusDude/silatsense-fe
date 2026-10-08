@@ -11,6 +11,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { PasswordField } from "@/features/auth/components/password-field";
 import { signUpSchema, type SignUpInput } from "@/features/auth/schemas";
+import type { SignUpResponse } from "@/features/auth/types";
 
 export function SignUpForm() {
   const { control, handleSubmit } = useForm<SignUpInput>({
@@ -26,9 +27,9 @@ export function SignUpForm() {
     },
   });
 
-  const mutation = useMutation<unknown, Error, SignUpInput>({
+  const mutation = useMutation<SignUpResponse, Error, SignUpInput>({
     mutationFn: async () => {
-      // TODO: connect backend via lib/api-client.ts (no REST contract yet)
+      // TODO: connect backend via lib/api-client.ts (POST /auth/sign-up)
       throw new Error("Backend belum tersambung");
     },
   });
