@@ -11,6 +11,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { PasswordField } from "@/features/auth/components/password-field";
 import { signInSchema, type SignInInput } from "@/features/auth/schemas";
+import type { SignInResponse } from "@/features/auth/types";
 
 export function SignInForm() {
   const { control, handleSubmit } = useForm<SignInInput>({
@@ -24,9 +25,9 @@ export function SignInForm() {
     defaultValues: { identifier: "", password: "", rememberMe: false },
   });
 
-  const mutation = useMutation<unknown, Error, SignInInput>({
+  const mutation = useMutation<SignInResponse, Error, SignInInput>({
     mutationFn: async () => {
-      // TODO: connect backend via lib/api-client.ts (no REST contract yet)
+      // TODO: connect backend via lib/api-client.ts (POST /auth/sign-in)
       throw new Error("Backend belum tersambung");
     },
   });
@@ -71,7 +72,7 @@ export function SignInForm() {
         autoComplete="current-password"
       />
       <div className="flex justify-end">
-        {/* TODO: password-reset flow (no backend contract yet) */}
+        {/* TODO: password-reset flow via lib/api-client.ts (POST /auth/password-reset) */}
         <button type="button" className="text-xs font-medium text-primary hover:underline">
           Lupa sandi?
         </button>

@@ -81,3 +81,42 @@ Sonner `Toaster` already mounted in `app/layout.tsx`. Remember-me / forgot / ter
 ## 8. Out of scope
 
 Backend connect, session/cookie handling, password-reset flow, OAuth, E2E tests, dark-theme derivation (PSR-22), shared auth layout chrome (headers/footers reuse existing app shell).
+
+## 9. Expected backend DTOs (PSR-39, mirrored from `features/auth/types.ts`)
+
+Stubs point at `POST /auth/sign-in` and `POST /auth/sign-up` via `lib/api-client.ts`. `confirmPassword` and `terms` are client-only and never sent.
+
+```ts
+type MemberRole = "member" | "coach";
+
+interface AuthUser {
+  id: string;
+  fullName: string;
+  identifier: string;
+  role: MemberRole;
+}
+
+interface SignInRequest {
+  identifier: string; // NPM 8–12 digits or email (matches identifierSchema)
+  password: string;
+  rememberMe: boolean;
+}
+
+interface SignInResponse {
+  user: AuthUser;
+  accessToken: string;
+  expiresIn: number; // seconds
+}
+
+interface SignUpRequest {
+  fullName: string;
+  identifier: string; // NPM 8–12 digits or email
+  password: string;
+}
+
+interface SignUpResponse {
+  user: AuthUser;
+  accessToken: string;
+  expiresIn: number; // seconds
+}
+```
