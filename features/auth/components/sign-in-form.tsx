@@ -24,8 +24,8 @@ export function SignInForm() {
     defaultValues: { identifier: "", password: "", rememberMe: false },
   });
 
-  const mutation = useMutation({
-    mutationFn: async (_values: SignInInput) => {
+  const mutation = useMutation<unknown, Error, SignInInput>({
+    mutationFn: async () => {
       // TODO: connect backend via lib/api-client.ts (no REST contract yet)
       throw new Error("Backend belum tersambung");
     },
