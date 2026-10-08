@@ -62,8 +62,8 @@ export function SessionFeedback({ session }: { session: LastSessionData }) {
               );
             })}
           </ul>
-          {/* TODO: wire to repeat /latihan flow when the route lands */}
-          <span aria-disabled="true" className={buttonVariants({ className: "w-full" })}>
+          {/* TODO: wire repeat to the /latihan flow for this technique when the route lands */}
+          <span aria-disabled="true" className={buttonVariants({ variant: "outline", className: "w-full" })}>
             <RotateCcw data-icon="inline-start" /> Ulangi Latihan Gerakan Ini
           </span>
         </CardContent>
