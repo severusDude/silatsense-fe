@@ -14,4 +14,9 @@ describe("light-only theme mode", () => {
     expect(providersSource).toContain("enableSystem={false}");
     expect(providersSource).not.toContain('defaultTheme="system"');
   });
+
+  it("pins light so dark can never apply until PSR-22", () => {
+    expect(providersSource).toContain('forcedTheme="light"');
+    expect(providersSource).toContain("PSR-22");
+  });
 });

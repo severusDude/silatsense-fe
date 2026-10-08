@@ -50,6 +50,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider
         attribute="class"
         defaultTheme="light"
+        // TODO(PSR-22): drop forcedTheme once .dark tokens are derived from Figma.
+        forcedTheme="light"
         enableSystem={false}
         disableTransitionOnChange
       >
