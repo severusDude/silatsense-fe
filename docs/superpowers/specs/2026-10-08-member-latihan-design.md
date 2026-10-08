@@ -16,7 +16,7 @@ Figma-faithful member training-list frontend at `/latihan` (Figma `94:38430`, "L
 
 ## 3. Architecture
 
-- Routes (thin RSC, no logic): `app/(member)/latihan/page.tsx` → `LatihanPage`. `(member)` shell unchanged except nav state.
+- Routes (thin RSC, no logic): `app/(member)/latihan/page.tsx` → `LatihanPage`. Shell ownership lives in per-route leaf layouts: `app/(member)/dashboard/layout.tsx` (`<MemberLayout>` defaults, dashboard DOM unchanged) and `app/(member)/latihan/layout.tsx` (`activeTab="latihan"`, trail `["Dashboard", "Latihan"]`); the `(member)` group layout is a pure pass-through. (Decision 2026-10-08: nesting `MemberLayout` in both group and leaf layouts rendered double header/nav chrome on `/latihan` — single ownership per leaf instead.)
 - Compositions: `features/member/pages/latihan-page.tsx` (static shell + two `<Suspense>` units: hero, card list).
 - Client components: none expected — nav + cards are dead links this move; `member-bottom-nav.tsx` gains an `activeTab` prop (`"dashboard" | "latihan"`) instead of hardcoded Dashboard-active.
 - Components (`features/member/components/`): `latihan-hero.tsx`, `module-card-list.tsx`, `module-card.tsx`. Shared placeholder mirrors `features/landing/components/shared/image-placeholder.tsx` (same as dashboard move).
