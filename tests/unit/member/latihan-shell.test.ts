@@ -71,4 +71,12 @@ describe("latihan route", () => {
     expect(bottom).toContain("TODO");
     expect(bottom).toContain("aria-disabled");
   });
+
+  it("renders exactly one member shell per route", () => {
+    // Arrange + Act
+    const groupLayout = read("app/(member)/layout.tsx");
+
+    // Assert
+    expect(groupLayout).not.toContain("MemberLayout");
+  });
 });
