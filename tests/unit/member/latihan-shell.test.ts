@@ -34,3 +34,41 @@ describe("latihan components", () => {
     expect(list).toContain("ModuleCard");
   });
 });
+
+describe("latihan route", () => {
+  it("keeps the latihan route thin with no client boundary", () => {
+    // Arrange + Act
+    const layout = read("app/(member)/latihan/layout.tsx");
+    const page = read("app/(member)/latihan/page.tsx");
+
+    // Assert
+    expect(layout).not.toContain("use client");
+    expect(page).not.toContain("use client");
+    expect(page).toContain("@/features/member/pages/latihan-page");
+    expect(page).toContain("LatihanPage");
+  });
+
+  it("suspends hero and modules behind skeleton fallbacks", () => {
+    // Arrange + Act
+    const src = read("features/member/pages/latihan-page.tsx");
+
+    // Assert
+    expect(src).toContain("Suspense");
+    expect(src).toContain("Skeleton");
+    expect(src).toContain("getTrainingModules");
+    expect(src).toContain("LatihanHero");
+    expect(src).toContain("ModuleCardList");
+  });
+
+  it("marks Latihan active with real links and keeps dead TODOs for the rest", () => {
+    // Arrange + Act
+    const bottom = read("features/member/components/member-bottom-nav.tsx");
+
+    // Assert
+    expect(bottom).toContain("activeTab");
+    expect(bottom).toContain('href="/latihan"');
+    expect(bottom).toContain("aria-current");
+    expect(bottom).toContain("TODO");
+    expect(bottom).toContain("aria-disabled");
+  });
+});
