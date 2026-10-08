@@ -723,5 +723,524 @@ export function SessionFeedback({ session }: { session: LastSessionData }) {
                   <Icon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                   <div className="flex flex-col gap-0.5">
                     <p className={`text-xs font-bold ${tone.title}`}>{observation.title}</p>
-                    <p className={`text-xs leading-relaxed ${tone.body}`}>{observat
-...[truncated 7371 chars]
+                    <p className={`text-xs leading-relaxed ${tone.body}`}>{observation.body}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          {/* TODO: wire repeat to the /latihan flow for this technique when the route lands */}
+          <span aria-disabled="true" className={buttonVariants({ variant: "outline", className: "w-full" })}>
+            <RotateCcw data-icon="inline-start" /> Ulangi Latihan Gerakan Ini
+          </span>
+        </CardContent>
+      </Card>
+    </section>
+  );
+}
+```
+
+- [ ] **Step 6: Run the test to verify it passes**
+
+Run: `pnpm exec vitest run tests/unit/member/pillars-feedback.test.ts`
+Expected: PASS, 5 passed (3 mapping + 1 pillar-grid + 1 session-feedback).
+
+- [ ] **Step 7: Typecheck**
+
+Run: `pnpm typecheck`
+Expected: exit 0.
+
+- [ ] **Step 8: Lint touched files**
+
+Run: `pnpm exec eslint features/member/components/pillar-status.ts features/member/components/pillar-grid.tsx features/member/components/session-feedback.tsx tests/unit/member/pillars-feedback.test.ts`
+Expected: exit 0.
+
+- [ ] **Step 9: Verify the dead affordances carry TODOs**
+
+Run: `pnpm exec eslint features/member/components/pillar-grid.tsx features/member/components/session-feedback.tsx` (already green in Step 8) and confirm by reading that the Pukulan `Lanjut` span and the repeat button each have a `TODO` comment directly above them. No new code — visual confirmation only.
+
+- [ ] **Step 10: Commit**
+
+```bash
+git add features/member/components/pillar-status.ts features/member/components/pillar-grid.tsx features/member/components/session-feedback.tsx tests/unit/member/pillars-feedback.test.ts
+git commit -m "feat(member): add pillar grid and session feedback"
+```
+
+---
+
+### Task 4: Weekly progress + coach note (PSR-33 rest)
+
+**Files:**
+- Create: `features/member/components/weekly-progress.tsx`
+- Test: `tests/unit/member/weekly.test.ts`
+
+**Interfaces:**
+- Consumes: `WeeklyData`, `CoachNoteData` from `@/features/member/types` (Task 1).
+- Produces: `WeeklyProgress({ weekly, note }: { weekly: WeeklyData; note: CoachNoteData })`. Task 5 renders it inside a `Suspense` loader.
+
+- [ ] **Step 1: Write the failing test**
+
+```ts
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+const root = process.cwd();
+const read = (path: string) => readFileSync(join(root, path), "utf8");
+
+describe("weekly-progress", () => {
+  it("maps all seven days with data-driven bars and rest/empty states", () => {
+    // Arrange + Act
+    const src = read("features/member/components/weekly-progress.tsx");
+
+    // Assert
+    expect(src).toContain("weekly.days.map");
+    expect(src).toContain('day.state === "rest"');
+    expect(src).toContain("border-dashed");
+  });
+
+  it("renders the week label and coach note from props", () => {
+    // Arrange + Act
+    const src = read("features/member/components/weekly-progress.tsx");
+
+    // Assert
+    expect(src).toContain("weekLabel");
+    expect(src).toContain("blockquote");
+    expect(src).toContain("note.quote");
+  });
+
+  it("uses flex layout with no hard placement", () => {
+    // Arrange + Act
+    const src = read("features/member/components/weekly-progress.tsx");
+
+    // Assert
+    expect(src).toContain("flex");
+    expect(src).not.toContain("absolute");
+  });
+});
+```
+
+- [ ] **Step 2: Run the test to verify it fails**
+
+Run: `pnpm exec vitest run tests/unit/member/weekly.test.ts`
+Expected: FAIL with ENOENT (component file does not exist yet).
+
+- [ ] **Step 3: Create `weekly-progress.tsx`**
+
+```tsx
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import type { CoachNoteData, WeeklyData } from "@/features/member/types";
+
+export function WeeklyProgress({ weekly, note }: { weekly: WeeklyData; note: CoachNoteData }) {
+  return (
+    <section aria-labelledby="weekly-heading" className="flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col gap-3 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-col">
+              <h2 id="weekly-heading" className="text-sm font-bold">
+                {weekly.title}
+              </h2>
+              <p className="text-xs text-muted-foreground">{weekly.targetLabel}</p>
+            </div>
+            <Badge variant="secondary">{weekly.weekLabel}</Badge>
+          </div>
+          <div
+            role="img"
+            aria-label={`${weekly.title}: ${weekly.days.map((d) => `${d.label} ${d.value === null ? "istirahat" : `${d.value}%`}`).join(", ")}`}
+            className="flex items-stretch justify-between gap-1.5 pt-1"
+          >
+            {weekly.days.map((day) => {
+              const filled = day.state === "filled" || day.state === "active";
+              return (
+                <div key={day.label} className="flex flex-1 flex-col items-center gap-1">
+                  <span
+                    className={`text-[10px] ${day.state === "active" ? "font-bold text-primary" : day.state === "rest" ? "text-muted-foreground" : "font-bold text-muted-foreground"}`}
+                  >
+                    {day.value === null ? (day.state === "rest" ? "Rest" : "-") : `${day.value}%`}
+                  </span>
+                  {filled && day.value !== null ? (
+                    <div className="flex h-16 w-full items-end justify-center overflow-hidden rounded-lg bg-muted">
+                      {/* Data-driven height: chart value, not placement */}
+                      <div
+                        className={`w-full rounded-b-lg ${day.state === "active" ? "bg-primary" : "bg-stone-300"}`}
+                        style={{ height: `${day.value}%` }}
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      aria-hidden="true"
+                      className="flex h-16 w-full items-center justify-center rounded-lg border border-dashed bg-muted/50"
+                    />
+                  )}
+                  <span
+                    className={`text-[10px] ${day.state === "active" ? "font-bold text-primary" : "text-muted-foreground"}`}
+                  >
+                    {day.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <figure className="flex flex-col gap-2 rounded-2xl border bg-muted/60 p-3">
+            <figcaption className="flex items-center gap-2">
+              <span
+                aria-hidden="true"
+                className="flex size-6 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground"
+              >
+                {note.initials}
+              </span>
+              <span className="text-xs font-bold">{note.name}</span>
+            </figcaption>
+            <blockquote className="text-xs leading-relaxed text-muted-foreground italic">
+              &ldquo;{note.quote}&rdquo;
+            </blockquote>
+          </figure>
+        </CardContent>
+      </Card>
+    </section>
+  );
+}
+```
+
+- [ ] **Step 4: Run the test to verify it passes**
+
+Run: `pnpm exec vitest run tests/unit/member/weekly.test.ts`
+Expected: PASS, 3 passed.
+
+- [ ] **Step 5: Typecheck**
+
+Run: `pnpm typecheck`
+Expected: exit 0.
+
+- [ ] **Step 6: Lint touched files**
+
+Run: `pnpm exec eslint features/member/components/weekly-progress.tsx tests/unit/member/weekly.test.ts`
+Expected: exit 0.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add features/member/components/weekly-progress.tsx tests/unit/member/weekly.test.ts
+git commit -m "feat(member): add weekly progress chart and coach note"
+```
+
+---
+
+### Task 5: Member shell + routes + page composition + full gates (PSR-35)
+
+**Files:**
+- Create: `features/member/components/member-top-nav.tsx`
+- Create: `features/member/components/member-bottom-nav.tsx`
+- Create: `features/member/pages/member-layout.tsx`
+- Create: `features/member/pages/dashboard-page.tsx`
+- Create: `app/(member)/layout.tsx`
+- Create: `app/(member)/dashboard/page.tsx`
+- Test: `tests/unit/member/member-shell.test.ts`
+
+**Interfaces:**
+- Consumes: all section components + prop types from Tasks 1–4; `getMemberDashboard()` from `@/features/member/data/get-member-dashboard` (Task 1, server-only — imported only by `dashboard-page.tsx`, never by tests).
+- Produces: `/dashboard` route + `(member)` shell. Nothing downstream (final task).
+
+- [ ] **Step 1: Write the failing test**
+
+```ts
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+const root = process.cwd();
+const read = (path: string) => readFileSync(join(root, path), "utf8");
+
+describe("member shell routes", () => {
+  it("keeps app routes thin with no client boundary", () => {
+    // Arrange + Act
+    const layout = read("app/(member)/layout.tsx");
+    const page = read("app/(member)/dashboard/page.tsx");
+
+    // Assert
+    expect(layout).not.toContain("use client");
+    expect(page).not.toContain("use client");
+    expect(layout).toContain("@/features/member/pages/");
+    expect(page).toContain("@/features/member/pages/");
+  });
+
+  it("renders dead nav items with TODOs instead of stub routes", () => {
+    // Arrange + Act
+    const bottom = read("features/member/components/member-bottom-nav.tsx");
+    const top = read("features/member/components/member-top-nav.tsx");
+
+    // Assert
+    for (const label of ["Latihan", "Riwayat", "Profil"]) {
+      expect(bottom).toContain(label);
+    }
+    expect(bottom).toContain("aria-disabled");
+    expect(bottom).toContain("TODO");
+    expect(bottom).toContain("aria-current");
+    expect(top).toContain("TODO");
+  });
+
+  it("suspends each data section behind a skeleton fallback", () => {
+    // Arrange + Act
+    const src = read("features/member/pages/dashboard-page.tsx");
+
+    // Assert
+    expect(src).toContain("Suspense");
+    expect(src).toContain("Skeleton");
+    expect(src).toContain("getMemberDashboard");
+  });
+
+  it("avoids hard placement in shell components", () => {
+    // Arrange + Act
+    const files = [
+      "features/member/components/member-top-nav.tsx",
+      "features/member/components/member-bottom-nav.tsx",
+      "features/member/pages/member-layout.tsx",
+      "features/member/pages/dashboard-page.tsx",
+    ];
+
+    // Assert
+    for (const file of files) {
+      expect(read(file)).not.toContain("absolute");
+    }
+  });
+});
+```
+
+- [ ] **Step 2: Run the test to verify it fails**
+
+Run: `pnpm exec vitest run tests/unit/member/member-shell.test.ts`
+Expected: FAIL with ENOENT (route/shell files do not exist yet).
+
+- [ ] **Step 3: Create `member-top-nav.tsx`**
+
+```tsx
+import { CloudCheck, Play } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+
+export function MemberTopNav() {
+  return (
+    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-[448px] flex-col px-4 pt-3 pb-2.5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="font-heading flex size-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground shadow-sm">
+              S
+            </span>
+            <span className="font-heading text-base font-bold tracking-tight">SILATSENSE</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {/* TODO: wire quick-start to the /latihan session flow when the route lands */}
+            <span aria-disabled="true" title="Mulai latihan (TODO)" className={buttonVariants({ size: "icon", className: "rounded-full" })}>
+              <Play className="size-4" />
+            </span>
+            <span className="flex items-center gap-1.5 border-l pl-2">
+              <span className="flex size-8 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-foreground ring-1 ring-border ring-inset">
+                AS
+              </span>
+              <span aria-hidden="true" className="size-2 rounded-full bg-success" />
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <p className="text-xs font-bold text-primary">Dashboard</p>
+          <Badge variant="success">
+            <CloudCheck className="size-3" /> Cloud Sinkron
+          </Badge>
+        </div>
+      </div>
+    </header>
+  );
+}
+```
+
+- [ ] **Step 4: Create `member-bottom-nav.tsx`**
+
+```tsx
+import { Dumbbell, LayoutDashboard, ScrollText, User } from "lucide-react";
+
+export function MemberBottomNav() {
+  return (
+    <nav aria-label="Navigasi member" className="sticky bottom-0 z-40 border-t bg-background/95 backdrop-blur">
+      <ul className="mx-auto flex w-full max-w-[448px] px-4 py-2">
+        <li className="flex flex-1 flex-col items-center gap-0.5 py-1 text-[10px] font-medium text-primary">
+          <span aria-current="page" className="flex flex-col items-center gap-0.5">
+            <LayoutDashboard className="size-4" aria-hidden="true" />
+            Dashboard
+          </span>
+        </li>
+        {/* TODO: link to /latihan when the route lands */}
+        <li className="flex flex-1 flex-col items-center gap-0.5 py-1 text-[10px] text-muted-foreground">
+          <span aria-disabled="true" className="flex flex-col items-center gap-0.5">
+            <span className="flex items-center gap-1">
+              <Dumbbell className="size-4" aria-hidden="true" />
+              <span className="rounded-full bg-destructive px-1 text-[9px] font-bold text-white">4</span>
+            </span>
+            Latihan
+          </span>
+        </li>
+        {/* TODO: link to /riwayat when the route lands */}
+        <li className="flex flex-1 flex-col items-center gap-0.5 py-1 text-[10px] text-muted-foreground">
+          <span aria-disabled="true" className="flex flex-col items-center gap-0.5">
+            <ScrollText className="size-4" aria-hidden="true" />
+            Riwayat
+          </span>
+        </li>
+        {/* TODO: link to /profil when the route lands */}
+        <li className="flex flex-1 flex-col items-center gap-0.5 py-1 text-[10px] text-muted-foreground">
+          <span aria-disabled="true" className="flex flex-col items-center gap-0.5">
+            <User className="size-4" aria-hidden="true" />
+            Profil
+          </span>
+        </li>
+      </ul>
+    </nav>
+  );
+}
+```
+
+- [ ] **Step 5: Create `member-layout.tsx`**
+
+```tsx
+import type { ReactNode } from "react";
+import { MemberBottomNav } from "@/features/member/components/member-bottom-nav";
+import { MemberTopNav } from "@/features/member/components/member-top-nav";
+
+export function MemberLayout({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      <MemberTopNav />
+      <main className="mx-auto flex w-full max-w-[448px] flex-1 flex-col gap-5 px-4 pt-4 pb-8">
+        {children}
+      </main>
+      <MemberBottomNav />
+    </div>
+  );
+}
+```
+
+- [ ] **Step 6: Create `dashboard-page.tsx`**
+
+```tsx
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getMemberDashboard } from "@/features/member/data/get-member-dashboard";
+import { HeroGreeting } from "@/features/member/components/hero-greeting";
+import { HeroVisualCard } from "@/features/member/components/hero-visual-card";
+import { PillarGrid } from "@/features/member/components/pillar-grid";
+import { SessionFeedback } from "@/features/member/components/session-feedback";
+import { WeeklyProgress } from "@/features/member/components/weekly-progress";
+
+export function DashboardPage() {
+  return (
+    <div className="flex flex-col gap-5">
+      <Suspense fallback={<Skeleton className="h-64 w-full rounded-3xl" />}>
+        <HeroSection />
+      </Suspense>
+      <Suspense fallback={<Skeleton className="h-72 w-full rounded-3xl" />}>
+        <PillarSection />
+      </Suspense>
+      <Suspense fallback={<Skeleton className="h-80 w-full rounded-3xl" />}>
+        <FeedbackSection />
+      </Suspense>
+      <Suspense fallback={<Skeleton className="h-64 w-full rounded-3xl" />}>
+        <WeeklySection />
+      </Suspense>
+    </div>
+  );
+}
+
+async function HeroSection() {
+  const data = await getMemberDashboard();
+  return (
+    <div className="flex flex-col gap-4">
+      <HeroGreeting greeting={data.greeting} />
+      <HeroVisualCard metric={data.heroMetric} />
+    </div>
+  );
+}
+
+async function PillarSection() {
+  const data = await getMemberDashboard();
+  return <PillarGrid pillars={data.pillars} />;
+}
+
+async function FeedbackSection() {
+  const data = await getMemberDashboard();
+  return <SessionFeedback session={data.lastSession} />;
+}
+
+async function WeeklySection() {
+  const data = await getMemberDashboard();
+  return <WeeklyProgress weekly={data.weekly} note={data.coachNote} />;
+}
+```
+
+- [ ] **Step 7: Create the thin routes**
+
+`app/(member)/layout.tsx`:
+
+```tsx
+import type { ReactNode } from "react";
+import { MemberLayout } from "@/features/member/pages/member-layout";
+
+export default function Layout({ children }: { children: ReactNode }) {
+  return <MemberLayout>{children}</MemberLayout>;
+}
+```
+
+`app/(member)/dashboard/page.tsx`:
+
+```tsx
+import { DashboardPage } from "@/features/member/pages/dashboard-page";
+
+export default function Page() {
+  return <DashboardPage />;
+}
+```
+
+- [ ] **Step 8: Run the shell test to verify it passes**
+
+Run: `pnpm exec vitest run tests/unit/member/member-shell.test.ts`
+Expected: PASS, 4 passed.
+
+- [ ] **Step 9: Confirm the generic dashboard scaffold is gone**
+
+Run: `git ls-files features/dashboard`
+Expected: no output (empty scaffold dirs are untracked; nothing to delete). If files are listed, delete them and note the paths in your report.
+
+- [ ] **Step 10: Regenerate route types, then full gates**
+
+Run: `pnpm exec next typegen`
+Expected: exit 0 (generates `.next/types` for the new routes).
+
+Run: `pnpm typecheck`
+Expected: exit 0.
+
+Run: `pnpm lint`
+Expected: exit 0 (full project).
+
+Run: `pnpm test`
+Expected: all suites pass (including the 5 new member suites: 6 + 4 + 5 + 3 + 4 = 22 tests).
+
+Run: `pnpm build`
+Expected: exit 0, `/dashboard` in the route list, no `use cache` errors.
+
+- [ ] **Step 11: Browser overflow + dead-CTA check**
+
+Run: `pnpm dev`, open `http://localhost:3000/dashboard` at 390px width and desktop width with both navs visible, then evaluate in the console:
+
+```js
+document.documentElement.scrollWidth <= window.innerWidth
+```
+
+Expected: `true` at both widths. Spot-check that the dead CTAs/nav items render with Figma styling. Paste the two boolean results in your report. Stop the dev server afterwards.
+
+- [ ] **Step 12: Commit**
+
+```bash
+git add app/\(member\) features/member/components/member-top-nav.tsx features/member/components/member-bottom-nav.tsx features/member/pages tests/unit/member/member-shell.test.ts
+git commit -m "feat(member): add member shell nav routes and dashboard page"
+```
