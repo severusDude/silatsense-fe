@@ -39,10 +39,9 @@ Next.js App Router. Follow strictly.
 
 Never run `pnpm dev` in the foreground and never sleep-poll inside a single call — split START (returns instantly) from READINESS (fast separate checks), so no command ever needs manual interruption.
 
-1. Start detached, logs to Temp, capture PID — returns immediately, zero waiting. Always via `cmd.exe` (never `Start-Process pnpm` directly — the shim resolves inconsistently and can open editors instead of executing):
-   `Start-Process -FilePath "cmd.exe" -ArgumentList "/c pnpm dev --port <PORT>" -WorkingDirectory "<repo>" -WindowStyle Hidden -RedirectStandardOutput "<TEMP>\next-dev-<PORT>.log" -PassThru`
-   Use a fresh port per run (3101, 3102, …) to dodge stale binds. `<TEMP>` is `C:\Users\Lutfi\AppData\Local\Temp\opencode`.
-   If the start call itself does not return promptly, do NOT retry-spawn (each attempt orphans another server): kill by port, and ask the user to run `pnpm dev --port <PORT>` themselves and hand back the port.
+1. Start detached via WMI (returns immediately with ProcessId, no window, zero waiting — never `Start-Process`, `pnpm dev`, `start`, or `&`; they hang the shell). First destroy any leftover on the port (`Get-NetTCPConnection -LocalPort <PORT>` → `taskkill /PID <pid> /T /F`), confirm `curl.exe ... --max-time 3` returns `000`, then:
+   `Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = 'cmd.exe /c pnpm dev --port <PORT> > <TEMP>\next-dev-<PORT>.log 2>&1'; CurrentDirectory = '<repo>' }`
+   Remember the ProcessId; ReturnValue must be 0. Use a fresh port per run (3101, 3102, …). `<TEMP>` is `C:\Users\Lutfi\AppData\Local\Temp\opencode`.
 2. Check readiness with fast bounded calls only: `Get-Content -Tail 5 <log>` for `Ready in`, or one `Invoke-WebRequest -TimeoutSec 5`. If not ready, do other work or issue ONE `Start-Sleep` (≤20s) then re-check. Cap at ~3 re-checks — if still not ready, read the log tail, kill the tree, and report (gates-only evidence) instead of hanging.
 3. Drive the page with the Playwright tools (open via tab-new first — bare navigate fails with no open tab), run `scrollWidth <= innerWidth` + geometry checks, screenshot only if needed.
 4. Stop every time: `taskkill /PID <pid> /T /F`, then confirm the port is free (`Get-NetTCPConnection -LocalPort <PORT>` → empty). No orphan servers, no occupied ports left behind.
