@@ -49,7 +49,7 @@ Dummy values mirror Figma verbatim (Aced, 2 hari, Pukulan Lurus, 82%, 14°/<8°,
 
 - Flex layouts only — no absolute/hard placement (overlays inside the visual card use a relative container with flex rows, not inset coordinates).
 - Images: `ImagePlaceholder` (`role="img"`, `ImageIcon`, dashed border) for the pose visual + logo mark.
-- Icons (lucide, never emoji — Figma `💡` becomes `Lightbulb`): `Play` (quick-start + primary CTA), `BookOpen` (panduan), `ArrowRight`/`ChevronRight` (CTAs/Lanjut), `CheckCircle2` (good), `TriangleAlert` (warning), `Lightbulb` (recommendation), `RotateCcw` (ulangi), `LayoutDashboard`/`Dumbbell`/`History`/`User` (bottom nav), `CloudCheck` (sync), `Footprints`/`Hand`/`Shield`/`Zap` (pillars).
+- Icons (lucide 1.x names, never emoji — Figma `💡` becomes `Lightbulb`): `Play` (quick-start), `ArrowRight` (primary CTA) / `ChevronRight` (Lanjut), `BookOpen` (panduan), `CircleCheck` (good), `TriangleAlert` (warning), `Lightbulb` (recommendation), `RotateCcw` (ulangi), `LayoutDashboard`/`Dumbbell`/`ScrollText`/`User` (bottom nav), `CloudCheck` (sync), `Footprints`/`Hand`/`Shield`/`Zap` (pillars). (Renamed from `CheckCircle2`/`History` — removed in lucide-react 1.x.)
 - Status tints via `Badge`: green (`Stabil`, `Optimal`, sync, good row), amber (`Perlu Koreksi`, warning row, score chip), neutral (recommendation row, empty days). Pukulan card gets `border-primary` active ring.
 - CTAs + bottom nav (Latihan/Riwayat/Profil) render as dead affordances with `TODO` comments pointing at future routes (`/latihan` session flow, `/panduan`); Latihan keeps its `4` badge. No navigation wiring this move.
 
