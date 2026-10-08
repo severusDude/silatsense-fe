@@ -18,7 +18,7 @@ Figma-faithful `/sign-in` and `/sign-up` frontend. RHF + Zod (`mode: "onChange"`
 - Client components: `features/auth/components/sign-in-form.tsx`, `sign-up-form.tsx`, shared `password-field.tsx` (`"use client"`, `useState` eye toggle).
 - Schemas: `features/auth/schemas/` directory form (`sign-in.ts`, `sign-up.ts`, `index.ts` re-export).
 - No `app/api/` (external clients only). Backend stub lives in the client mutation with `TODO` until REST contract exists.
-- Missing primitive: add `components/ui/input-group.tsx` via `npx shadcn@latest add input-group` (base-nova, Base UI). No Radix. `@/` imports only.
+- Missing primitive: add `components/ui/input-group.tsx` and `components/ui/tooltip.tsx` via shadcn (base-nova, Base UI). No Radix. `@/` imports only.
 
 ## 4. Schemas / validation
 
@@ -49,7 +49,7 @@ RHF: `useForm({ resolver: zodResolver(schema), mode: "onChange", criteriaMode: "
 ## 5. UI pattern
 
 - Each field: `Controller` → `Field data-invalid={fieldState.invalid}` → `FieldLabel` (uppercase Grotesk) + `Input` (leading icon via relative wrapper or `InputGroupAddon align="inline-start"`) + `FieldError errors={[fieldState.error]}` when invalid.
-- Password (`password-field.tsx`): `InputGroup` > `InputGroupInput type={show ? "text" : "password"}` (after input in DOM) + `InputGroupAddon align="inline-end"` > `InputGroupButton type="button" size="icon-xs" aria-label={show ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}` with `Eye`/`EyeOff`.
+- Password (`password-field.tsx`): `InputGroup` > `InputGroupInput type={show ? "text" : "password"}` (after input in DOM) + `InputGroupAddon align="inline-end"` > shadcn `Tooltip` wrapping `InputGroupButton type="button" size="icon-xs"` with `Eye`/`EyeOff` icon and visible tooltip text (`Tampilkan kata sandi` / `Sembunyikan kata sandi`). Never `aria-label`-only for the toggle — tooltip is the label affordance.
 - CTA: `Button` primary full-width with `ArrowRight` icon. Checkbox: Base UI checkbox via shadcn with `Field orientation="horizontal"`.
 - `Lupa sandi?` renders as non-navigating affordance (TODO backend reset flow, out of scope).
 
