@@ -8,13 +8,16 @@ const read = (path: string) => readFileSync(join(root, path), "utf8");
 describe("member shell routes", () => {
   it("keeps app routes thin with no client boundary", () => {
     // Arrange + Act
-    const layout = read("app/(member)/layout.tsx");
+    const layout = read("app/(member)/dashboard/layout.tsx");
+    const latihanLayout = read("app/(member)/latihan/layout.tsx");
     const page = read("app/(member)/dashboard/page.tsx");
 
     // Assert
     expect(layout).not.toContain("use client");
+    expect(latihanLayout).not.toContain("use client");
     expect(page).not.toContain("use client");
     expect(layout).toContain("@/features/member/pages/");
+    expect(latihanLayout).toContain("@/features/member/pages/");
     expect(page).toContain("@/features/member/pages/");
   });
 

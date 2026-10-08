@@ -68,3 +68,26 @@ export interface MemberDashboard {
   weekly: WeeklyData;
   coachNote: CoachNoteData;
 }
+
+export interface TrainingModule {
+  slug: "kuda-kuda" | "pukulan" | "tangkisan" | "tendangan";
+  order: number;
+  orderLabel: string;
+  name: string;
+  levelLabel: string;
+  description: string;
+  estimateLabel?: string;
+}
+
+export interface TrainingHero {
+  badges: string[];
+  title: string;
+  subtitle: string;
+  sessionsLabel: string;
+  accuracyLabel: string;
+}
+
+export interface MemberTraining {
+  hero: TrainingHero;
+  modules: TrainingModule[];
+}

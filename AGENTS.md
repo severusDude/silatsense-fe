@@ -35,6 +35,18 @@ Next.js App Router. Follow strictly.
 7. Verify per `docs/CODE_STANDARD.md` §6: `pnpm build` + `tsc --noEmit` + `eslint` + `pnpm test` green, plus browser `scrollWidth <= innerWidth` check for visual moves. Zero errors before `In Review`.
 8. Merges: PR to `development` with squash. `development` → `main` with merge commit, no squash.
 
+## Dev server for browser checks (Playwright)
+
+Never run `pnpm dev` in the foreground and never sleep-poll inside a single call — split START (returns instantly) from READINESS (fast separate checks), so no command ever needs manual interruption.
+
+1. Start detached via WMI (returns immediately with ProcessId, no window, zero waiting — never `Start-Process`, `pnpm dev`, `start`, or `&`; they hang the shell). First destroy any leftover on the port (`Get-NetTCPConnection -LocalPort <PORT>` → `taskkill /PID <pid> /T /F`), confirm `curl.exe ... --max-time 3` returns `000`, then:
+   `Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = 'cmd.exe /c pnpm dev --port <PORT> > <TEMP>\next-dev-<PORT>.log 2>&1'; CurrentDirectory = '<repo>' }`
+   Remember the ProcessId; ReturnValue must be 0. Use a fresh port per run (3101, 3102, …). `<TEMP>` is `C:\Users\Lutfi\AppData\Local\Temp\opencode`.
+2. Check readiness with fast bounded calls only: `Get-Content -Tail 5 <log>` for `Ready in`, or one `Invoke-WebRequest -TimeoutSec 5`. If not ready, do other work or issue ONE `Start-Sleep` (≤20s) then re-check. Cap at ~3 re-checks — if still not ready, read the log tail, kill the tree, and report (gates-only evidence) instead of hanging.
+3. Drive the page with the Playwright tools (open via tab-new first — bare navigate fails with no open tab), run `scrollWidth <= innerWidth` + geometry checks, screenshot only if needed.
+4. Stop every time: `taskkill /PID <pid> /T /F`, then confirm the port is free (`Get-NetTCPConnection -LocalPort <PORT>` → empty). No orphan servers, no occupied ports left behind.
+5. Delete all tool artifacts when done: `.playwright-mcp/`, Temp server logs. Never commit them, never leave them untracked. Verify with `git status --short`.
+
 ## Commits
 
 `<type>(<scope>): <summary>` + optional body + footers. Types: `feat|fix|docs|style|refactor|perf|test|chore|ci`. Breaking: `!` before `:` (e.g. `feat(api)!: change auth payload`). One task = one commit = one review.

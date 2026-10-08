@@ -2,7 +2,7 @@ import { CloudCheck, Play } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 
-export function MemberTopNav() {
+export function MemberTopNav({ trail = ["Dashboard"] }: { trail?: string[] }) {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-[448px] flex-col px-4 pt-3 pb-2.5">
@@ -27,7 +27,7 @@ export function MemberTopNav() {
           </div>
         </div>
         <div className="flex items-center justify-between gap-3 pt-2">
-          <p className="text-xs font-bold text-primary">Dashboard</p>
+          <p className="text-xs font-bold text-primary">{trail.join(" / ")}</p>
           <Badge variant="success">
             <CloudCheck className="size-3" /> Cloud Sinkron
           </Badge>
