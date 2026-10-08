@@ -16,6 +16,20 @@ describe("latihan components", () => {
     expect(src).toContain('variant="outline"');
   });
 
+  it("layers the order badge inside the image corner without absolute", () => {
+    // Arrange + Act
+    const src = read("features/member/components/module-card.tsx");
+
+    // Assert
+    expect(src).toContain("col-start-1 row-start-1");
+    expect(src).toContain("self-end");
+    expect(src).toContain("justify-self-start");
+    expect(src).toContain("m-2");
+    expect(src).toContain("backdrop-blur");
+    expect(src).toContain("orderLabel");
+    expect(src).not.toContain("absolute");
+  });
+
   it("keeps cards flex-only with placeholders and dead CTAs", () => {
     // Arrange + Act
     const card = read("features/member/components/module-card.tsx");

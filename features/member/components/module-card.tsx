@@ -9,9 +9,14 @@ export function ModuleCard({ module }: { module: TrainingModule }) {
   return (
     <Card>
       <CardContent className="flex flex-col gap-3 p-4">
-        <div className="flex flex-col gap-1.5">
-          <ImagePlaceholder label={module.name} />
-          <Badge variant="secondary">{module.orderLabel}</Badge>
+        <div className="grid">
+          <ImagePlaceholder label={module.name} className="col-start-1 row-start-1" />
+          <Badge
+            variant="secondary"
+            className="col-start-1 row-start-1 m-2 self-end justify-self-start bg-secondary/80 backdrop-blur-sm"
+          >
+            {module.orderLabel}
+          </Badge>
         </div>
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col gap-0.5">
