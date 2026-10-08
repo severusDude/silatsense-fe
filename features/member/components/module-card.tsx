@@ -1,0 +1,35 @@
+import { ArrowRight, Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ImagePlaceholder } from "@/features/member/components/shared/image-placeholder";
+import type { TrainingModule } from "@/features/member/types";
+
+export function ModuleCard({ module }: { module: TrainingModule }) {
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-3 p-4">
+        <div className="flex flex-col gap-1.5">
+          <ImagePlaceholder label={module.name} />
+          <Badge variant="secondary">{module.orderLabel}</Badge>
+        </div>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-sm font-bold">{module.name}</h2>
+            <p className="text-xs text-muted-foreground">{module.levelLabel}</p>
+          </div>
+          {module.estimateLabel ? (
+            <Badge variant="outline" className="shrink-0">
+              <Clock className="size-3" aria-hidden="true" /> {module.estimateLabel}
+            </Badge>
+          ) : null}
+        </div>
+        <p className="text-xs leading-relaxed text-muted-foreground">{module.description}</p>
+        {/* TODO: wire to /latihan/[slug] Persiapan detail (Figma 94:38628) when the route lands */}
+        <span aria-disabled="true" className={buttonVariants({ className: "w-full" })}>
+          Mulai Latihan <ArrowRight data-icon="inline-end" />
+        </span>
+      </CardContent>
+    </Card>
+  );
+}
