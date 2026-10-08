@@ -70,6 +70,12 @@ export function SignInForm() {
         placeholder="secretpassword"
         autoComplete="current-password"
       />
+      <div className="flex justify-end">
+        {/* TODO: password-reset flow (no backend contract yet) */}
+        <button type="button" className="text-xs font-medium text-primary hover:underline">
+          Lupa sandi?
+        </button>
+      </div>
       <Controller
         name="rememberMe"
         control={control}
@@ -78,7 +84,7 @@ export function SignInForm() {
             <Checkbox
               id="sign-in-remember"
               checked={field.value}
-              onCheckedChange={field.onChange}
+              onCheckedChange={(checked) => field.onChange(checked === true)}
             />
             <FieldLabel htmlFor="sign-in-remember">Ingat saya di perangkat ini</FieldLabel>
           </Field>

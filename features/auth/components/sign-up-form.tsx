@@ -115,12 +115,10 @@ export function SignUpForm() {
               Saya menyetujui ketentuan latihan mandiri &amp; pemrosesan stream video
               secara lokal di browser sesuai standar UKM Silat UNSIL.
             </FieldLabel>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}
       />
-      {control.getFieldState("terms").invalid && (
-        <FieldError errors={[control.getFieldState("terms").error]} />
-      )}
       <Button type="submit" className="w-full" disabled={mutation.isPending}>
         Daftar Akun Pesilat <ArrowRight data-icon="inline-end" />
       </Button>
