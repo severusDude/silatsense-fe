@@ -65,7 +65,7 @@ export function CameraSourceCard({
           <SelectTrigger className="w-full" aria-label="Sumber kamera">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent alignItemWithTrigger={false}>
+          <SelectContent>
             <SelectGroup>
               {cameras.map((camera) => (
                 <SelectItem key={camera.id} value={camera.id}>
