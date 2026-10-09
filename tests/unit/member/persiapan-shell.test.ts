@@ -47,8 +47,16 @@ describe("persiapan components", () => {
     // Assert
     expect(source).toContain("PILIH SUMBER KAMERA");
     expect(source).toContain("Pindai Ulang");
-    expect(source).toContain("Logitech Brio 4K Ultra HD");
-    expect(source).toContain("Terhubung (1080p @ 60 FPS)");
+    expect(source).toContain("use client");
+    expect(source).toContain("enumerateDevices");
+    expect(source).toContain("getUserMedia");
+    expect(source).toContain("getTracks");
+    expect(source).toContain("items={");
+    expect(source).toContain("onValueChange");
+    expect(source).toContain("RESOLUSI");
+    expect(source).toContain("FPS");
+    expect(source).toContain("LATENSI");
+    expect(source).not.toContain("Terhubung (1080p @ 60 FPS)");
     expect(coach).toContain("INSTRUKSI PELATIH SILAT");
     expect(coach).toContain("Wajib");
     expect(calibration).toContain("KESIAPAN SENSOR & AI");

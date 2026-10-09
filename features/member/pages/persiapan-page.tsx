@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPersiapan } from "@/features/member/data/get-persiapan";
+import { getCameras, getPersiapan } from "@/features/member/data/get-persiapan";
+import { defaultCameraId } from "@/features/member/data/persiapan-dummy";
 import { PersiapanViewport } from "@/features/member/components/persiapan-viewport";
 import { CameraSourceCard } from "@/features/member/components/camera-source-card";
 import { CoachInstructionCard } from "@/features/member/components/coach-instruction-card";
@@ -39,7 +40,8 @@ async function ViewportSection({ slug }: { slug: string }) {
 async function SourceSection({ slug }: { slug: string }) {
   const detail = await getPersiapan(slug);
   if (!detail) notFound();
-  return <CameraSourceCard />;
+  const cameras = await getCameras();
+  return <CameraSourceCard cameras={cameras} defaultCameraId={defaultCameraId} />;
 }
 
 async function CoachSection({ slug }: { slug: string }) {
