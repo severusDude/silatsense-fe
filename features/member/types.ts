@@ -109,6 +109,7 @@ export interface PersiapanDetail {
   slug: PersiapanSlug;
   eyebrow: string;
   accuracyLabel: string;
+  accuracyValue: string;
   title: string;
   description: string;
   coachQuote: string;

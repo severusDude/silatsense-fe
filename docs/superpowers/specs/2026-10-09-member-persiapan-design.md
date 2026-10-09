@@ -44,7 +44,8 @@ interface PostureGuide {
 interface PersiapanDetail {
   slug: PersiapanSlug;
   eyebrow: string; // e.g. "KUDA-KUDA"
-  accuracyLabel: string; // e.g. "Target Akurasi: ≥ 88%"
+  accuracyLabel: string; // e.g. "Target Akurasi:"
+  accuracyValue: string; // e.g. "≥ 88%" (destructive-red accent)
   title: string; // e.g. "Kuda-kuda"
   description: string; // calibration paragraph (§2)
   coachQuote: string; // coach card quote (§2)

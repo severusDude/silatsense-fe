@@ -38,7 +38,8 @@ export const dummyPersiapanBySlug: Record<PersiapanSlug, PersiapanDetail> = {
   "kuda-kuda": {
     slug: "kuda-kuda",
     eyebrow: "KUDA-KUDA",
-    accuracyLabel: "Target Akurasi: ≥ 88%",
+    accuracyLabel: "Target Akurasi:",
+    accuracyValue: "≥ 88%",
     title: "Kuda-kuda",
     description:
       "Kalibrasi Pra-Latihan Biomekanika untuk mengukur simetri tumpuan kaki (50:50 COG), sudut fleksi lutut (130°–135°), dan tegak lurus sumbu aksial tulang belakang.",
@@ -55,7 +56,8 @@ export const dummyPersiapanBySlug: Record<PersiapanSlug, PersiapanDetail> = {
   pukulan: {
     slug: "pukulan",
     eyebrow: "PUKULAN",
-    accuracyLabel: "Target Akurasi: ≥ 85%",
+    accuracyLabel: "Target Akurasi:",
+    accuracyValue: "≥ 85%",
     title: "Pukulan",
     description:
       "Kalibrasi Pra-Latihan Biomekanika untuk mengukur linearitas dorongan kepalan (segaris ulu hati), stabilitas Kuda Kuda (135°), dan rotasi sendi panggul (45°).",
@@ -72,7 +74,8 @@ export const dummyPersiapanBySlug: Record<PersiapanSlug, PersiapanDetail> = {
   tangkisan: {
     slug: "tangkisan",
     eyebrow: "TANGKISAN",
-    accuracyLabel: "Target Akurasi: ≥ 85%",
+    accuracyLabel: "Target Akurasi:",
+    accuracyValue: "≥ 85%",
     title: "Tangkisan",
     description:
       "Kalibrasi Pra-Latihan Biomekanika untuk mengukur sudut perisai lengan (45° terhadap dahi), serta rileksasi bahu dan sumbu leher.",
@@ -89,7 +92,8 @@ export const dummyPersiapanBySlug: Record<PersiapanSlug, PersiapanDetail> = {
   tendangan: {
     slug: "tendangan",
     eyebrow: "TENDANGAN",
-    accuracyLabel: "Target Akurasi: ≥ 85%",
+    accuracyLabel: "Target Akurasi:",
+    accuracyValue: "≥ 85%",
     title: "Tendangan",
     description:
       "Kalibrasi Pra-Latihan Biomekanika untuk mengukur daya dorong tumit, ketinggian lintasan kaki, dan kelurusan lutut tumpuan.",
