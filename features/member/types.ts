@@ -91,3 +91,28 @@ export interface MemberTraining {
   hero: TrainingHero;
   modules: TrainingModule[];
 }
+
+export type PersiapanSlug = "kuda-kuda" | "pukulan" | "tangkisan" | "tendangan";
+
+export interface CalibrationCheck {
+  title: string;
+  detail: string;
+  stateLabel: string;
+}
+
+export interface PostureGuide {
+  term: string;
+  detail: string;
+}
+
+export interface PersiapanDetail {
+  slug: PersiapanSlug;
+  eyebrow: string;
+  accuracyLabel: string;
+  title: string;
+  description: string;
+  coachQuote: string;
+  readinessLabel: string;
+  checks: CalibrationCheck[];
+  guides: PostureGuide[];
+}
