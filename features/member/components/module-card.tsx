@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -30,10 +31,12 @@ export function ModuleCard({ module }: { module: TrainingModule }) {
           ) : null}
         </div>
         <p className="text-xs leading-relaxed text-muted-foreground">{module.description}</p>
-        {/* TODO: wire to /latihan/[slug] Persiapan detail (Figma 94:38628) when the route lands */}
-        <span aria-disabled="true" className={buttonVariants({ className: "w-full" })}>
+        <Link
+          href={`/latihan/${module.slug}`}
+          className={buttonVariants({ className: "w-full" })}
+        >
           Mulai Latihan <ArrowRight data-icon="inline-end" />
-        </span>
+        </Link>
       </CardContent>
     </Card>
   );
