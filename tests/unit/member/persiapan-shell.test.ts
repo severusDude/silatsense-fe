@@ -134,11 +134,13 @@ describe("persiapan route", () => {
 
   it("keeps the select edge-aligned with rounded FPS", () => {
     // Arrange + Act
-    const src = read("features/member/components/camera-source-card.tsx");
+    const card = read("features/member/components/camera-source-card.tsx");
+    const primitive = read("components/ui/select.tsx");
 
     // Assert
-    expect(src).toContain("alignItemWithTrigger={false}");
-    expect(src).toContain("formatFps");
+    expect(primitive).toContain("alignItemWithTrigger = false");
+    expect(card).not.toContain("alignItemWithTrigger");
+    expect(card).toContain("formatFps");
   });
 
   it("owns one member shell per leaf without double chrome", () => {
