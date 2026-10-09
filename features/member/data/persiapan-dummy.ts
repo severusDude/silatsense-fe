@@ -1,4 +1,8 @@
-import type { PersiapanDetail, PersiapanSlug } from "@/features/member/types";
+import type {
+  CameraDevice,
+  PersiapanDetail,
+  PersiapanSlug,
+} from "@/features/member/types";
 
 // Kuda-kuda copy mirrors Figma node 94:38628 verbatim. Other slugs carry
 // best-effort transcriptions derived from the list-move module copy, flagged
@@ -32,6 +36,21 @@ export const persiapanSlugs: PersiapanSlug[] = [
   "pukulan",
   "tangkisan",
   "tendangan",
+];
+
+// Fallback list shown before the user taps Pindai Ulang (probe-on-tap) and
+// when camera access is denied or unavailable. Real devices replace it via
+// enumerateDevices + getSettings probing in CameraSourceCard.
+export const defaultCameraId = "integrated";
+
+export const dummyCameras: CameraDevice[] = [
+  {
+    id: "integrated",
+    label: "Kamera Terintegrasi",
+    resolution: "1280×720",
+    fps: 30,
+    latencyMs: null,
+  },
 ];
 
 export const dummyPersiapanBySlug: Record<PersiapanSlug, PersiapanDetail> = {

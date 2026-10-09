@@ -14,16 +14,21 @@ describe("persiapan components", () => {
     expect(src).not.toContain("absolute");
     expect(src).toContain("ImagePlaceholder");
     expect(src).toContain("col-start-1 row-start-1");
-    expect(src).toContain("1080p @ 60 FPS");
     expect(src).toContain("Pesilat Terdeteksi");
-    expect(src).toContain("Ganti");
-    expect(src).toContain("TODO");
+    expect(src).toContain("<video");
   });
 
   it("keeps all persiapan sections flex-only with lucide icons", () => {
     // Arrange + Act
     const files = [
       "features/member/components/persiapan-viewport.tsx",
+      "features/member/components/camera-experience.tsx",
+      "features/member/components/camera-source-card.tsx",
+      "features/member/components/coach-instruction-card.tsx",
+      "features/member/components/calibration-card.tsx",
+      "features/member/components/persiapan-cta.tsx",
+    ];
+    const withIcons = [
       "features/member/components/camera-source-card.tsx",
       "features/member/components/coach-instruction-card.tsx",
       "features/member/components/calibration-card.tsx",
@@ -34,7 +39,9 @@ describe("persiapan components", () => {
     for (const file of files) {
       const src = read(file);
       expect(src).not.toContain("absolute");
-      expect(src).toContain("lucide-react");
+    }
+    for (const file of withIcons) {
+      expect(read(file)).toContain("lucide-react");
     }
   });
 
@@ -47,8 +54,13 @@ describe("persiapan components", () => {
     // Assert
     expect(source).toContain("PILIH SUMBER KAMERA");
     expect(source).toContain("Pindai Ulang");
-    expect(source).toContain("Logitech Brio 4K Ultra HD");
-    expect(source).toContain("Terhubung (1080p @ 60 FPS)");
+    expect(source).toContain("use client");
+    expect(source).toContain("items={");
+    expect(source).toContain("onValueChange");
+    expect(source).toContain("RESOLUSI");
+    expect(source).toContain("FPS");
+    expect(source).toContain("LATENSI");
+    expect(source).not.toContain("Terhubung (1080p @ 60 FPS)");
     expect(coach).toContain("INSTRUKSI PELATIH SILAT");
     expect(coach).toContain("Wajib");
     expect(calibration).toContain("KESIAPAN SENSOR & AI");
@@ -85,20 +97,50 @@ describe("persiapan route", () => {
     expect(page).toContain("PersiapanPage");
   });
 
-  it("suspends five sections behind skeleton fallbacks with a notFound guard", () => {
+  it("suspends camera, coach, calibration, and CTA behind skeleton fallbacks", () => {
     // Arrange + Act
     const src = read("features/member/pages/persiapan-page.tsx");
+    const experience = read(
+      "features/member/components/camera-experience.tsx",
+    );
 
     // Assert
     expect(src).toContain("Suspense");
     expect(src).toContain("Skeleton");
     expect(src).toContain("notFound");
     expect(src).toContain("getPersiapan");
-    expect(src).toContain("PersiapanViewport");
-    expect(src).toContain("CameraSourceCard");
+    expect(src).toContain("getCameras");
+    expect(src).toContain("CameraExperience");
     expect(src).toContain("CoachInstructionCard");
     expect(src).toContain("CalibrationCard");
     expect(src).toContain("PersiapanCta");
+    expect(experience).toContain("PersiapanViewport");
+    expect(experience).toContain("CameraSourceCard");
+    expect(experience).toContain("getUserMedia");
+    expect(experience).toContain("getTracks");
+  });
+
+  it("syncs the viewport badge to the live stream without a Ganti badge", () => {
+    // Arrange + Act
+    const src = read("features/member/components/persiapan-viewport.tsx");
+
+    // Assert
+    expect(src).toContain("srcObject");
+    expect(src).toContain("qualityBadge");
+    expect(src).toContain("Siaga");
+    expect(src).not.toContain("Ganti");
+    expect(src).not.toContain("1080p @ 60 FPS");
+  });
+
+  it("keeps the select edge-aligned with rounded FPS", () => {
+    // Arrange + Act
+    const card = read("features/member/components/camera-source-card.tsx");
+    const primitive = read("components/ui/select.tsx");
+
+    // Assert
+    expect(primitive).toContain("alignItemWithTrigger = false");
+    expect(card).not.toContain("alignItemWithTrigger");
+    expect(card).toContain("formatFps");
   });
 
   it("owns one member shell per leaf without double chrome", () => {

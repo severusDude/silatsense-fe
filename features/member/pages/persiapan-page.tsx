@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPersiapan } from "@/features/member/data/get-persiapan";
-import { PersiapanViewport } from "@/features/member/components/persiapan-viewport";
-import { CameraSourceCard } from "@/features/member/components/camera-source-card";
+import { getCameras, getPersiapan } from "@/features/member/data/get-persiapan";
+import { defaultCameraId } from "@/features/member/data/persiapan-dummy";
+import { CameraExperience } from "@/features/member/components/camera-experience";
 import { CoachInstructionCard } from "@/features/member/components/coach-instruction-card";
 import { CalibrationCard } from "@/features/member/components/calibration-card";
 import { PersiapanCta } from "@/features/member/components/persiapan-cta";
@@ -12,10 +12,7 @@ export function PersiapanPage({ slug }: { slug: string }) {
   return (
     <div className="flex flex-col gap-3.5">
       <Suspense fallback={<Skeleton className="aspect-video w-full rounded-2xl" />}>
-        <ViewportSection slug={slug} />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-36 w-full rounded-2xl" />}>
-        <SourceSection slug={slug} />
+        <CameraSection slug={slug} />
       </Suspense>
       <Suspense fallback={<Skeleton className="h-28 w-full rounded-2xl" />}>
         <CoachSection slug={slug} />
@@ -30,16 +27,17 @@ export function PersiapanPage({ slug }: { slug: string }) {
   );
 }
 
-async function ViewportSection({ slug }: { slug: string }) {
+async function CameraSection({ slug }: { slug: string }) {
   const detail = await getPersiapan(slug);
   if (!detail) notFound();
-  return <PersiapanViewport label={detail.title} />;
-}
-
-async function SourceSection({ slug }: { slug: string }) {
-  const detail = await getPersiapan(slug);
-  if (!detail) notFound();
-  return <CameraSourceCard />;
+  const cameras = await getCameras();
+  return (
+    <CameraExperience
+      title={detail.title}
+      cameras={cameras}
+      defaultCameraId={defaultCameraId}
+    />
+  );
 }
 
 async function CoachSection({ slug }: { slug: string }) {

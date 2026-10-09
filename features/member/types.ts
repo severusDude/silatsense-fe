@@ -117,3 +117,11 @@ export interface PersiapanDetail {
   checks: CalibrationCheck[];
   guides: PostureGuide[];
 }
+
+export interface CameraDevice {
+  id: string;
+  label: string;
+  resolution: string;
+  fps: number;
+  latencyMs: number | null;
+}

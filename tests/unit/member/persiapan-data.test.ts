@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { PersiapanDetail } from "@/features/member/types";
 import {
+  defaultCameraId,
+  dummyCameras,
   dummyPersiapanBySlug,
   persiapanSlugs,
 } from "@/features/member/data/persiapan-dummy";
@@ -50,5 +52,29 @@ describe("dummyPersiapanBySlug", () => {
 
     // Assert
     expect(detail).toBeNull();
+  });
+});
+
+describe("dummyCameras", () => {
+  it("keeps ids unique with the default camera present", () => {
+    // Arrange + Act
+    const ids = dummyCameras.map((camera) => camera.id);
+
+    // Assert
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).toContain(defaultCameraId);
+  });
+
+  it("carries a full profile per camera with nullable latency", () => {
+    // Arrange + Act
+    const integrated = dummyCameras.find(
+      (camera) => camera.id === defaultCameraId,
+    );
+
+    // Assert
+    expect(integrated?.label).toBe("Kamera Terintegrasi");
+    expect(integrated?.resolution).toBe("1280×720");
+    expect(integrated?.fps).toBe(30);
+    expect(integrated?.latencyMs).toBeNull();
   });
 });
