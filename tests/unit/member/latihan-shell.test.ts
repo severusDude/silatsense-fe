@@ -30,7 +30,7 @@ describe("latihan components", () => {
     expect(src).not.toContain("absolute");
   });
 
-  it("keeps cards flex-only with placeholders and dead CTAs", () => {
+  it("keeps cards flex-only with placeholders and live detail links", () => {
     // Arrange + Act
     const card = read("features/member/components/module-card.tsx");
     const list = read("features/member/components/module-card-list.tsx");
@@ -41,9 +41,8 @@ describe("latihan components", () => {
       expect(src).not.toContain("absolute");
     }
     expect(card).toContain("ImagePlaceholder");
-    expect(card).toContain("TODO");
-    expect(card).toContain("/latihan/[slug]");
-    expect(card).toContain("aria-disabled");
+    expect(card).toContain("/latihan/${module.slug}");
+    expect(card).not.toContain("aria-disabled");
     expect(card).not.toContain("Sensor Siap");
     expect(list).toContain("ModuleCard");
   });
@@ -52,8 +51,8 @@ describe("latihan components", () => {
 describe("latihan route", () => {
   it("keeps the latihan route thin with no client boundary", () => {
     // Arrange + Act
-    const layout = read("app/(member)/latihan/layout.tsx");
-    const page = read("app/(member)/latihan/page.tsx");
+    const layout = read("app/(member)/latihan/(list)/layout.tsx");
+    const page = read("app/(member)/latihan/(list)/page.tsx");
 
     // Assert
     expect(layout).not.toContain("use client");

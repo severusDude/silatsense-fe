@@ -27,7 +27,7 @@ export function MemberTopNav({ trail = ["Dashboard"] }: { trail?: string[] }) {
           </div>
         </div>
         <div className="flex items-center justify-between gap-3 pt-2">
-          <p className="text-xs font-bold text-primary">{trail.join(" / ")}</p>
+          <p className="min-w-0 flex-1 truncate text-xs font-bold text-primary">{trail.join(" / ")}</p>
           <Badge variant="success">
             <CloudCheck className="size-3" /> Cloud Sinkron
           </Badge>

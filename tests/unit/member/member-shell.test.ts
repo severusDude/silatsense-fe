@@ -17,7 +17,7 @@ describe("member shell routes", () => {
     expect(latihanLayout).not.toContain("use client");
     expect(page).not.toContain("use client");
     expect(layout).toContain("@/features/member/pages/");
-    expect(latihanLayout).toContain("@/features/member/pages/");
+    expect(latihanLayout).not.toContain("MemberLayout");
     expect(page).toContain("@/features/member/pages/");
   });
 
