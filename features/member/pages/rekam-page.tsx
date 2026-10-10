@@ -36,5 +36,5 @@ async function ViewportSection({ slug }: { slug: string }) {
 async function CtaSection({ slug }: { slug: string }) {
   const detail = await getRekam(slug);
   if (!detail) notFound();
-  return <RekamSelesaiCta />;
+  return <RekamSelesaiCta slug={slug} />;
 }

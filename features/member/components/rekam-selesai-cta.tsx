@@ -1,14 +1,14 @@
+import Link from "next/link";
 import { Zap } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 
-export function RekamSelesaiCta() {
+export function RekamSelesaiCta({ slug }: { slug: string }) {
   return (
-    /* TODO: wire to /latihan/[slug]/sesi when the sesi move lands */
-    <span
-      aria-disabled="true"
+    <Link
+      href={`/latihan/${slug}/sesi`}
       className={buttonVariants({ size: "lg", className: "w-full rounded-full" })}
     >
       <Zap data-icon="inline-start" /> Selesai
-    </span>
+    </Link>
   );
 }
