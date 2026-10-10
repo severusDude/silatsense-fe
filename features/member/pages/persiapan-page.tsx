@@ -55,5 +55,5 @@ async function CalibrationSection({ slug }: { slug: string }) {
 async function CtaSection({ slug }: { slug: string }) {
   const detail = await getPersiapan(slug);
   if (!detail) notFound();
-  return <PersiapanCta />;
+  return <PersiapanCta slug={slug} />;
 }

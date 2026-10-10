@@ -125,3 +125,12 @@ export interface CameraDevice {
   fps: number;
   latencyMs: number | null;
 }
+
+export interface RekamSession {
+  slug: PersiapanSlug;
+  trainingName: string;
+  eyebrow: string;
+  countdownSec: number;
+  targetDurationSec: number;
+  camera: CameraDevice;
+}

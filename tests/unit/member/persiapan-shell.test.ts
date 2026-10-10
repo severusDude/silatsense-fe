@@ -68,16 +68,16 @@ describe("persiapan components", () => {
     expect(calibration).toContain("PANDUAN POSTUR KUNCI");
   });
 
-  it("keeps the CTA dead with a session TODO and no countdown state", () => {
+  it("links the CTA to the rekam route with no countdown state", () => {
     // Arrange + Act
     const src = read("features/member/components/persiapan-cta.tsx");
 
     // Assert
     expect(src).toContain("Mulai Analisis Gerakan");
     expect(src).toContain("3s Mundur");
-    expect(src).toContain("aria-disabled");
-    expect(src).toContain("TODO");
-    expect(src).toContain("/latihan/[slug]/sesi");
+    expect(src).toContain("/latihan/${slug}/rekam");
+    expect(src).not.toContain("aria-disabled");
+    expect(src).not.toContain("/latihan/[slug]/sesi");
     expect(src).not.toContain("useState");
   });
 });
@@ -85,8 +85,8 @@ describe("persiapan components", () => {
 describe("persiapan route", () => {
   it("keeps the [slug] route thin with static params and no client boundary", () => {
     // Arrange + Act
-    const layout = read("app/(member)/latihan/[slug]/layout.tsx");
-    const page = read("app/(member)/latihan/[slug]/page.tsx");
+    const layout = read("app/(member)/latihan/[slug]/(persiapan)/layout.tsx");
+    const page = read("app/(member)/latihan/[slug]/(persiapan)/page.tsx");
 
     // Assert
     expect(layout).not.toContain("use client");
@@ -146,11 +146,13 @@ describe("persiapan route", () => {
   it("owns one member shell per leaf without double chrome", () => {
     // Arrange + Act
     const group = read("app/(member)/latihan/layout.tsx");
+    const slug = read("app/(member)/latihan/[slug]/layout.tsx");
     const list = read("app/(member)/latihan/(list)/layout.tsx");
-    const detail = read("app/(member)/latihan/[slug]/layout.tsx");
+    const detail = read("app/(member)/latihan/[slug]/(persiapan)/layout.tsx");
 
     // Assert
     expect(group).not.toContain("MemberLayout");
+    expect(slug).not.toContain("MemberLayout");
     expect(list).toContain("MemberLayout");
     expect(list).toContain('activeTab="latihan"');
     expect(detail).toContain("MemberLayout");
