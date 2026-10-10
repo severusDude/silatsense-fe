@@ -3,12 +3,23 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { RotateCcw, TriangleAlert, Upload } from "lucide-react";
+import { FileVideo, RotateCcw, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  Attachment,
+  AttachmentActions,
+  AttachmentContent,
+  AttachmentDescription,
+  AttachmentMedia,
+  AttachmentTitle,
+} from "@/components/ui/attachment";
 import { Button, buttonVariants } from "@/components/ui/button";
-import type { SesiUploadState } from "@/features/member/types";
+import type {
+  SesiUploadState,
+  TrainingSession,
+} from "@/features/member/types";
 
-export function SesiActions({ slug }: { slug: string }) {
+export function SesiActions({ session }: { session: TrainingSession }) {
   const [status, setStatus] = useState<SesiUploadState>("idle");
   const [progress, setProgress] = useState(0);
   const timerRef = useRef<number | null>(null);
@@ -58,9 +69,56 @@ export function SesiActions({ slug }: { slug: string }) {
   }
 
   const uploading = status === "uploading";
+  const attachmentState =
+    status === "uploading"
+      ? "uploading"
+      : status === "failed"
+        ? "error"
+        : status === "success"
+          ? "done"
+          : "idle";
+  const fileName = `${session.slug}.mp4`;
+  const description =
+    status === "uploading"
+      ? `Mengunggah… ${progress}%`
+      : status === "failed"
+        ? "Unggah gagal — coba lagi"
+        : status === "success"
+          ? `MP4 · ${session.fileSizeLabel} · Terunggah`
+          : `MP4 · ${session.fileSizeLabel} · Siap diunggah`;
 
   return (
     <div className="flex flex-col gap-2.5">
+      <Attachment state={attachmentState} className="w-full">
+        <AttachmentMedia>
+          <FileVideo className="size-5" aria-hidden="true" />
+        </AttachmentMedia>
+        <AttachmentContent>
+          <AttachmentTitle>{fileName}</AttachmentTitle>
+          <AttachmentDescription>{description}</AttachmentDescription>
+        </AttachmentContent>
+        {status === "success" ? (
+          <AttachmentActions>
+            <Badge variant="success">Terunggah</Badge>
+          </AttachmentActions>
+        ) : null}
+        {status === "uploading" ? (
+          <div
+            role="progressbar"
+            aria-valuenow={progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Kemajuan unggahan"
+            className="flex h-1.5 w-full basis-full overflow-hidden rounded-full bg-secondary"
+          >
+            <div
+              className="h-full rounded-full bg-primary"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        ) : null}
+      </Attachment>
+
       {status === "idle" ? (
         <Button
           type="button"
@@ -73,72 +131,29 @@ export function SesiActions({ slug }: { slug: string }) {
         </Button>
       ) : null}
 
-      {status !== "idle" ? (
-        <div className="flex flex-col gap-2 rounded-2xl border bg-card p-4 shadow-sm">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-bold">
-              {status === "success"
-                ? "Unggahan selesai"
-                : status === "failed"
-                  ? "Unggahan gagal"
-                  : "Mengunggah rekaman"}
-            </p>
-            <p className="text-xs font-bold tabular-nums">{progress}%</p>
-          </div>
-          <div
-            role="progressbar"
-            aria-valuenow={progress}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label="Kemajuan unggahan"
-            className="flex h-2 w-full overflow-hidden rounded-full bg-secondary"
-          >
-            <div
-              className="h-full rounded-full bg-primary"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+      {status === "failed" ? (
+        <Button
+          type="button"
+          size="lg"
+          onClick={() => runAttempt(true)}
+          className="w-full rounded-full"
+        >
+          Coba lagi
+        </Button>
+      ) : null}
 
-          {status === "failed" ? (
-            <div className="flex flex-col gap-2">
-              <p className="flex items-center gap-2 text-xs font-medium text-destructive">
-                <TriangleAlert className="size-4" aria-hidden="true" />
-                Unggah gagal — Coba lagi
-              </p>
-              <Button
-                type="button"
-                size="lg"
-                onClick={() => runAttempt(true)}
-                className="w-full rounded-full"
-              >
-                Coba lagi
-              </Button>
-            </div>
-          ) : null}
-
-          {status === "success" ? (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <Badge variant="success">Terunggah</Badge>
-              </div>
-              {/* TODO → /evaluasi when the results route lands */}
-              <span
-                aria-disabled="true"
-                className={buttonVariants({
-                  variant: "outline",
-                  size: "lg",
-                  className: "w-full rounded-full opacity-60",
-                })}
-              >
-                Lihat Evaluasi
-              </span>
-            </div>
-          ) : null}
-        </div>
+      {status === "success" ? (
+        /* TODO → /evaluasi when the results route lands */
+        <span
+          aria-disabled="true"
+          className={buttonVariants({ size: "lg", className: "w-full rounded-full" })}
+        >
+          Lihat Evaluasi
+        </span>
       ) : null}
 
       <Link
-        href={`/latihan/${slug}/rekam`}
+        href={`/latihan/${session.slug}/rekam`}
         aria-disabled={uploading}
         onClick={(event) => {
           if (uploading) event.preventDefault();
