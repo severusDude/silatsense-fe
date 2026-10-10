@@ -51,16 +51,17 @@ describe("rekam components", () => {
     expect(src).toContain("react-media-recorder");
   });
 
-  it("keeps the Selesai CTA dead with a sesi TODO and no evaluation CTA", () => {
+  it("links the Selesai CTA live to the sesi route with no evaluation CTA", () => {
     // Arrange + Act
     const cta = read("features/member/components/rekam-selesai-cta.tsx");
     const viewport = read("features/member/components/rekam-viewport.tsx");
 
     // Assert
     expect(cta).toContain("Selesai");
-    expect(cta).toContain("aria-disabled");
-    expect(cta).toContain("TODO");
-    expect(cta).toContain("/latihan/[slug]/sesi");
+    expect(cta).toContain("/latihan/${slug}/sesi");
+    expect(cta).toContain("Link");
+    expect(cta).not.toContain("aria-disabled");
+    expect(cta).not.toContain("TODO");
     expect(cta).not.toContain("useState");
     expect(cta).not.toContain("Lihat Evaluasi");
     expect(viewport).not.toContain("Lihat Evaluasi");
