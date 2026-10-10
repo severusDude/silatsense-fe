@@ -6,13 +6,13 @@ const root = process.cwd();
 const read = (path: string) => readFileSync(join(root, path), "utf8");
 
 describe("sesi components", () => {
-  it("plays the recording in a portrait frame without overlay chrome", () => {
+  it("plays the recording in a portrait video shell with no remnant", () => {
     // Arrange + Act
     const src = read("features/member/components/sesi-playback.tsx");
 
     // Assert
     expect(src).not.toContain("absolute");
-    expect(src).toContain("ImagePlaceholder");
+    expect(src).not.toContain("ImagePlaceholder");
     expect(src).toContain("aspect-[3/4]");
     expect(src).toContain("<video");
     expect(src).toContain("controls");
@@ -20,6 +20,7 @@ describe("sesi components", () => {
     expect(src).not.toContain("00:47");
     expect(src).not.toContain("Hasil rekaman");
     expect(src).not.toContain("durationLabel");
+    expect(src).not.toContain("placeholder");
     expect(src).not.toContain("Ganti");
     expect(src).not.toContain("Pesilat Terdeteksi");
     expect(src).not.toContain("COG 50:50");
