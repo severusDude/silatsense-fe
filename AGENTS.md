@@ -49,4 +49,10 @@ Never run `pnpm dev` in the foreground and never sleep-poll inside a single call
 
 ## Commits
 
-`<type>(<scope>): <summary>` + optional body + footers. Types: `feat|fix|docs|style|refactor|perf|test|chore|ci`. Breaking: `!` before `:` (e.g. `feat(api)!: change auth payload`). One task = one commit = one review.
+`<type>(<scope>): <summary>` + optional body + footers. Types: `feat|fix|docs|style|refactor|perf|test|chore|ci`. Breaking: `!` before `:`.
+
+- Atomic on the task branch: each commit is one logical change that leaves the tree compiling (`tsc --noEmit` clean). Don't mix refactor/format with behavior changes, or unrelated chores (e.g. regenerated agent-rules block) with feature work.
+- A behavior change and its characterization test may share a commit; spec/doc updates get their own `docs` commit.
+- Commit as each logical step lands, not at the end of the task. Never leave a task as one giant "wip" commit.
+- Full gates (§6) run before `In Review`, not per commit.
+- One task = one squashed commit on `development` = one review. The squash message follows the format above and is the task's commit.
