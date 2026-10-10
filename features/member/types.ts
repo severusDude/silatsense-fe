@@ -134,3 +134,17 @@ export interface RekamSession {
   targetDurationSec: number;
   camera: CameraDevice;
 }
+
+export type SesiUploadState = "idle" | "uploading" | "failed" | "success";
+
+export interface TrainingSession {
+  slug: PersiapanSlug;
+  trainingName: string;
+  eyebrow: string;
+  durationSec: number;
+  durationLabel: string;
+  recordedAtLabel: string;
+  fileSizeLabel: string;
+  camera: CameraDevice;
+  videoStatus: "recorded";
+}
