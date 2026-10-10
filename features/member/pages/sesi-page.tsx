@@ -37,5 +37,5 @@ async function InfoSection({ slug }: { slug: string }) {
 async function ActionsSection({ slug }: { slug: string }) {
   const session = await getSesi(slug);
   if (!session) notFound();
-  return <SesiActions slug={slug} />;
+  return <SesiActions session={session} />;
 }

@@ -6,18 +6,20 @@ const root = process.cwd();
 const read = (path: string) => readFileSync(join(root, path), "utf8");
 
 describe("sesi components", () => {
-  it("plays the recording in a portrait frame without viewfinder chrome", () => {
+  it("plays the recording in a portrait frame without overlay chrome", () => {
     // Arrange + Act
     const src = read("features/member/components/sesi-playback.tsx");
 
     // Assert
     expect(src).not.toContain("absolute");
     expect(src).toContain("ImagePlaceholder");
-    expect(src).toContain("col-start-1 row-start-1");
     expect(src).toContain("aspect-[3/4]");
-    expect(src).toContain("durationLabel");
     expect(src).toContain("<video");
     expect(src).toContain("controls");
+    expect(src).not.toContain("ULASAN SESI");
+    expect(src).not.toContain("00:47");
+    expect(src).not.toContain("Hasil rekaman");
+    expect(src).not.toContain("durationLabel");
     expect(src).not.toContain("Ganti");
     expect(src).not.toContain("Pesilat Terdeteksi");
     expect(src).not.toContain("COG 50:50");
@@ -39,23 +41,54 @@ describe("sesi components", () => {
     expect(src).toContain("eyebrow");
   });
 
-  it("drives a fail-once-at-72 upload machine with progressbar and retry", () => {
+  it("renders the upload as an attachment card with bottom progress", () => {
     // Arrange + Act
     const src = read("features/member/components/sesi-actions.tsx");
 
     // Assert
     expect(src).toContain("use client");
-    expect(src).toContain("Unggah Rekaman");
+    expect(src).toContain("Attachment");
+    expect(src).toContain("AttachmentMedia");
+    expect(src).toContain("AttachmentContent");
+    expect(src).toContain("AttachmentTitle");
+    expect(src).toContain("AttachmentDescription");
+    expect(src).toContain("FileVideo");
+    expect(src).toContain('"uploading"');
+    expect(src).toContain('"error"');
+    expect(src).toContain('"done"');
     expect(src).toContain('role="progressbar"');
     expect(src).toContain("aria-valuenow");
+    expect(src).toContain("basis-full");
+    expect(src).not.toContain("absolute");
+  });
+
+  it("drives a fail-once-at-72 upload machine with retry", () => {
+    // Arrange + Act
+    const src = read("features/member/components/sesi-actions.tsx");
+
+    // Assert
+    expect(src).toContain("Unggah Rekaman");
     expect(src).toContain("%");
     expect(src).toContain("72");
     expect(src).toContain("Coba lagi");
     expect(src).toContain("Terunggah");
-    expect(src).toContain("TriangleAlert");
     expect(src).toContain("toast");
     expect(src).toContain("clearInterval");
-    expect(src).not.toContain("absolute");
+  });
+
+  it("keeps Coba lagi and Lihat Evaluasi primary above the retake", () => {
+    // Arrange + Act
+    const src = read("features/member/components/sesi-actions.tsx");
+
+    // Assert
+    expect(src).toContain("Lihat Evaluasi");
+    expect(src).toContain(
+      'buttonVariants({ size: "lg", className: "w-full rounded-full" })',
+    );
+    const evaluasiIndex = src.indexOf("Lihat Evaluasi");
+    const retakeIndex = src.indexOf("/latihan/${session.slug}/rekam");
+    expect(evaluasiIndex).toBeGreaterThan(-1);
+    expect(retakeIndex).toBeGreaterThan(evaluasiIndex);
   });
 
   it("pins the XHR upload contract and dead evaluasi affordance", () => {
@@ -77,7 +110,7 @@ describe("sesi components", () => {
     const src = read("features/member/components/sesi-actions.tsx");
 
     // Assert
-    expect(src).toContain("/latihan/${slug}/rekam");
+    expect(src).toContain("/latihan/${session.slug}/rekam");
     expect(src).toContain("Hapus & Latihan Ulang");
     expect(src).toContain("aria-disabled");
     expect(src).toContain("preventDefault");
@@ -127,7 +160,7 @@ describe("sesi route", () => {
     expect(src).toContain("getSesi");
     expect(src).toContain("SesiPlayback");
     expect(src).toContain("SesiInfoCard");
-    expect(src).toContain("SesiActions");
+    expect(src).toContain("SesiActions session");
     expect(src.match(/Suspense/g)?.length).toBeGreaterThanOrEqual(3);
   });
 
