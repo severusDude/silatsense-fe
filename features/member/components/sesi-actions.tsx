@@ -143,13 +143,12 @@ export function SesiActions({ session }: { session: TrainingSession }) {
       ) : null}
 
       {status === "success" ? (
-        /* TODO → /evaluasi when the results route lands */
-        <span
-          aria-disabled="true"
+        <Link
+          href={`/latihan/${session.slug}/evaluasi`}
           className={buttonVariants({ size: "lg", className: "w-full rounded-full" })}
         >
           Lihat Evaluasi
-        </span>
+        </Link>
       ) : null}
 
       <Link
