@@ -17,7 +17,7 @@ export function EvaluasiPlayback({ session }: { session: EvaluationSession }) {
           <video
             controls
             aria-label={`${session.techniqueName} — visualisasi postur`}
-            className="aspect-[4/3] w-[calc(100%+2rem)] -mx-4 rounded-2xl border bg-black"
+            className="aspect-[4/3] -mx-4 min-w-[calc(100%_+_2rem)] rounded-2xl border bg-black"
           />
           <EvaluasiScrubber />
         </CardContent>

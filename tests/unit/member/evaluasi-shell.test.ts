@@ -110,7 +110,7 @@ describe("evaluasi card shells", () => {
 
     // Assert
     expect(src).toContain("-mx-4");
-    expect(src).toContain("w-[calc(100%+2rem)]");
+    expect(src).toContain("min-w-[calc(100%_+_2rem)]");
     expect(src).toContain("aspect-[4/3]");
     expect(src).toContain("<video");
     expect(src).not.toContain("absolute");
