@@ -89,3 +89,33 @@ describe("riwayat movement island", () => {
     expect(dateAt).toBeGreaterThan(titleAt);
   });
 });
+
+describe("riwayat route and nav", () => {
+  it("keeps the route thin with shell-owned nav state", () => {
+    // Arrange + Act
+    const route = read("app/(member)/riwayat/page.tsx");
+    const layout = read("app/(member)/riwayat/layout.tsx");
+    const page = read("features/member/pages/riwayat-page.tsx");
+
+    // Assert
+    expect(route).not.toContain('"use client"');
+    expect(route).toContain("<RiwayatPage />");
+    expect(route).not.toContain("generateStaticParams");
+    expect(layout).toContain('activeTab="riwayat"');
+    expect(layout).toContain("Riwayat Latihan");
+    expect(page).not.toContain('"use client"');
+    expect(page).toContain("Riwayat Latihan");
+    expect(page).toContain("MediaPipe 33-point");
+    expect(page).toContain("Suspense");
+  });
+
+  it("makes Riwayat a real bottom-nav tab", () => {
+    // Arrange + Act
+    const src = read("features/member/components/member-bottom-nav.tsx");
+
+    // Assert
+    expect(src).toContain('"riwayat"');
+    expect(src).toContain('href="/riwayat"');
+    expect(src).not.toContain("TODO: link to /riwayat");
+  });
+});
