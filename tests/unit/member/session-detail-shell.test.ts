@@ -31,7 +31,7 @@ describe("session coach card", () => {
 });
 
 describe("session kelayakan card", () => {
-  it("badges IPSI CLASS B outline plus Lolos/Fokus/Remidi pillar stages", () => {
+  it("badges IPSI CLASS B outline plus icon-only pillar stages", () => {
     // Arrange + Act
     const src = read("features/member/components/session-kelayakan-card.tsx");
 
@@ -39,13 +39,19 @@ describe("session kelayakan card", () => {
     expect(src).toContain("@/components/ui/badge");
     expect(src).toContain("IPSI CLASS B");
     expect(src).toContain('variant="outline"');
+    expect(src).toContain("Check");
+    expect(src).toContain("CircleAlert");
+    expect(src).toContain("TriangleAlert");
+    expect(src).toContain("aria-label");
     expect(src).toContain("stageLabel");
+    expect(src).toContain("/80");
     expect(src).toContain("scorePct");
     expect(src).toContain("targetPct");
     expect(src).toContain("retestLabel");
     expect(src).toContain("retestValue");
     expect(src).toContain("Syarat Kelulusan:");
     expect(src).toContain("Catatan Penguji:");
+    expect(src).not.toContain("pillarBadgeVariant");
     expect(src).not.toContain("Latihan Mandiri");
     expect(src).not.toContain("Perlu Perbaikan");
   });
@@ -57,17 +63,21 @@ describe("session kelayakan card", () => {
 });
 
 describe("session video placeholder", () => {
-  it("renders HUD copy with a placeholder and no images", () => {
+  it("renders a full-bleed placeholder under the technique title", () => {
     // Arrange + Act
     const src = read("features/member/components/session-video-placeholder.tsx");
 
     // Assert
-    expect(src).toContain("Objek tinjauan kinematika");
-    expect(src).toContain("uppercase");
+    expect(src).toContain("CardTitle");
     expect(src).toContain("techniqueName");
-    expect(src).toContain("cameraLabel");
-    expect(src).toContain("qualityLabel");
+    expect(src).toContain("techniqueDesc");
+    expect(src).toContain("aspect-video");
+    expect(src).toContain("-mx-(--card-spacing)");
     expect(src).toContain("TODO");
+    expect(src).not.toContain("Objek tinjauan kinematika");
+    expect(src).not.toContain("cameraLabel");
+    expect(src).not.toContain("qualityLabel");
+    expect(src).not.toContain("Crosshair");
     expect(src).not.toContain("<img");
     expect(src).not.toContain("absolute");
   });
@@ -81,9 +91,13 @@ describe("session posture list", () => {
 
     // Assert
     expect(list).toContain("Catatan Pelatih");
-    expect(list).toContain("3 Sesuai • 2 Koreksi");
+    expect(list).toContain("ScoreRing");
+    expect(list).toContain("evaluasi-posture-list");
+    expect(list).toContain("sesuai");
     expect(list).toContain("Belum ada catatan dari pelatih");
     expect(list).toContain("postures.length === 0");
+    expect(list).not.toContain("3 Sesuai • 2 Koreksi");
+    expect(list).not.toContain("@/components/ui/badge");
     expect(item).toContain("@/components/ui/badge");
     expect(item).toContain("statusLabel");
     expect(read("features/member/data/session-detail-dummy.ts")).toContain("Perlu Koreksi");

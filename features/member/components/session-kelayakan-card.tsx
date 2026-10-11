@@ -1,4 +1,4 @@
-import { CalendarDays, ClipboardCheck, TriangleAlert } from "lucide-react";
+import { CalendarDays, Check, CircleAlert, ClipboardCheck, TriangleAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -10,10 +10,16 @@ import {
 } from "@/components/ui/card";
 import type { SessionDetail } from "@/features/member/types";
 
-const pillarBadgeVariant = {
-  success: "success",
-  destructive: "destructive",
-  warning: "warning",
+const pillarStageIcon = {
+  success: Check,
+  warning: TriangleAlert,
+  destructive: CircleAlert,
+} as const;
+
+const pillarStageTone = {
+  success: "bg-success/80",
+  warning: "bg-warning/80",
+  destructive: "bg-destructive/80",
 } as const;
 
 export function SessionKelayakanCard({ session }: { session: SessionDetail }) {
@@ -38,25 +44,33 @@ export function SessionKelayakanCard({ session }: { session: SessionDetail }) {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            {session.pillars.map((pillar) => (
-              <div
-                key={pillar.id}
-                className="flex flex-col gap-1 rounded-xl border p-2.5"
-              >
-                <p className="flex items-center justify-between gap-1.5">
-                  <span className="text-[11px] font-semibold text-foreground">
-                    {pillar.name}
-                  </span>
-                  <Badge variant={pillarBadgeVariant[pillar.badge]}>
-                    {pillar.stageLabel}
-                  </Badge>
-                </p>
-                <p className="flex items-baseline justify-between gap-1.5">
-                  <span className="text-[10px] text-muted-foreground">{pillar.detail}</span>
-                  <span className="text-base font-bold">{pillar.scorePct}%</span>
-                </p>
-              </div>
-            ))}
+            {session.pillars.map((pillar) => {
+              const Icon = pillarStageIcon[pillar.badge];
+              return (
+                <div
+                  key={pillar.id}
+                  className="flex flex-col gap-1 rounded-xl border p-2.5"
+                >
+                  <p className="flex items-center justify-between gap-1.5">
+                    <span className="text-[11px] font-semibold text-foreground">
+                      {pillar.name}
+                    </span>
+                    <span
+                      role="img"
+                      aria-label={pillar.stageLabel}
+                      title={pillar.stageLabel}
+                      className={`flex size-6 shrink-0 items-center justify-center rounded-full ${pillarStageTone[pillar.badge]} text-white`}
+                    >
+                      <Icon aria-hidden="true" className="size-3.5" />
+                    </span>
+                  </p>
+                  <p className="flex items-baseline justify-between gap-1.5">
+                    <span className="text-[10px] text-muted-foreground">{pillar.detail}</span>
+                    <span className="text-base font-bold">{pillar.scorePct}%</span>
+                  </p>
+                </div>
+              );
+            })}
           </div>
           <div className="flex flex-col gap-1.5 border-t pt-2.5">
             <p className="flex items-start gap-1.5 text-[11px] leading-relaxed">
