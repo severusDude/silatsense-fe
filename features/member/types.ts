@@ -151,14 +151,18 @@ export interface TrainingSession {
 
 export type EvaluasiSlug = PersiapanSlug;
 
-export type PostureStatus = "sesuai" | "tidak-sesuai";
+export type PostureStatus = "sesuai" | "perlu-koreksi";
 
 export interface PostureAssessment {
   id: "bahu" | "siku-kanan" | "pinggul" | "lutut" | "pergelangan";
   name: string;
   status: PostureStatus;
-  statusLabel: string;
+  statusLabel: string; // "SESUAI" | "PERLU KOREKSI" — status word only
+  reading: string; // e.g. "142° → target 130–138°"
   detail: string;
+  correctionCue: string; // e.g. "Tarik siku ~8 cm ke dalam." — empty on sesuai
+  thumbnailLabel: string; // e.g. "Siku kanan"
+  thumbnailSrc: null; // literal until the pose-render move binds a real asset
 }
 
 export interface KinematicScore {

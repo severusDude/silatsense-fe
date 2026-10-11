@@ -36,9 +36,47 @@ describe("dummyEvaluasiBySlug", () => {
       "Lutut",
       "Pergelangan",
     ]);
-    expect(detail.postures[1]?.statusLabel).toBe("TIDAK SESUAI (142°)");
+    expect(detail.postures.map((posture) => posture.statusLabel)).toEqual([
+      "SESUAI",
+      "PERLU KOREKSI",
+      "SESUAI",
+      "SESUAI",
+      "PERLU KOREKSI",
+    ]);
+    expect(detail.postures.map((posture) => posture.reading)).toEqual([
+      "Sejajar (target netral)",
+      "142° → target 130–138°",
+      "Terkunci (target simetris)",
+      "135° (target 130–138°)",
+      "+0,15 dtk → target ≤ 0,05 dtk",
+    ]);
+    expect(detail.postures.map((posture) => posture.correctionCue)).toEqual([
+      "",
+      "Tarik siku ~8 cm ke dalam.",
+      "",
+      "",
+      "Kunci kepalan 0,1 dtk lebih awal.",
+    ]);
+    expect(detail.postures.map((posture) => posture.thumbnailLabel)).toEqual([
+      "Bahu",
+      "Siku kanan",
+      "Pinggul",
+      "Lutut",
+      "Pergelangan",
+    ]);
+    for (const posture of detail.postures) {
+      expect(posture.thumbnailSrc).toBeNull();
+    }
     expect(detail.videoStatus).toBe("placeholder");
     expect(detail).not.toHaveProperty("speedLabel");
+    for (const posture of detail.postures) {
+      expect(posture).not.toHaveProperty("speedLabel");
+    }
+    expect(
+      detail.postures
+        .filter((posture) => posture.status === "perlu-koreksi")
+        .map((posture) => posture.id),
+    ).toEqual(["siku-kanan", "pergelangan"]);
   });
 
   it("falls back to null for an unknown slug", () => {
