@@ -186,3 +186,45 @@ export interface EvaluationSession {
   postures: PostureAssessment[];
   videoStatus: "placeholder";
 }
+
+export type RiwayatSlug = PersiapanSlug;
+
+export type HistoryStatus = "sesuai" | "perlu-koreksi";
+
+export interface RiwayatParam {
+  id: "bahu" | "siku-kanan" | "pinggul" | "lutut" | "pergelangan";
+  name: string;
+  reading: string;
+  deviated: boolean;
+  actionLabel?: string;
+}
+
+export interface HistoryEntry {
+  slug: RiwayatSlug;
+  techniqueName: string;
+  dateLabel: string;
+  timeLabel: string;
+  summary: string;
+  status: HistoryStatus;
+  statusLabel: string; // "Sesuai" | "Perlu Koreksi" — title-case, status word only
+  scorePct: number;
+  scoreCaption: string; // "Kinematika IPSI" | "Standar ≥85%"
+  params: RiwayatParam[]; // length 5
+  coachNote: string; // verdict only, no telemetry
+}
+
+export interface HistorySummary {
+  totalSessionsLabel: string;
+  sessionsDeltaLabel: string;
+  avgAccuracyPct: number;
+  accuracyNote: string;
+  dominantFocus: string;
+  dominantSessionsLabel: string;
+  sensorHoursLabel: string;
+  sensorNote: string;
+}
+
+export interface MemberHistory {
+  summary: HistorySummary;
+  entries: HistoryEntry[]; // length 4: kuda-kuda, pukulan, tangkisan, tendangan
+}
