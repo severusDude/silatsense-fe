@@ -67,12 +67,9 @@ describe("evaluasi components", () => {
       "features/member/components/evaluasi-actions.tsx",
     ];
 
-    // Assert — ScoreRing centers its label via one sanctioned
-    // `absolute inset-0` span inside a relative ring; no other overlays allowed.
+    // Assert
     for (const file of files) {
-      expect(read(file).replace("absolute inset-0", "")).not.toContain(
-        "absolute",
-      );
+      expect(read(file)).not.toContain("absolute");
     }
     expect(
       read("features/member/components/evaluasi-score-card.tsx"),

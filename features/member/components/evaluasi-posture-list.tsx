@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -16,9 +15,9 @@ function ScoreRing({ sesuai, total }: { sesuai: number; total: number }) {
     <div
       role="img"
       aria-label={`${sesuai} dari ${total} parameter sesuai`}
-      className="relative size-11 shrink-0"
+      className="grid size-11 shrink-0 place-items-center"
     >
-      <svg viewBox="0 0 36 36" aria-hidden="true" className="size-11 -rotate-90">
+      <svg viewBox="0 0 36 36" aria-hidden="true" className="col-start-1 row-start-1 size-11 -rotate-90">
         <circle
           cx="18"
           cy="18"
@@ -40,7 +39,7 @@ function ScoreRing({ sesuai, total }: { sesuai: number; total: number }) {
       </svg>
       <span
         aria-hidden="true"
-        className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-foreground"
+        className="col-start-1 row-start-1 text-[10px] font-bold text-foreground"
       >
         {sesuai}/{total}
       </span>
