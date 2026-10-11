@@ -414,8 +414,11 @@ describe("session coach card", () => {
     expect(src).toContain("@/components/ui/badge");
     expect(src).toContain('variant="warning"');
     expect(src).toContain("Menunggu");
-    expect(src).toContain("KEPUTUSAN SIDANG PELATIH");
-    expect(src).toContain("TAHAP REMIDIASI TEKNIS");
+    expect(src).toContain("Keputusan sidang pelatih");
+    expect(src).toContain("uppercase");
+    expect(src).toContain("Tahap remidiasi teknis");
+    expect(src).toContain("decidedAtLabel");
+    expect(src).toContain("focusTechnique");
     expect(src).toContain("coach.initials");
     expect(src).not.toContain("Terverifikasi Resmi");
     expect(src).not.toContain("<img");
@@ -437,9 +440,10 @@ describe("session kelayakan card", () => {
     expect(src).toContain("IPSI CLASS B");
     expect(src).toContain('variant="outline"');
     expect(src).toContain("stageLabel");
-    expect(src).toContain("80%");
-    expect(src).toContain("85%");
-    expect(src).toContain("Jadwal Uji Ulang:");
+    expect(src).toContain("scorePct");
+    expect(src).toContain("targetPct");
+    expect(src).toContain("retestLabel");
+    expect(src).toContain("retestValue");
     expect(src).toContain("Syarat Kelulusan:");
     expect(src).toContain("Catatan Penguji:");
     expect(src).not.toContain("Latihan Mandiri");
@@ -665,7 +669,8 @@ describe("session video placeholder", () => {
     const src = read("features/member/components/session-video-placeholder.tsx");
 
     // Assert
-    expect(src).toContain("OBJEK TINJAUAN KINEMATIKA");
+    expect(src).toContain("Objek tinjauan kinematika");
+    expect(src).toContain("uppercase");
     expect(src).toContain("techniqueName");
     expect(src).toContain("cameraLabel");
     expect(src).toContain("qualityLabel");
@@ -687,7 +692,8 @@ describe("session posture list", () => {
     expect(list).toContain("Belum ada catatan dari pelatih");
     expect(list).toContain("postures.length === 0");
     expect(item).toContain("@/components/ui/badge");
-    expect(item).toContain("Perlu Koreksi");
+    expect(item).toContain("statusLabel");
+    expect(read("features/member/data/session-detail-dummy.ts")).toContain("Perlu Koreksi");
     expect(item).toContain("Catatan:");
     expect(item).toContain("Koreksi:");
     expect(item).toContain("correctionCue");
