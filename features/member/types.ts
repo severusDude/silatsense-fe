@@ -148,3 +148,37 @@ export interface TrainingSession {
   camera: CameraDevice;
   videoStatus: "recorded";
 }
+
+export type EvaluasiSlug = PersiapanSlug;
+
+export type PostureStatus = "sesuai" | "tidak-sesuai";
+
+export interface PostureAssessment {
+  id: "bahu" | "siku-kanan" | "pinggul" | "lutut" | "pergelangan";
+  name: string;
+  status: PostureStatus;
+  statusLabel: string;
+  detail: string;
+}
+
+export interface KinematicScore {
+  value: number;
+  unit: "%";
+  targetPct: number;
+  targetLabel: string;
+  deltaLabel: string;
+  alertLabel: string;
+  summary: string;
+}
+
+export interface EvaluationSession {
+  slug: EvaluasiSlug;
+  techniqueName: string;
+  evaluatedAtLabel: string;
+  validReps: number;
+  deviatedReps: number;
+  qualityLabel: string;
+  score: KinematicScore;
+  postures: PostureAssessment[];
+  videoStatus: "placeholder";
+}
