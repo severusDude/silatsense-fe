@@ -112,3 +112,30 @@ describe("session detail actions", () => {
     expect(src).not.toContain("absolute");
   });
 });
+
+describe("session detail route and page", () => {
+  it("keeps the [id] route thin with static params and inherited nav", () => {
+    // Arrange + Act
+    const route = read("app/(member)/riwayat/[id]/page.tsx");
+    const layout = read("app/(member)/riwayat/layout.tsx");
+    const page = read("features/member/pages/session-detail-page.tsx");
+
+    // Assert
+    expect(route).not.toContain('"use client"');
+    expect(route).toContain("generateStaticParams");
+    expect(route).toContain("sessionDetailIds");
+    expect(route).toContain("<SessionDetailPage");
+    expect(layout).toContain('activeTab="riwayat"');
+    expect(page).not.toContain('"use client"');
+    expect(page).toContain("Suspense");
+    expect(page).toContain("notFound");
+    expect(page).toContain("SessionCoachCard");
+    expect(page).toContain("SessionKelayakanCard");
+    expect(page).toContain("SessionVideoPlaceholder");
+    expect(page).toContain("SessionPostureList");
+    expect(page).toContain("SessionDetailActions");
+    expect(page).not.toContain("absolute");
+    expect(page).not.toContain("Terverifikasi Resmi");
+    expect(page).not.toContain("Latihan Mandiri");
+  });
+});
