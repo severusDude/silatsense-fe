@@ -9,7 +9,7 @@ import {
 import { EvaluasiPostureItem } from "@/features/member/components/evaluasi-posture-item";
 import type { EvaluationSession } from "@/features/member/types";
 
-function ScoreRing({ sesuai, total }: { sesuai: number; total: number }) {
+export function ScoreRing({ sesuai, total }: { sesuai: number; total: number }) {
   const pct = Math.round((sesuai / total) * 100);
   return (
     <div

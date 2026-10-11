@@ -228,3 +228,38 @@ export interface MemberHistory {
   summary: HistorySummary;
   entries: HistoryEntry[]; // length 4: kuda-kuda, pukulan, tangkisan, tendangan
 }
+
+export type SessionDecision = "menunggu" | "remidiasi";
+
+export interface SessionPillar {
+  id: "kuda-kuda" | "tangkisan" | "pukulan" | "tendangan";
+  name: string;
+  detail: string;
+  scorePct: number;
+  stageLabel: "Lolos" | "Fokus" | "Remidi";
+  badge: "success" | "destructive" | "warning";
+}
+
+export interface SessionVideo {
+  status: "placeholder";
+  cameraLabel: string;
+  qualityLabel: string;
+}
+
+export interface SessionDetail {
+  id: string;
+  techniqueName: string;
+  techniqueDesc: string;
+  coach: { initials: string; name: string; role: string };
+  decision: SessionDecision;
+  decisionLabel: string;
+  decidedAtLabel?: string;
+  focusTechnique?: string;
+  scorePct: number;
+  targetPct: number;
+  pillars: SessionPillar[];
+  video: SessionVideo;
+  postures: PostureAssessment[];
+  retestLabel: string;
+  retestValue: string;
+}
