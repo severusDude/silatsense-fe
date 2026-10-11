@@ -86,6 +86,48 @@ describe("evaluasi components", () => {
   });
 });
 
+describe("evaluasi card shells", () => {
+  it("wraps visualisasi, penilaian, and actions each in a Card", () => {
+    // Arrange + Act
+    const files = [
+      "features/member/components/evaluasi-playback.tsx",
+      "features/member/components/evaluasi-posture-list.tsx",
+      "features/member/components/evaluasi-actions.tsx",
+    ];
+
+    // Assert
+    for (const file of files) {
+      const src = read(file);
+      expect(src).toContain("@/components/ui/card");
+      expect(src).toContain("<Card>");
+      expect(src).toContain("<CardContent");
+    }
+  });
+
+  it("bleeds the video full-width against the card padding", () => {
+    // Arrange + Act
+    const src = read("features/member/components/evaluasi-playback.tsx");
+
+    // Assert
+    expect(src).toContain("-mx-4");
+    expect(src).toContain("w-[calc(100%+2rem)]");
+    expect(src).toContain("aspect-[4/3]");
+    expect(src).toContain("<video");
+    expect(src).not.toContain("absolute");
+  });
+
+  it("frames posture icons in tinted chips", () => {
+    // Arrange + Act
+    const src = read("features/member/components/evaluasi-posture-list.tsx");
+
+    // Assert
+    expect(src).toContain("bg-success/15");
+    expect(src).toContain("bg-warning/15");
+    expect(src).toContain("rounded-full");
+    expect(src).toContain("pl-8");
+  });
+});
+
 describe("evaluasi route", () => {
   it("keeps the evaluasi route thin with static params and no client boundary", () => {
     // Arrange + Act
