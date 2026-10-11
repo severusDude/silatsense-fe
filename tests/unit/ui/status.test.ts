@@ -15,8 +15,9 @@ const sonnerSource = readFileSync(
 describe("status tokens in :root", () => {
   it("adds Figma success tints", () => {
     expect(globalsCss).toContain("--success: oklch(0.958 0.0182 155.81)");
+    // Darkened 0.5273 → 0.50 for WCAG AA (4.47 → 5.02 on success bg, PSR-68)
     expect(globalsCss).toContain(
-      "--success-foreground: oklch(0.5273 0.1378 149.69)"
+      "--success-foreground: oklch(0.5 0.1378 149.69)"
     );
     expect(globalsCss).toContain(
       "--success-border: oklch(0.925 0.0806 155.99)"
