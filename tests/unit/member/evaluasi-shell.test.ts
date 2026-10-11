@@ -155,7 +155,6 @@ describe("evaluasi route", () => {
     expect(src).toContain("EvaluasiHeader");
     expect(src).toContain("EvaluasiScoreCard");
     expect(src).toContain("EvaluasiPlayback");
-    expect(src).toContain("EvaluasiScrubber");
     expect(src).toContain("EvaluasiPostureList");
     expect(src).toContain("EvaluasiActions session");
     expect(src.match(/Suspense/g)?.length).toBeGreaterThanOrEqual(4);

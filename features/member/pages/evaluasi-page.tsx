@@ -5,7 +5,6 @@ import { getEvaluasi } from "@/features/member/data/get-evaluasi";
 import { EvaluasiHeader } from "@/features/member/components/evaluasi-header";
 import { EvaluasiScoreCard } from "@/features/member/components/evaluasi-score-card";
 import { EvaluasiPlayback } from "@/features/member/components/evaluasi-playback";
-import { EvaluasiScrubber } from "@/features/member/components/evaluasi-scrubber";
 import { EvaluasiPostureList } from "@/features/member/components/evaluasi-posture-list";
 import { EvaluasiActions } from "@/features/member/components/evaluasi-actions";
 
@@ -45,7 +44,6 @@ async function VisualSection({ slug }: { slug: string }) {
   return (
     <>
       <EvaluasiPlayback session={session} />
-      <EvaluasiScrubber />
     </>
   );
 }
