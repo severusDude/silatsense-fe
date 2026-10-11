@@ -21,7 +21,7 @@ export function SessionVideoPlaceholder({ session }: { session: SessionDetail })
           <div
             role="img"
             aria-label="Placeholder video telemetri"
-            className="-mx-(--card-spacing) flex aspect-video w-auto items-center justify-center bg-foreground"
+            className="-mx-(--card-spacing) -mb-(--card-spacing) flex aspect-video w-auto items-center justify-center bg-foreground"
           >
             <Video aria-hidden="true" className="size-8 text-background/60" />
           </div>

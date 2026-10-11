@@ -17,9 +17,9 @@ const pillarStageIcon = {
 } as const;
 
 const pillarStageTone = {
-  success: "bg-success/80",
-  warning: "bg-warning/80",
-  destructive: "bg-destructive/80",
+  success: "bg-success text-success-foreground",
+  warning: "bg-warning text-warning-foreground",
+  destructive: "bg-destructive text-white",
 } as const;
 
 export function SessionKelayakanCard({ session }: { session: SessionDetail }) {
@@ -59,7 +59,7 @@ export function SessionKelayakanCard({ session }: { session: SessionDetail }) {
                       role="img"
                       aria-label={pillar.stageLabel}
                       title={pillar.stageLabel}
-                      className={`flex size-6 shrink-0 items-center justify-center rounded-full ${pillarStageTone[pillar.badge]} text-white`}
+                      className={`flex size-6 shrink-0 items-center justify-center rounded-full ${pillarStageTone[pillar.badge]}`}
                     >
                       <Icon aria-hidden="true" className="size-3.5" />
                     </span>

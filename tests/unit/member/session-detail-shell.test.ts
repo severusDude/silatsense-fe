@@ -44,7 +44,10 @@ describe("session kelayakan card", () => {
     expect(src).toContain("TriangleAlert");
     expect(src).toContain("aria-label");
     expect(src).toContain("stageLabel");
-    expect(src).toContain("/80");
+    expect(src).toContain("bg-success text-success-foreground");
+    expect(src).toContain("bg-warning text-warning-foreground");
+    expect(src).toContain("bg-destructive text-white");
+    expect(src).not.toContain("/80");
     expect(src).toContain("scorePct");
     expect(src).toContain("targetPct");
     expect(src).toContain("retestLabel");
@@ -73,6 +76,7 @@ describe("session video placeholder", () => {
     expect(src).toContain("techniqueDesc");
     expect(src).toContain("aspect-video");
     expect(src).toContain("-mx-(--card-spacing)");
+    expect(src).toContain("-mb-(--card-spacing)");
     expect(src).toContain("TODO");
     expect(src).not.toContain("Objek tinjauan kinematika");
     expect(src).not.toContain("cameraLabel");
