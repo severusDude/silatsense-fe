@@ -44,7 +44,7 @@ Sync both when phases change. Parent issue: PSR-69.
 | 6 | Coach member list | 94:40178 `Member List - Coach` | `/coach/members` | Breadcrumb + count badge; 4 stats (5 Atlet 3 Siap/2 Remidiasi / 84.6% / 60% / 24 sesi); search input; 5 cards (avatar, name, stage pill, score + stage, movement note + status pill, Lihat Detail) | `TeamMember[]` (length 5: id, initials, name, stage `siap\|remidiasi\|lolos`, score, movementNote) — `TODO (GET /coach/members)` + client search filter (no backend) |
 | 7 | Coach member detail | 94:40427 `Member detail - Coach` | `/coach/members/[id]` | Athlete header (badges, belt/attendance ×3, aggregate + 3 mini metrics); 4 pillars (pukulan = fokus); evaluasi terbaru (score + 4 tiles + skeletal placeholder + 4 pills + 5 params); feedback textarea + dual CTA; riwayat log 4 cards (#24 amber … #21 red) + more link | `CoachMemberDetail { athlete, pillars[4], latestEval, feedbackDraft, history[4] }` — `TODO (GET /coach/members/:id)` + `TODO (POST /coach/feedback)` |
 
-Open question: user listed "coach member training session detail" with the same node id 94:40427 as member detail — no distinct session-detail frame found. Treat §6 log cards as deep-links into member `/riwayat/[id]` until a distinct node id arrives.
+Resolved 2026-10-11: the 8th link duplicated node 94:40427 — the intended pair is session detail without feedback (94:38951) vs with feedback (94:39232), both already indexed above. 7 unique nodes cover all scope; no 8th screen. Coach §6 log cards deep-link into member `/riwayat/[id]`.
 
 ## 4. Issue scaffolds (create JIT, titles ≤60 chars)
 
