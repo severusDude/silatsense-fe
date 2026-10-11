@@ -32,6 +32,7 @@ describe("evaluasi components", () => {
       "features/member/components/evaluasi-score-card.tsx",
       "features/member/components/evaluasi-playback.tsx",
       "features/member/components/evaluasi-posture-list.tsx",
+      "features/member/components/evaluasi-posture-item.tsx",
     ];
     const src = files.map(read).join("\n");
     const data = read("features/member/data/evaluasi-dummy.ts");
@@ -48,7 +49,7 @@ describe("evaluasi components", () => {
     expect(data).toContain("PERLU PERBAIKAN");
     expect(data).toContain("1080p@60FPS");
     expect(data).toContain("SESUAI");
-    expect(data).toContain("TIDAK SESUAI");
+    expect(data).toContain("PERLU KOREKSI");
     expect(src).not.toContain("4.18");
     expect(src).not.toContain("speedLabel");
   });
@@ -61,12 +62,17 @@ describe("evaluasi components", () => {
       "features/member/components/evaluasi-playback.tsx",
       "features/member/components/evaluasi-scrubber.tsx",
       "features/member/components/evaluasi-posture-list.tsx",
+      "features/member/components/evaluasi-posture-item.tsx",
+      "features/member/components/evaluasi-pose-thumb.tsx",
       "features/member/components/evaluasi-actions.tsx",
     ];
 
-    // Assert
+    // Assert — ScoreRing centers its label via one sanctioned
+    // `absolute inset-0` span inside a relative ring; no other overlays allowed.
     for (const file of files) {
-      expect(read(file)).not.toContain("absolute");
+      expect(read(file).replace("absolute inset-0", "")).not.toContain(
+        "absolute",
+      );
     }
     expect(
       read("features/member/components/evaluasi-score-card.tsx"),
@@ -116,15 +122,27 @@ describe("evaluasi card shells", () => {
     expect(src).not.toContain("absolute");
   });
 
-  it("frames posture icons in tinted chips", () => {
+  it("revamps posture rows with ring, sorted Collapsible rows, and thumb stub", () => {
     // Arrange + Act
-    const src = read("features/member/components/evaluasi-posture-list.tsx");
+    const src = [
+      "features/member/components/evaluasi-posture-list.tsx",
+      "features/member/components/evaluasi-posture-item.tsx",
+      "features/member/components/evaluasi-pose-thumb.tsx",
+    ]
+      .map(read)
+      .join("\n");
+    const data = read("features/member/data/evaluasi-dummy.ts");
 
     // Assert
-    expect(src).toContain("bg-success/15");
-    expect(src).toContain("bg-warning/15");
-    expect(src).toContain("rounded-full");
-    expect(src).toContain("pl-8");
+    expect(src).toContain("Collapsible");
+    expect(src).toContain("min-h-[64px]");
+    expect(data).toContain("PERLU KOREKSI");
+    expect(data).toContain("142° → target 130–138°");
+    expect(data).toContain("Tarik siku");
+    expect(src).toContain("strokeDasharray");
+    expect(src).toContain("CardHeader");
+    expect(src).not.toContain("TIDAK SESUAI");
+    expect(src).not.toContain("PERLU PERBAIKAN");
   });
 });
 

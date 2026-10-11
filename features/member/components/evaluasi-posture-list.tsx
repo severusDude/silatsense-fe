@@ -1,61 +1,78 @@
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { EvaluasiPostureItem } from "@/features/member/components/evaluasi-posture-item";
 import type { EvaluationSession } from "@/features/member/types";
+
+function ScoreRing({ sesuai, total }: { sesuai: number; total: number }) {
+  const pct = Math.round((sesuai / total) * 100);
+  return (
+    <div
+      role="img"
+      aria-label={`${sesuai} dari ${total} parameter sesuai`}
+      className="relative size-11 shrink-0"
+    >
+      <svg viewBox="0 0 36 36" aria-hidden="true" className="size-11 -rotate-90">
+        <circle
+          cx="18"
+          cy="18"
+          r="15.9155"
+          fill="none"
+          strokeWidth="3.5"
+          className="stroke-secondary"
+        />
+        <circle
+          cx="18"
+          cy="18"
+          r="15.9155"
+          fill="none"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+          strokeDasharray={`${pct} 100`}
+          className="stroke-success-foreground"
+        />
+      </svg>
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-foreground"
+      >
+        {sesuai}/{total}
+      </span>
+    </div>
+  );
+}
 
 export function EvaluasiPostureList({
   session,
 }: {
   session: EvaluationSession;
 }) {
+  const ordered = [...session.postures].sort(
+    (a, b) =>
+      Number(b.status === "perlu-koreksi") - Number(a.status === "perlu-koreksi"),
+  );
+  const sesuai = session.postures.filter((p) => p.status === "sesuai").length;
+
   return (
     <section aria-label="Penilaian postur anatomis" className="flex flex-col gap-2">
       <Card>
-        <CardContent className="flex flex-col gap-2 p-4">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex flex-col">
-              <h2 className="text-sm font-bold">Penilaian Postur Anatomis</h2>
-              <p className="text-[10px] text-muted-foreground">
-                Evaluasi 5 parameter biomekanika pukulan lurus
-              </p>
-            </div>
-            <Badge variant="outline">3 Sesuai · 2 Perlu Koreksi</Badge>
-          </div>
-          <div className="flex flex-col gap-2">
-            {session.postures.map((posture) => {
-              const ok = posture.status === "sesuai";
-              const Icon = ok ? CheckCircle2 : AlertTriangle;
-              return (
-                <Card key={posture.id}>
-                  <CardContent className="flex flex-col gap-1.5 p-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="flex items-center gap-2 text-xs font-bold">
-                        <span
-                          className={
-                            ok
-                              ? "flex size-6 shrink-0 items-center justify-center rounded-full bg-success/15 text-success"
-                              : "flex size-6 shrink-0 items-center justify-center rounded-full bg-warning/15 text-warning"
-                          }
-                        >
-                          <Icon
-                            aria-hidden="true"
-                            className="size-3.5"
-                          />
-                        </span>
-                        {posture.name}
-                      </p>
-                      <Badge variant={ok ? "success" : "warning"}>
-                        {posture.statusLabel}
-                      </Badge>
-                    </div>
-                    <p className="pl-8 text-[11px] leading-relaxed text-muted-foreground">
-                      {posture.detail}
-                    </p>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+        <CardHeader>
+          <CardTitle>Penilaian Postur Anatomis</CardTitle>
+          <CardDescription>Evaluasi 5 parameter biomekanika pukulan lurus</CardDescription>
+          <CardAction>
+            <ScoreRing sesuai={sesuai} total={session.postures.length} />
+          </CardAction>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2">
+          {ordered.map((posture) => (
+            <EvaluasiPostureItem key={posture.id} posture={posture} />
+          ))}
         </CardContent>
       </Card>
     </section>
