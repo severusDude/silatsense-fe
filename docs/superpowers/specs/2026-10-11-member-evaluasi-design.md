@@ -8,6 +8,7 @@ Evaluasi-hasil frontend at `/latihan/[slug]/evaluasi`: session header + kinemati
 
 ## 2. Figma deltas (decision 2026-10-11, supersedes verbatim fidelity)
 
+- DROPPED `⚡ 4.18 m/s` speed badge (decision 2026-10-11) — header shows 2 badges only (`12 Repetisi Sah`, `3 Terdeviasi`); no `speedLabel` in DTO.
 - REPLACED authentic video playback viewport (silat frame + MediaPipe 33-pt skeleton + trajectory/deviasi/kuda-kuda overlay badges + play button + HUD control bar) with a `<video controls>` shell placeholder (aspect-4/3, no src, flex-only, no `absolute` overlays). Rationale: user instruction — ship placeholder now, bind blob + pick library later. Two TODOs pinned in code (§6).
 - REPLACED all pill/badge visuals with shadcn `Badge` (`@/components/ui/badge`, base-nova): `12 Repetisi Sah` → `success`, `3 Terdeviasi` → `warning`, `Perlu Perbaikan` → `warning`, `1080p@60FPS` → `outline`, `Sesuai*` → `success`, `Tidak Sesuai*` → `warning` (amber deviation tone, not destructive — decision 2026-10-11).
 - KEPT static: scrubber timeline (buffer/progress/rep markers/playhead + labels as divs, no lib), hero progress bar + target marker, 5 posture cards copy, action banner copy. No interactivity in stub (dead CTAs carry TODOs).
@@ -53,7 +54,6 @@ interface EvaluationSession {
   evaluatedAtLabel: string; // e.g. "28 Sep 2026, 16:45 WIB"
   validReps: number; // e.g. 12
   deviatedReps: number; // e.g. 3
-  speedLabel: string; // e.g. "⚡ 4.18 m/s"
   qualityLabel: string; // e.g. "1080p@60FPS"
   score: KinematicScore;
   postures: PostureAssessment[]; // length 5, order: bahu, siku-kanan, pinggul, lutut, pergelangan
@@ -96,7 +96,7 @@ Static shell per Suspense unit; invalid slug → `notFound()`. Upload/save contr
 
 ## 7. Verification
 
-- `tests/unit/member/evaluasi-data.test.ts`: 4 slugs resolve, pukulan 5 postures verbatim (names + statuses), unknown slug returns null.
+- `tests/unit/member/evaluasi-data.test.ts`: 4 slugs resolve, pukulan 5 postures verbatim (names + statuses), no `speedLabel` key, unknown slug returns null.
 - `tests/unit/member/evaluasi-shell.test.ts`: thin route (no `use client`, `generateStaticParams`, `notFound`), 4 Suspense units, flex-only, 6 badge strings + video shell + 2 TODO strings + `Lihat Evaluasi` live href, no `absolute`.
 - Green: `pnpm build` + `tsc --noEmit` + `eslint` + `pnpm test`.
 - Browser (Playwright): `scrollWidth <= innerWidth` at 390px + desktop on `/latihan/pukulan/evaluasi`; click-path sesi `Lihat Evaluasi` → evaluasi; invalid slug 404s.
