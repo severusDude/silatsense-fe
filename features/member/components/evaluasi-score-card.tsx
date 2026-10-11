@@ -1,6 +1,12 @@
 import { TriangleAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { EvaluationSession } from "@/features/member/types";
 
 export function EvaluasiScoreCard({
@@ -14,23 +20,23 @@ export function EvaluasiScoreCard({
 
   return (
     <Card>
-      <CardContent className="flex flex-col gap-3 p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-col gap-1">
-            <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
-              Akurasi Kinematika
-            </p>
-            <p className="flex items-baseline gap-1">
-              <span className="text-4xl font-bold">{score.value}</span>
-              <span className="text-xl font-bold text-muted-foreground">
-                {score.unit}
-              </span>
-            </p>
-          </div>
+      <CardHeader>
+        <CardTitle className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
+          Akurasi Kinematika
+        </CardTitle>
+        <CardAction>
           <Badge variant="warning" className="uppercase">
             <TriangleAlert aria-hidden="true" /> {score.alertLabel}
           </Badge>
-        </div>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        <p className="flex items-baseline gap-1">
+          <span className="text-4xl font-bold">{score.value}</span>
+          <span className="text-xl font-bold text-muted-foreground">
+            {score.unit}
+          </span>
+        </p>
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between gap-2">
             <p className="text-[10px] font-semibold text-muted-foreground">

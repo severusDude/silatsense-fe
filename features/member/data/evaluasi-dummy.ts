@@ -84,7 +84,7 @@ function evaluasiSession(
       targetPct: 85,
       targetLabel: "Target Lulus Standar : ≥ 85%",
       deltaLabel: "Selisih -5%",
-      alertLabel: "PERLU PERBAIKAN",
+      alertLabel: "PERLU KOREKSI",
       summary:
         "2 dari 5 parameter anatomis membutuhkan penyesuaian: elevasi siku kanan (sayap terbuka) dan rotasi kepalan pergelangan tangan.",
     },

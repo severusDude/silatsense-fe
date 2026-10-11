@@ -1,18 +1,24 @@
 import Link from "next/link";
 import { RotateCcw, Save } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { EvaluationSession } from "@/features/member/types";
 
 export function EvaluasiActions({ session }: { session: EvaluationSession }) {
   return (
     <section aria-label="Tindak lanjut evaluasi" className="flex flex-col gap-2">
       <Card>
-        <CardContent className="flex flex-col gap-2 p-4">
-          <h2 className="text-sm font-bold">Siap Memperbaiki Deviasi Gerakan?</h2>
-          <p className="text-[11px] text-muted-foreground">
-            Targetkan akurasi ≥ 85% untuk lulus standar uji.
-          </p>
+        <CardHeader>
+          <CardTitle className="text-sm font-bold">Siap Memperbaiki Deviasi Gerakan?</CardTitle>
+          <CardDescription>Targetkan akurasi ≥ 85% untuk lulus standar uji.</CardDescription>
+        </CardHeader>
+        <CardFooter className="flex-col items-stretch gap-2">
           {/* TODO: connect backend via lib/api-client.ts (POST /member/evaluations/:slug/ack) — dead CTA for now */}
           <span
             aria-disabled="true"
@@ -30,7 +36,7 @@ export function EvaluasiActions({ session }: { session: EvaluationSession }) {
           >
             <RotateCcw data-icon="inline-start" /> Latihan Ulang
           </Link>
-        </CardContent>
+        </CardFooter>
       </Card>
     </section>
   );

@@ -27,7 +27,7 @@ describe("dummyEvaluasiBySlug", () => {
     expect(detail.score.value).toBe(80);
     expect(detail.score.targetPct).toBe(85);
     expect(detail.score.deltaLabel).toBe("Selisih -5%");
-    expect(detail.score.alertLabel).toBe("PERLU PERBAIKAN");
+    expect(detail.score.alertLabel).toBe("PERLU KOREKSI");
     expect(detail.postures).toHaveLength(5);
     expect(detail.postures.map((posture) => posture.name)).toEqual([
       "Bahu",

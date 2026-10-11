@@ -46,7 +46,7 @@ describe("evaluasi components", () => {
     expect(src).toContain("statusLabel");
     expect(data).toContain("validReps: 12");
     expect(data).toContain("deviatedReps: 3");
-    expect(data).toContain("PERLU PERBAIKAN");
+    expect(data).toContain("PERLU KOREKSI");
     expect(data).toContain("1080p@60FPS");
     expect(data).toContain("SESUAI");
     expect(data).toContain("PERLU KOREKSI");
@@ -103,8 +103,16 @@ describe("evaluasi card shells", () => {
       const src = read(file);
       expect(src).toContain("@/components/ui/card");
       expect(src).toContain("<Card>");
-      expect(src).toContain("<CardContent");
     }
+    expect(
+      read("features/member/components/evaluasi-playback.tsx"),
+    ).toContain("<CardContent");
+    expect(
+      read("features/member/components/evaluasi-posture-list.tsx"),
+    ).toContain("<CardContent");
+    expect(
+      read("features/member/components/evaluasi-actions.tsx"),
+    ).toContain("<CardFooter");
   });
 
   it("bleeds the video full-width against the card padding", () => {
@@ -112,11 +120,32 @@ describe("evaluasi card shells", () => {
     const src = read("features/member/components/evaluasi-playback.tsx");
 
     // Assert
-    expect(src).toContain("-mx-4");
-    expect(src).toContain("min-w-[calc(100%_+_2rem)]");
+    expect(src).toContain("-mx-6");
+    expect(src).toContain("min-w-[calc(100%_+_3rem)]");
     expect(src).toContain("aspect-[4/3]");
     expect(src).toContain("<video");
     expect(src).not.toContain("absolute");
+  });
+
+  it("composes CardHeader/CardFooter slots on score, playback, and actions", () => {
+    // Arrange + Act
+    const score = read("features/member/components/evaluasi-score-card.tsx");
+    const playback = read("features/member/components/evaluasi-playback.tsx");
+    const actions = read("features/member/components/evaluasi-actions.tsx");
+    const footer = actions.slice(actions.indexOf("<CardFooter"));
+
+    // Assert
+    expect(score).toContain("CardHeader");
+    expect(score).toContain("CardTitle");
+    expect(score).toContain("CardAction");
+    expect(playback).toContain("CardHeader");
+    expect(playback).toContain("CardTitle");
+    expect(playback).toContain("CardAction");
+    expect(actions).toContain("CardHeader");
+    expect(actions).toContain("CardDescription");
+    expect(actions).toContain("CardFooter");
+    expect(footer).toContain("Selesai dan Simpan");
+    expect(footer).toContain("Latihan Ulang");
   });
 
   it("revamps posture rows with ring, sorted Collapsible rows, and thumb stub", () => {
