@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 const bottomNav = readFileSync("features/coach/components/coach-bottom-nav.tsx", "utf8");
 const topNav = readFileSync("features/coach/components/coach-top-nav.tsx", "utf8");
+const header = readFileSync("features/coach/components/coach-header.tsx", "utf8");
 
 describe("coach shell", () => {
   it("exposes four tabs with Profil linking to the shared /profil route", () => {
@@ -22,5 +23,13 @@ describe("coach shell", () => {
     expect(topNav).toContain("KF");
     expect(topNav).toContain("Cloud Sinkron");
     expect(topNav).not.toContain("Portal");
+  });
+
+  it("shows the coach header copy with a dead report CTA (no Portal badge)", () => {
+    // Arrange + Act + Assert
+    expect(header).toContain("Dashboard Pelatih");
+    expect(header).toContain("Unduh Rapor Tim (PDF)");
+    expect(header).toContain("GET /coach/report");
+    expect(header).not.toContain("Portal");
   });
 });

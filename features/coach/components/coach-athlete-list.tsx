@@ -1,0 +1,47 @@
+import { ChevronRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { stageBadgeVariant } from "@/features/coach/components/coach-stage";
+import type { CoachAthlete } from "@/features/coach/types";
+
+export function CoachAthleteList({ athletes }: { athletes: CoachAthlete[] }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Ringkasan Latihan Member</CardTitle>
+        <CardAction>
+          <Badge variant="secondary">5 Atlet</Badge>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <ul className="flex flex-col gap-2.5">
+          {athletes.map((athlete) => (
+            <li key={athlete.id} className="flex items-center gap-2.5 rounded-2xl border p-2.5">
+              <span
+                role="img"
+                aria-label={`Avatar ${athlete.name}`}
+                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-foreground"
+              >
+                {athlete.initials}
+              </span>
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <h3 className="truncate text-xs font-bold">{athlete.name}</h3>
+                  <Badge variant={stageBadgeVariant(athlete.stage)}>{athlete.stageLabel}</Badge>
+                </div>
+                <p className="truncate text-[11px] text-muted-foreground">{athlete.lastGerakan}</p>
+              </div>
+              <span className="shrink-0 text-sm font-bold tabular-nums">{athlete.scorePct}%</span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+      {/* TODO: wire to /coach/members/[id] when the Phase 11 detail move lands */}
+      <div className="flex flex-col gap-2 px-(--card-spacing) pb-(--card-spacing)">
+        <span aria-disabled="true" className="flex items-center justify-center gap-1 text-xs font-bold text-primary">
+          Lihat Detail <ChevronRight className="size-3.5" />
+        </span>
+      </div>
+    </Card>
+  );
+}
