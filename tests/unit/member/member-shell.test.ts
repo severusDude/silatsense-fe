@@ -30,8 +30,9 @@ describe("member shell routes", () => {
     for (const label of ["Latihan", "Riwayat", "Profil"]) {
       expect(bottom).toContain(label);
     }
-    expect(bottom).toContain("aria-disabled");
-    expect(bottom).toContain("TODO");
+    expect(bottom).toContain('href="/profil"');
+    expect(bottom).not.toContain("aria-disabled");
+    expect(bottom).not.toContain("TODO: link to /profil");
     expect(bottom).toContain("aria-current");
     expect(top).toContain("TODO");
   });
