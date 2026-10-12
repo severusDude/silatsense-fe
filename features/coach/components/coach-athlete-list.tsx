@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { stageBadgeVariant } from "@/features/coach/components/coach-stage";
 import type { CoachAthlete } from "@/features/coach/types";
@@ -35,13 +36,15 @@ export function CoachAthleteList({ athletes }: { athletes: CoachAthlete[] }) {
                 <span className="shrink-0 text-sm font-bold tabular-nums">{athlete.scorePct}%</span>
               </div>
               {/* TODO: wire to /coach/members/[id] when the Phase 11 detail move lands */}
-              <span
+              <Button
+                variant="ghost"
+                size="sm"
                 aria-disabled="true"
                 title={`Lihat detail ${athlete.name} (TODO)`}
-                className="flex items-center justify-center gap-1 border-t px-2.5 py-2 text-xs font-bold text-primary"
+                className="h-auto w-full justify-center gap-1 rounded-t-none border-t border-border px-2.5 py-2 text-xs font-bold text-primary hover:text-primary"
               >
                 Lihat Detail <ChevronRight className="size-3.5" aria-hidden="true" />
-              </span>
+              </Button>
             </li>
           ))}
         </ul>

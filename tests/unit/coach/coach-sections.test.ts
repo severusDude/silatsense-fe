@@ -22,10 +22,11 @@ describe("coach sections", () => {
     expect(values).toEqual(["5 Atlet", "84.6%", "2 Sesi", "Elevasi Siku"]);
   });
 
-  it("renders a dead detail CTA per athlete row", () => {
+  it("renders a dead detail CTA button per athlete row", () => {
     // Arrange + Act + Assert
     expect(athleteList).toContain("Ringkasan Latihan Member");
     expect(athleteList).toContain("5 Atlet");
+    expect(athleteList).toContain("<Button");
     expect(athleteList).toContain("Lihat Detail");
     expect(athleteList).toContain("/coach/members/[id]");
     expect(athleteList).toContain("border-t");
