@@ -320,7 +320,7 @@ describe("profile server cards", () => {
     const src = athleteSrc();
 
     // Assert
-    expect(src).toContain("Aced Suryana");
+    expect(src).toContain("Peran & Divisi");
     expect(src).not.toContain("absolute");
     expect(securitySrc()).not.toContain("absolute");
     expect(src).toContain("Pelatih Kepala UKM");
@@ -391,7 +391,7 @@ export function ProfileAthleteCard({ profile }: { profile: Profile }) {
             AS
           </div>
           {/* TODO: wire avatar upload when backend lands */}
-          {/* Overlap via negative margin (flex-only, no absolute): badge sits on the avatar's bottom-right */}
+          {/* Overlap via negative margin: badge sits on the avatar's bottom-right */}
           <button
             type="button"
             aria-label="Ubah foto profil"
