@@ -3,10 +3,10 @@ import type { CoachOverview } from "@/features/coach/types";
 // Placeholder values mirror Figma node 94:37791 verbatim until the backend lands.
 export const dummyCoachOverview: CoachOverview = {
   stats: [
-    { id: "total-atlet", label: "Total Atlet", value: "5 Atlet", context: "Ketuntasan 60%", badge: "3 Siap 2 Remediasi" },
-    { id: "akurasi-tim", label: "Rata-rata Akurasi Tim", value: "84.6%", context: "24 Sesi · +3.8%", badge: "Target ≥ 85% (-0.4%)" },
-    { id: "antrean", label: "Antrean Sidang & Evaluasi", value: "2 Sesi", context: "Uji Baca Gerakan" },
-    { id: "fokus", label: "Fokus Perbaikan Utama", value: "Elevasi Siku", context: "+8 cm sayap (142°) · Drill: Rib-Slide Punch" },
+    { id: "total-atlet", label: "Total Atlet", value: "5 Atlet", badge: "3 Siap 2 Remediasi", footerLeft: "Ketuntasan", footerRight: "60%" },
+    { id: "akurasi-tim", label: "Akurasi Tim", value: "84.6%", badge: "Target ≥ 85% (-0.4%)", footerLeft: "24 Sesi", footerRight: "+3.8%" },
+    { id: "sidang-uji", label: "Sidang Uji", value: "2 Sesi", note: "Aced S., Siti N.", footerLeft: "Uji Dojo", footerRight: "2 Okt 2026" },
+    { id: "fokus", label: "Fokus Utama", value: "Elevasi Siku" },
   ],
   athletes: [
     { id: "aced-suryana", initials: "AS", name: "Aced Suryana", stage: "remediasi", stageLabel: "Tahap Remediasi", scorePct: 80, lastGerakan: "Kuda-kuda" },

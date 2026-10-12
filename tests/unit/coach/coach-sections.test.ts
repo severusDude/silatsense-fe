@@ -14,17 +14,21 @@ describe("coach sections", () => {
     expect(statGrid).toContain("Statistik tim");
     expect(statGrid).toContain('"total-atlet"');
     expect(statGrid).toContain('"akurasi-tim"');
-    expect(statGrid).toContain("antrean");
+    expect(statGrid).toContain("sidang-uji");
     expect(statGrid).toContain("fokus");
+    expect(statGrid).toContain("justify-between");
+    expect(statGrid).toContain("footerLeft");
+    expect(statGrid).toContain("footerRight");
     expect(values).toEqual(["5 Atlet", "84.6%", "2 Sesi", "Elevasi Siku"]);
   });
 
-  it("renders the athlete list card with a single dead footer affordance", () => {
+  it("renders a dead detail CTA per athlete row", () => {
     // Arrange + Act + Assert
     expect(athleteList).toContain("Ringkasan Latihan Member");
     expect(athleteList).toContain("5 Atlet");
     expect(athleteList).toContain("Lihat Detail");
     expect(athleteList).toContain("/coach/members/[id]");
+    expect(athleteList).toContain("border-t");
     expect(athleteList).not.toContain("MediaPipe");
   });
 });

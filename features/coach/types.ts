@@ -21,11 +21,13 @@ export interface CoachPillar {
 }
 
 export interface CoachStat {
-  id: "total-atlet" | "akurasi-tim" | "antrean" | "fokus";
+  id: "total-atlet" | "akurasi-tim" | "sidang-uji" | "fokus";
   label: string;
   value: string;
-  context: string;
-  badge?: string;
+  badge?: string; // content pill (stats 1-2)
+  note?: string; // content third line (stat 3: queue names)
+  footerLeft?: string; // footer pair, justify-between (absent on fokus)
+  footerRight?: string;
 }
 
 export interface PosturePoint {

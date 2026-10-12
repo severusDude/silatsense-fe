@@ -12,6 +12,35 @@ describe("dummyCoachOverview", () => {
     expect(reviewQueue).toEqual(["Aced S.", "Siti N."]);
   });
 
+  it("pins Figma stat labels with badges in content and footer pairs", () => {
+    // Arrange + Act
+    const rows = dummyCoachOverview.stats.map((s) => [
+      s.label,
+      s.value,
+      s.badge ?? null,
+      s.note ?? null,
+      s.footerLeft ?? null,
+      s.footerRight ?? null,
+    ]);
+
+    // Assert
+    expect(rows).toEqual([
+      ["Total Atlet", "5 Atlet", "3 Siap 2 Remediasi", null, "Ketuntasan", "60%"],
+      ["Akurasi Tim", "84.6%", "Target ≥ 85% (-0.4%)", null, "24 Sesi", "+3.8%"],
+      ["Sidang Uji", "2 Sesi", null, "Aced S., Siti N.", "Uji Dojo", "2 Okt 2026"],
+      ["Fokus Utama", "Elevasi Siku", null, null, null, null],
+    ]);
+  });
+
+  it("drops the drill context from the Fokus stat", () => {
+    // Arrange + Act
+    const raw = JSON.stringify(dummyCoachOverview.stats);
+
+    // Assert
+    expect(raw).not.toContain("Rib-Slide");
+    expect(raw).not.toContain("sayap");
+  });
+
   it("exposes five athletes with Figma scores and last-gerakan subtitles", () => {
     // Arrange + Act
     const rows = dummyCoachOverview.athletes.map((a) => [a.name, a.scorePct, a.lastGerakan]);
