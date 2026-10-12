@@ -382,7 +382,7 @@ export function ProfileAthleteCard({ profile }: { profile: Profile }) {
   return (
     <Card>
       <CardContent className="flex flex-col items-center gap-1 p-4">
-        <div className="relative">
+        <div className="flex w-fit flex-col">
           <div
             role="img"
             aria-label={`Foto profil ${profile.name}`}
@@ -391,10 +391,11 @@ export function ProfileAthleteCard({ profile }: { profile: Profile }) {
             AS
           </div>
           {/* TODO: wire avatar upload when backend lands */}
+          {/* Overlap via negative margin (flex-only, no absolute): badge sits on the avatar's bottom-right */}
           <button
             type="button"
             aria-label="Ubah foto profil"
-            className="absolute right-0 bottom-0 flex size-7 items-center justify-center rounded-full border bg-background"
+            className="-mt-7 ml-[68px] flex size-7 items-center justify-center rounded-full border bg-background"
           >
             <Camera className="size-3.5" aria-hidden="true" />
           </button>
