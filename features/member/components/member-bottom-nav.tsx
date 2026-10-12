@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Dumbbell, LayoutDashboard, ScrollText, User } from "lucide-react";
 
-export type MemberTab = "dashboard" | "latihan" | "riwayat";
+export type MemberTab = "dashboard" | "latihan" | "riwayat" | "profil";
 
 const itemClass = "flex flex-1 flex-col items-center gap-0.5 py-1 text-[10px] font-medium";
 const linkInner = "flex flex-col items-center gap-0.5";
@@ -10,6 +10,7 @@ export function MemberBottomNav({ activeTab = "dashboard" }: { activeTab?: Membe
   const dashboardActive = activeTab === "dashboard";
   const latihanActive = activeTab === "latihan";
   const riwayatActive = activeTab === "riwayat";
+  const profilActive = activeTab === "profil";
   return (
     <nav aria-label="Navigasi member" className="sticky bottom-0 z-40 border-t bg-background/95 backdrop-blur">
       <ul className="mx-auto flex w-full max-w-[448px] px-4 py-2">
@@ -58,12 +59,18 @@ export function MemberBottomNav({ activeTab = "dashboard" }: { activeTab?: Membe
             </Link>
           )}
         </li>
-        {/* TODO: link to /profil when the route lands */}
-        <li className={`${itemClass} text-muted-foreground`}>
-          <span aria-disabled="true" className={linkInner}>
-            <User className="size-4" aria-hidden="true" />
-            Profil
-          </span>
+        <li className={`${itemClass} ${profilActive ? "text-primary" : "text-muted-foreground"}`}>
+          {profilActive ? (
+            <span aria-current="page" className={linkInner}>
+              <User className="size-4" aria-hidden="true" />
+              Profil
+            </span>
+          ) : (
+            <Link href="/profil" className={linkInner}>
+              <User className="size-4" aria-hidden="true" />
+              Profil
+            </Link>
+          )}
         </li>
       </ul>
     </nav>
