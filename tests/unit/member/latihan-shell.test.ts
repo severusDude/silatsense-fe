@@ -81,8 +81,9 @@ describe("latihan route", () => {
     expect(bottom).toContain("activeTab");
     expect(bottom).toContain('href="/latihan"');
     expect(bottom).toContain("aria-current");
-    expect(bottom).toContain("TODO");
-    expect(bottom).toContain("aria-disabled");
+    expect(bottom).toContain('href="/profil"');
+    expect(bottom).not.toContain("TODO: link to /profil");
+    expect(bottom).not.toContain("aria-disabled");
   });
 
   it("renders exactly one member shell per route", () => {
