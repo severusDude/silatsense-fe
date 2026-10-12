@@ -1,6 +1,6 @@
 # Coach Dashboard Design — /coach (Phase 10, dashboard only)
 
-Date: 2026-10-12. Status: draft, approved as contract (rev 0 approved 2026-10-12: dashboard-only scope under shared Phase 10 milestone, semantic Badge mapping, shared `/profil` 4th nav, dead PDF CTA, Users/Target/Clock/Wrench icons, Ringkasan subtitle drop). Linear: milestone `[Phase 10] Coach foundation` to be created JIT (shared with later members-list move); parent `[coach] Ship coach dashboard` + ~4 subs to be created after this spec. Sibling specs: `2026-10-08-member-dashboard-design.md` (Suspense-section + shell pattern reused), `2026-10-11-member-profile-design.md` (shared `/profil` role-prop contract reused). Figma `94:37791` (`Dashboard - Coach`, 390×1828; `get_design_context` timed out twice 2026-10-12 — contract pinned from screenshot + full metadata instead; pixel audit deferred to implementation).
+Date: 2026-10-12. Status: draft, approved as contract (rev 0 approved 2026-10-12: dashboard-only scope under shared Phase 10 milestone, semantic Badge mapping, shared `/profil` 4th nav, dead PDF CTA, Users/Target/Clock/Wrench icons, Ringkasan subtitle drop; rev 1 approved 2026-10-12: per-row detail CTAs, justify-between stat footers, badges-in-content, drill-text drop, Figma-verbatim stat labels — see §2). Linear: milestone `[Phase 10] Coach foundation` to be created JIT (shared with later members-list move); parent `[coach] Ship coach dashboard` + ~4 subs to be created after this spec. Sibling specs: `2026-10-08-member-dashboard-design.md` (Suspense-section + shell pattern reused), `2026-10-11-member-profile-design.md` (shared `/profil` role-prop contract reused). Figma `94:37791` (`Dashboard - Coach`, 390×1828; `get_design_context` timed out twice 2026-10-12 — contract pinned from screenshot + full metadata instead; pixel audit deferred to implementation).
 
 ## 1. Goal
 
@@ -16,6 +16,12 @@ Coach dashboard frontend at `/coach`: header (heading + desc + dead PDF CTA) + 4
 - MEMBER SUBTITLE → last practiced gerakan: each athlete row subtitle renders `lastGerakan` only (e.g. `Kuda-kuda`, `Tendangan`, `Pukulan`) — the Figma detail suffixes (`Tumpuan 100%`, `Recoil Poros Panggul 12cm`) are REMOVED.
 - GRAPHICS → lucide only: stat icons `Users` (Total Atlet) / `Target` (Akurasi) / `Clock` (Antrean) / `Wrench` (Fokus); no SVG illustrations, no `next/image` src (avatar circles render initials `AS/SN/RM/FP/DW`, `role="img"`).
 - CTA `Unduh Rapor Tim (PDF)` is a DEAD `Button` with `TODO (GET /coach/report)` — no download logic this move (member dead-CTA precedent).
+- REV 1 (user review 2026-10-12, re-read of 94:37791 metadata — each `Article - Member N` owns its `HorizontalBorder + Button "Lihat Detail"`; stat pills sit inside the content container above the footer margin):
+  - PER-ROW `Lihat Detail`: every athlete `<li>` is a mini-card (identity row + `border-t` + full-width dead CTA with Phase 11 TODO); the single list-level footer affordance is REMOVED (reverses the Task 4 one-affordance call — Figma fidelity governs).
+  - STAT FOOTERS = `justify-between` pairs: `Ketuntasan | 60%`, `24 Sesi | +3.8%`, `Uji Dojo | 2 Okt 2026`; Fokus card has NO footer.
+  - BADGES → `CardContent`: value + Badge (stats 1–2), value + queue note (stat 3), value only (stat 4).
+  - DROPPED the Fokus drill text (`+8 cm sayap (142°) · Drill: Rib-Slide Punch`); `CoachStat.context` removed, replaced by `note?` + `footerLeft?`/`footerRight?`.
+  - LABELS Figma-verbatim (prior draft had invented copy — corrected, no instruction had ordered those changes): `Akurasi Tim` (was `Rata-rata Akurasi Tim`), `Sidang Uji` (was `Antrean Sidang & Evaluasi`), `Fokus Utama` (was `Fokus Perbaikan Utama`). Separators/decimal punctuation intentionally left as-is (out of rev-1 scope).
 
 ## 3. Architecture
 
@@ -51,11 +57,13 @@ interface CoachPillar {
 }
 
 interface CoachStat {
-  id: string; // "total-atlet"
-  label: string; // "Total Atlet"
+  id: "total-atlet" | "akurasi-tim" | "sidang-uji" | "fokus";
+  label: string; // "Total Atlet" | "Akurasi Tim" | "Sidang Uji" | "Fokus Utama" (Figma-verbatim, rev 1)
   value: string; // "5 Atlet"
-  context: string; // "Ketuntasan 60%"
-  badge?: string; // "3 Siap 2 Remediasi"
+  badge?: string; // content pill: "3 Siap 2 Remediasi" | "Target ≥ 85% (-0.4%)"
+  note?: string; // content third line: "Aced S., Siti N." (stat 3)
+  footerLeft?: string; // "Ketuntasan" | "24 Sesi" | "Uji Dojo" (absent on fokus)
+  footerRight?: string; // "60%" | "+3.8%" | "2 Okt 2026" (absent on fokus)
 }
 
 interface PosturePoint {
@@ -78,13 +86,13 @@ interface CoachOverview {
 // Endpoints: TODO (GET /coach/overview), TODO (GET /coach/report).
 ```
 
-Dummy values mirror Figma verbatim (5 Atlet, 84.6% vs 85%, 2 Sesi antrean, Elevasi Siku +8cm/142° + Rib-Slide Punch drill, 5 athletes with scores above, 4 pillars, 5 posture points with KF-coach context). Single `types.ts` file until 2+ types force directory form.
+Dummy values mirror Figma verbatim (5 Atlet, 84.6% vs 85%, 2 Sesi Sidang Uji, Elevasi Siku value-only, 5 athletes with scores above, 4 pillars, 5 posture points with KF-coach context). Single `types.ts` file until 2+ types force directory form.
 
 ## 5. UI pattern
 
 - Flex/grid layouts only — no `absolute` in new/modified UI files.
-- Stat tiles = `Card size="sm"`: `CardHeader` (Title=label + Action=icon) + `CardContent` (value, tabular-nums) + `CardFooter` (context + Badge). Stat 1 footer `Ketuntasan 60%` + `3 Siap 2 Remediasi` secondary Badge; stat 2 `Target ≥ 85% (-0.4%)` outline Badge + `24 Sesi` / `+3.8%`; stat 3 `Aced S., Siti N.` + queue note; stat 4 `+8 cm sayap (142°)` + `Rib-Slide Punch` drill line.
-- Athlete rows: initials avatar (`role="img"`) + name + stage Badge + `lastGerakan` subtitle + score + outline `Lihat Detail` button (dead TODO href to Phase 11 detail). No per-row MediaPipe copy.
+- Stat tiles = `Card size="sm"`: `CardHeader` (Title=label + Action=icon) + `CardContent` (value tabular-nums + Badge + note) + `CardFooter` (`justify-between` footer pair; omitted on Fokus). Stat 1 `5 Atlet` + `3 Siap 2 Remediasi` secondary Badge, footer `Ketuntasan | 60%`; stat 2 `84.6%` + `Target ≥ 85% (-0.4%)` outline Badge, footer `24 Sesi | +3.8%`; stat 3 `2 Sesi` + `Aced S., Siti N.` note, footer `Uji Dojo | 2 Okt 2026`; stat 4 `Elevasi Siku` value-only, no footer.
+- Athlete rows = mini-cards: initials avatar (`role="img"`) + name + stage Badge + `lastGerakan` subtitle + score, then `border-t` + full-width dead `Lihat Detail` CTA per row (TODO to Phase 11 detail). No per-row MediaPipe copy.
 - Pillars = div progress bars (no chart dep, roadmap Not-list) + header `target ≥ 85%` outline Badge; status text colored via Badge (`Stabil` success, `Optimal` secondary, `Deviasi Siku` warning, `Remediasi` warning).
 - Posture = 2×2 tiles + full-width warning banner (`5. Pronasi Pergelangan — 58% Terdeteksi (+10.5°)`); tiles carry score + status Badge, no invented copy.
 - Placeholders: every visual is a `div role="img"`; strings pinned in test: `Dashboard Pelatih`, `5 Atlet`, `Kuda-kuda`, `84.6%`.
