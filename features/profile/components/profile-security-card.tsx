@@ -1,5 +1,5 @@
 import { ShieldCheck } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function ProfileSecurityCard({
   passwordUpdatedLabel,
@@ -8,10 +8,13 @@ export function ProfileSecurityCard({
 }) {
   return (
     <Card>
-      <CardContent className="flex flex-col gap-3 p-4">
-        <h2 className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-1.5 text-sm font-bold">
           <ShieldCheck className="size-4" aria-hidden="true" /> Keamanan & Otentikasi
-        </h2>
+        </CardTitle>
+        <CardDescription>Kelola proteksi akun atlet dan akses pelatih.</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3 rounded-xl border bg-muted/40 p-3">
           <div className="flex min-w-0 flex-col">
             <span className="text-xs font-semibold text-foreground">Kata Sandi Akun</span>

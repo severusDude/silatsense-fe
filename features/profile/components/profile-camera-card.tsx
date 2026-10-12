@@ -2,7 +2,13 @@
 
 import { Controller, useFormContext } from "react-hook-form";
 import { Camera } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
   Select,
@@ -20,10 +26,13 @@ export function ProfileCameraCard({ cameras }: { cameras: CameraDevice[] }) {
 
   return (
     <Card>
-      <CardContent className="flex flex-col gap-3 p-4">
-        <h2 className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-1.5 text-sm font-bold">
           <Camera className="size-4" aria-hidden="true" /> Kamera
-        </h2>
+        </CardTitle>
+        <CardDescription>Konfigurasi Input kamera</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
         <Controller
           name="cameraDeviceId"
           control={control}
