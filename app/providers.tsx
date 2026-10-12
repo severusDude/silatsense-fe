@@ -49,10 +49,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
         attribute="class"
-        defaultTheme="system"
-        enableSystem
+        defaultTheme="light"
+        // TODO(PSR-22): drop forcedTheme once .dark tokens are derived from Figma.
+        forcedTheme="light"
+        enableSystem={false}
         disableTransitionOnChange
       >
+        {/* Light-only: dark derivation is future work (PSR-22). */}
         {children}
         {process.env.NODE_ENV === 'development' && (
           <ReactQueryDevtools initialIsOpen={false} />

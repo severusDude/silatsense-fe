@@ -23,18 +23,37 @@ Next.js App Router. Follow strictly.
 - `features/<name>/`: `actions/` (server actions, mutations only) · `components/` (+ `components/shared/`) · `data/` (queries, if needed) · `pages/` (compositions called from `app/` routes) · `schemas` · `types`. `schemas` and `types` may each be a file (`schemas.ts`) or a directory (`schemas/index.ts`, `schemas/<name>.ts`); directory form preferred at 2+ items.
 - `actions/` + `data/` are server-only (`import "server-only"` first line), never imported from client components. Pass serializable props only. `schemas` Zod-validates at the `actions/` boundary.
 - Shared UI in `components/ui/` (shadcn `base-nova` on `@base-ui/react` — not Radix). Singletons in `lib/` (`api-client.ts`, `utils.ts`). Import with `@/` alias only. Backend is external REST; no Prisma in this repo (`data/` + `actions/` call `lib/api-client.ts`).
+- `scripts/` holds read-only dev tooling (no network, no writes); each script documents usage in its header and is covered by `tests/unit/scripts/`.
 
 ## Workflow (in order)
 
 1. Never work on `main` or `development`. Cut a task branch from `development`: `git fetch origin development && git checkout -b <linear-gitBranchName|experiment/*> origin/development`. Use the Linear-generated branch as-is; delete after merge.
-2. Check the issue via `linear-personal_list_issues` / `get_issue`. If missing: read `docs/superpowers/specs/*`, create parent + sub-issues (`save_issue`, `parentId` for subs), copy `gitBranchName`, cut the branch.
+2. Check the issue via `linear-personal_list_issues` / `get_issue`. If missing: read `docs/superpowers/specs/*`, create parent + sub-issues (`save_issue`, `parentId` for subs), copy `gitBranchName`, cut the branch. At phase start, read the roadmap first: Linear Doc `[Roadmap] SilatSense FE — Member closeout + Coach` (+ mirror `docs/superpowers/roadmap-template.md`) for phase scope, Figma index, and issue scaffolds; create that phase's milestone just-in-time; phase owner updates Doc + mirror in the same task.
 3. Read the PRD (parent description + linked spec doc) for related instructions.
 4. Read and adhere to the spec file for the move.
-5. Implement per `docs/CODE_STANDARD.md`. One parent + sub-issues per move (max 1 level: parent = 1–3 day shippable, sub = <4h). Title `[area] Verb outcome`, ≤60 chars. Description 4-field header only (`Goal / Scope(+Out:) / Acceptance boxes / Links`), ≤15 lines; longer specs go in a Linear Doc linked under `Links:`.
-6. Solo-agile tracking: assignee always `me`; exactly one label (`feature|bug|chore|docs|spike`); `feature`/`bug` carry exactly one milestone (max 2 open, `[Phase N] Outcome`); 1-week Mon–Mon cycles, only committed issues in-cycle, spillover explicitly re-committed. Specs in `docs/superpowers/specs/`, plans in `docs/superpowers/plans/`. Progress `save_comment` per completed move (`Done X, next Y.`); `decision` comments update Scope/Acceptance to match; `In Review` carries PR URL + 2–4 test steps.
+5. Implement per `docs/CODE_STANDARD.md`. One parent + sub-issues per move (max 1 level: parent = 1–3 day shippable, sub = <4h). Title `[area] Verb outcome`, ≤60 chars. Description 4-field header only (`Goal / Scope(+Out:) / Acceptance boxes / Links`), ≤15 lines; longer specs go in a Linear Doc linked under `Links:`. Moves needing backend data not yet built carry the expected DTO shape in the linked spec (mirrored from `types`, pinned by test) per `CODE_STANDARD.md` §4a.
+6. Solo-agile tracking: assignee always `me`; exactly one label (`feature|bug|chore|docs|spike`); `feature`/`bug` carry exactly one milestone (max 2 open, `[Phase N] Outcome`); 1-week Mon–Mon cycles, only committed issues in-cycle, spillover explicitly re-committed. Specs in `docs/superpowers/specs/`, plans in `docs/superpowers/plans/`. Advisory at phase start: `node scripts/linear-roadmap-audit.mjs issues.json [milestones.json]`; fix violations by hand, never blocks `In Review`. Progress `save_comment` per completed move (`Done X, next Y.`); `decision` comments update Scope/Acceptance to match; `In Review` carries PR URL + 2–4 test steps.
 7. Verify per `docs/CODE_STANDARD.md` §6: `pnpm build` + `tsc --noEmit` + `eslint` + `pnpm test` green, plus browser `scrollWidth <= innerWidth` check for visual moves. Zero errors before `In Review`.
 8. Merges: PR to `development` with squash. `development` → `main` with merge commit, no squash.
 
+## Dev server for browser checks (Playwright)
+
+Never run `pnpm dev` in the foreground and never sleep-poll inside a single call — split START (returns instantly) from READINESS (fast separate checks), so no command ever needs manual interruption.
+
+1. Start detached via WMI (returns immediately with ProcessId, no window, zero waiting — never `Start-Process`, `pnpm dev`, `start`, or `&`; they hang the shell). First destroy any leftover on the port (`Get-NetTCPConnection -LocalPort <PORT>` → `taskkill /PID <pid> /T /F`), confirm `curl.exe ... --max-time 3` returns `000`, then:
+   `Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = 'cmd.exe /c pnpm dev --port <PORT> > <TEMP>\next-dev-<PORT>.log 2>&1'; CurrentDirectory = '<repo>' }`
+   Remember the ProcessId; ReturnValue must be 0. Use a fresh port per run (3101, 3102, …). `<TEMP>` is `C:\Users\Lutfi\AppData\Local\Temp\opencode`.
+2. Check readiness with fast bounded calls only: `Get-Content -Tail 5 <log>` for `Ready in`, or one `Invoke-WebRequest -TimeoutSec 5`. If not ready, do other work or issue ONE `Start-Sleep` (≤20s) then re-check. Cap at ~3 re-checks — if still not ready, read the log tail, kill the tree, and report (gates-only evidence) instead of hanging.
+3. Drive the page with the Playwright tools (open via tab-new first — bare navigate fails with no open tab), run `scrollWidth <= innerWidth` + geometry checks, screenshot only if needed.
+4. Stop every time: `taskkill /PID <pid> /T /F`, then confirm the port is free (`Get-NetTCPConnection -LocalPort <PORT>` → empty). No orphan servers, no occupied ports left behind.
+5. Delete all tool artifacts when done: `.playwright-mcp/`, Temp server logs. Never commit them, never leave them untracked. Verify with `git status --short`.
+
 ## Commits
 
-`<type>(<scope>): <summary>` + optional body + footers. Types: `feat|fix|docs|style|refactor|perf|test|chore|ci`. Breaking: `!` before `:` (e.g. `feat(api)!: change auth payload`). One task = one commit = one review.
+`<type>(<scope>): <summary>` + optional body + footers. Types: `feat|fix|docs|style|refactor|perf|test|chore|ci`. Breaking: `!` before `:`.
+
+- Atomic on the task branch: each commit is one logical change that leaves the tree compiling (`tsc --noEmit` clean). Don't mix refactor/format with behavior changes, or unrelated chores (e.g. regenerated agent-rules block) with feature work.
+- A behavior change and its characterization test may share a commit; spec/doc updates get their own `docs` commit.
+- Commit as each logical step lands, not at the end of the task. Never leave a task as one giant "wip" commit.
+- Full gates (§6) run before `In Review`, not per commit.
+- One task = one squashed commit on `development` = one review. The squash message follows the format above and is the task's commit.
