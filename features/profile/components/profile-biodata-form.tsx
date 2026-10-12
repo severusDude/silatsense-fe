@@ -1,7 +1,13 @@
 "use client";
 
 import { Controller, useFormContext } from "react-hook-form";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
 import type { UpdateProfileInput } from "@/features/profile/schemas";
@@ -17,8 +23,11 @@ export function ProfileBiodataForm() {
 
   return (
     <Card>
-      <CardContent className="flex flex-col gap-3 p-4">
-        <h2 className="text-sm font-bold text-foreground">Pengaturan Akun & Biodata Silat</h2>
+      <CardHeader>
+        <CardTitle className="text-sm font-bold">Pengaturan Akun & Biodata Silat</CardTitle>
+        <CardDescription>Informasi utama lisensi atlet dan sinkronisasi perguruan.</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
         {fields.map((item) => (
           <Controller
             key={item.name}
