@@ -43,3 +43,62 @@ describe("profile server cards", () => {
     expect(src).toContain("Kata Sandi Akun");
   });
 });
+
+describe("profile client islands", () => {
+  it("owns form state in the editor via FormProvider and zodResolver", () => {
+    // Arrange + Act
+    const src = read("features/profile/components/profile-editor.tsx");
+
+    // Assert
+    expect(src).toContain("FormProvider");
+    expect(src).toContain("zodResolver(profileSchema)");
+    expect(src).toContain("useForm<UpdateProfileInput>");
+    expect(src).not.toContain("Batal");
+  });
+
+  it("validates the stub update at the server-action boundary with PATCH TODO", () => {
+    // Arrange + Act
+    const src = read("features/profile/actions/update-profile.ts");
+
+    // Assert
+    expect(src).toContain("profileSchema.parse");
+    expect(src).toContain("PATCH /member/profile");
+    expect(src).toContain("TODO");
+  });
+
+  it("saves once with the Save icon over toast.promise and invalidates the profile key", () => {
+    // Arrange + Act
+    const src = read("features/profile/components/profile-save-action.tsx");
+
+    // Assert
+    expect(src).toContain("Save");
+    expect(src).toContain("toast.promise");
+    expect(src).toContain("Simpan Perubahan");
+    expect(src).toContain('["profile"]');
+    expect(src).not.toContain("Batal");
+  });
+
+  it("logs out via a non-primary outline button with a sign-out TODO", () => {
+    // Arrange + Act
+    const src = read("features/profile/components/profile-logout-button.tsx");
+
+    // Assert
+    expect(src).toContain("LogOut");
+    expect(src).toContain('variant="outline"');
+    expect(src).toContain("TODO");
+    expect(src).toContain("Logout");
+  });
+
+  it("keeps every client island free of absolute positioning", () => {
+    // Arrange + Act + Assert
+    for (const file of [
+      "features/profile/components/profile-editor.tsx",
+      "features/profile/components/profile-biodata-form.tsx",
+      "features/profile/components/profile-camera-card.tsx",
+      "features/profile/components/profile-save-action.tsx",
+      "features/profile/components/profile-logout-button.tsx",
+    ]) {
+      expect(read(file)).not.toContain("absolute");
+    }
+  });
+});
