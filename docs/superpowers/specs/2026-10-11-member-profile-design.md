@@ -19,7 +19,7 @@ Profile frontend at `/profil`: title section + athlete card (placeholder avatar 
 
 - Route (thin RSC, no logic): `app/(member)/profil/page.tsx` → `ProfilePage({ role: "member" })` (PSR-82). Leaf layout owns `activeTab="profil"`, trail `["Dashboard", "Profil"]`.
 - Composition: `features/profile/pages/profile-page.tsx` (static shell + four `<Suspense>` units: athlete card, biodata form, kamera, keamanan; follows `riwayat-page.tsx` pattern).
-- Client boundary — exactly four islands: `profile-biodata-form.tsx` (`"use client"`, RHF + `zodResolver(profileSchema)`), `profile-camera-card.tsx` (`"use client"`, shadcn `Select` over `CameraDevice[]`), `profile-save-action.tsx` (`"use client"`, `useMutation` stub → server action, `Save` icon), `profile-logout-button.tsx` (`"use client"`, outline stub with `TODO: wire sign-out (auth session clear)`, `LogOut` icon). Cards and shells stay server; props serializable.
+- Client boundary — exactly four islands: `profile-biodata-form.tsx` (`"use client"`, RHF + `zodResolver(profileSchema)`), `profile-camera-card.tsx` (`"use client"`, shadcn `Select` over `CameraDevice[]`), `profile-save-action.tsx` (`"use client"`, `useMutation` stub → server action, `Save` icon), `profile-logout-button.tsx` (`"use client"`, outline stub with `TODO: wire sign-out (auth session clear)`, `LogOut` icon). Form state is owned by `profile-editor.tsx` (`useForm` + `FormProvider`; server `ProfileSecurityCard` passed as `children`). Cards and shells stay server; props serializable.
 - Components (`features/profile/components/`): `profile-athlete-card.tsx` (server: placeholder avatar + attribute rows + mini stats, NO logout), `profile-biodata-form.tsx` (client), `profile-camera-card.tsx` (client), `profile-security-card.tsx` (server: dead `Ubah Kata Sandi` stub with TODO), `profile-save-action.tsx` (client), `profile-logout-button.tsx` (client). Full `Card` composition on shells. Icons `lucide-react` only (`Save`, `LogOut`, `Camera`, `User`, `Medal`, `Gauge`, `ShieldCheck`).
 - Data: `features/profile/data/get-profile.ts` (server-only, `'use cache'` + `cacheLife('minutes')`, `getProfile(role)`, returns `Profile`) + `features/profile/data/profile-dummy.ts` (pure). `CameraDevice` reused from `@/features/member/types` (no duplicate). `actions/update-profile.ts` (server-only, `profileSchema.parse()` first line, stub returns input, `TODO (PATCH /member/profile)`). `schemas.ts` holds `profileSchema`. No `app/api/`. `@/` imports only.
 
@@ -68,6 +68,7 @@ interface UpdateProfileInput {
   cameraDeviceId: string;
 }
 // CameraDevice reused from @/features/member/types (PSR-49, no duplicate).
+// dummyProfileCameras: CameraDevice[] (2 devices, FaceTime HD Camera default).
 // Endpoints: TODO (GET /member/profile), TODO (GET /coach/profile), TODO (PATCH /member/profile).
 ```
 
