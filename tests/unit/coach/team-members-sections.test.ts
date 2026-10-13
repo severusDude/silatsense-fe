@@ -22,6 +22,8 @@ describe("member sections", () => {
     // Arrange + Act + Assert
     expect(cardList).toContain("Monitoring Pose Kinematika");
     expect(cardList).toContain("Atlet Aktif");
+    expect(cardList).toContain("<section");
+    expect(cardList).toContain("<h2");
     expect(cardList).toContain("<CardHeader");
     expect(cardList).toContain("<CardTitle");
     expect(cardList).toContain("<CardAction");

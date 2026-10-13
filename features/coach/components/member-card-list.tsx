@@ -1,24 +1,23 @@
 import { ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { stageBadgeVariant } from "@/features/coach/components/coach-stage";
 import type { TeamMember } from "@/features/coach/types";
 
 export function MemberCardList({ members, totalAktif }: { members: TeamMember[]; totalAktif: number }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Monitoring Pose Kinematika</CardTitle>
-        <CardAction>
-          <Badge variant="secondary">{totalAktif} Atlet Aktif</Badge>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        {members.length === 0 ? (
-          <p className="py-4 text-center text-xs text-muted-foreground">Tidak ada atlet yang cocok.</p>
-        ) : (
-          <ul className="flex flex-col gap-2.5">
+    <section aria-labelledby="member-list-heading" className="flex flex-col gap-2.5">
+      <div className="flex items-center justify-between gap-3">
+        <h2 id="member-list-heading" className="text-sm font-bold">
+          Monitoring Pose Kinematika
+        </h2>
+        <Badge variant="secondary">{totalAktif} Atlet Aktif</Badge>
+      </div>
+      {members.length === 0 ? (
+        <p className="py-4 text-center text-xs text-muted-foreground">Tidak ada atlet yang cocok.</p>
+      ) : (
+        <ul className="flex flex-col gap-2.5">
             {members.map((member) => (
               <li key={member.id}>
                 <Card size="sm">
@@ -60,7 +59,6 @@ export function MemberCardList({ members, totalAktif }: { members: TeamMember[];
             ))}
           </ul>
         )}
-      </CardContent>
-    </Card>
+    </section>
   );
 }
