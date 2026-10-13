@@ -24,7 +24,9 @@ describe("member sections", () => {
     expect(cardList).toContain("Atlet Aktif");
     expect(cardList).toContain("<CardHeader");
     expect(cardList).toContain("<CardTitle");
+    expect(cardList).toContain("<CardAction");
     expect(cardList).toContain("<CardFooter");
+    expect(cardList).not.toContain('"gap-0"');
     expect(cardList).toContain("<Button");
     expect(cardList).toContain('variant="ghost"');
     expect(cardList).toContain("Lihat Detail");

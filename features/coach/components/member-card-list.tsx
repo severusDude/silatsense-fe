@@ -21,9 +21,9 @@ export function MemberCardList({ members, totalAktif }: { members: TeamMember[];
           <ul className="flex flex-col gap-2.5">
             {members.map((member) => (
               <li key={member.id}>
-                <Card size="sm" className="gap-0">
-                  <CardContent>
-                    <div className="flex items-center gap-2.5">
+                <Card size="sm">
+                  <CardHeader>
+                    <div className="flex min-w-0 items-center gap-2.5">
                       <span
                         role="img"
                         aria-label={`Avatar ${member.name}`}
@@ -33,14 +33,16 @@ export function MemberCardList({ members, totalAktif }: { members: TeamMember[];
                       </span>
                       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <h3 className="truncate text-xs font-bold">{member.name}</h3>
+                          <CardTitle className="truncate text-xs font-bold">{member.name}</CardTitle>
                           <Badge variant={stageBadgeVariant(member.stage)}>{member.stageLabel}</Badge>
                         </div>
                         <p className="truncate text-[11px] text-muted-foreground">{member.lastGerakan}</p>
                       </div>
-                      <span className="shrink-0 text-sm font-bold tabular-nums">{member.scorePct}%</span>
                     </div>
-                  </CardContent>
+                    <CardAction>
+                      <span className="shrink-0 text-sm font-bold tabular-nums">{member.scorePct}%</span>
+                    </CardAction>
+                  </CardHeader>
                   {/* TODO: wire to /coach/members/[id] when the Phase 11 detail move lands */}
                   <CardFooter className="p-0">
                     <Button
