@@ -3,6 +3,8 @@ import { readFileSync } from "node:fs";
 
 const page = readFileSync("app/(coach)/coach/members/page.tsx", "utf8");
 const layout = readFileSync("app/(coach)/coach/members/layout.tsx", "utf8");
+const parentLayout = readFileSync("app/(coach)/coach/layout.tsx", "utf8");
+const dashboardPage = readFileSync("app/(coach)/coach/page.tsx", "utf8");
 const membersPage = readFileSync("features/coach/pages/coach-members-page.tsx", "utf8");
 const search = readFileSync("features/coach/components/member-search.tsx", "utf8");
 
@@ -40,5 +42,15 @@ describe("members route", () => {
     expect(search).toContain("MemberCardList");
     expect(search).not.toContain("getTeamMembers");
     expect(search).not.toContain("absolute");
+  });
+
+  it("renders exactly one coach shell (parent layout is pass-through)", () => {
+    // Arrange + Act
+    // (parentLayout + dashboardPage reads at top of file)
+
+    // Assert
+    expect(parentLayout).not.toContain("CoachLayout");
+    expect(dashboardPage).toContain("<CoachLayout>");
+    expect(dashboardPage).toContain("CoachDashboardPage");
   });
 });
