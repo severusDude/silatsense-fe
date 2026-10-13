@@ -47,3 +47,19 @@ export interface CoachOverview {
   teamAccuracyPct: number;
   accuracyTargetPct: number;
 }
+
+export interface TeamMember {
+  id: string;
+  initials: string;
+  name: string;
+  nim: string;
+  stage: AthleteStage;
+  stageLabel: string;
+  scorePct: number;
+  lastGerakan: string;
+}
+
+export interface TeamMembers {
+  members: TeamMember[];
+  totalAktif: number;
+}
