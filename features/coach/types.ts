@@ -123,4 +123,5 @@ export interface FeedbackInput {
 export interface FeedbackResult {
   memberId: string;
   status: "draft" | "sent";
+  echo: string;
 }
