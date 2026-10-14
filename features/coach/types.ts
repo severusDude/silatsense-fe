@@ -1,4 +1,4 @@
-import type { PilarSlug, PostureParamId } from "@/components/shared/silat-reference";
+import type { PerformanceBadgeKey, PilarSlug, PostureParamId } from "@/components/shared/silat-reference";
 
 export type AthleteStage = "siap" | "remediasi" | "lolos";
 
@@ -64,4 +64,63 @@ export interface TeamMember {
 export interface TeamMembers {
   members: TeamMember[];
   totalAktif: number;
+}
+
+export interface PilarPerformance {
+  slug: PilarSlug;
+  name: string;
+  scorePct: number;
+  badgeKey: PerformanceBadgeKey;
+}
+
+export interface PostureParam {
+  id: PostureParamId;
+  name: string;
+  badgeKey: PerformanceBadgeKey;
+  note: string;
+}
+
+export interface LatestEvaluation {
+  technique: string;
+  metaLabel: string;
+  bigScorePct: number;
+  targetValue: string;
+  deltaValue: string;
+  metrics: { label: string; value: string; sub: string }[];
+  quickStats: { label: string; value: string; sub: string }[];
+  postures: PostureParam[];
+}
+
+export interface HistorySession {
+  id: string;
+  sesiLabel: string;
+  dateLabel: string;
+  title: string;
+  repetisiLabel: string;
+  scorePct: number;
+  badgeKey: PerformanceBadgeKey;
+}
+
+export interface MemberDetail {
+  id: string;
+  name: string;
+  nim: string;
+  stateKey: PerformanceBadgeKey;
+  beltLabel: string;
+  attendanceLabel: string;
+  aggregatePct: number;
+  aggregateKey: PerformanceBadgeKey;
+  pilares: PilarPerformance[];
+  evaluation: LatestEvaluation;
+  history: HistorySession[];
+}
+
+export interface FeedbackInput {
+  memberId: string;
+  message: string;
+}
+
+export interface FeedbackResult {
+  memberId: string;
+  status: "draft" | "sent";
 }
