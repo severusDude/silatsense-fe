@@ -29,10 +29,10 @@ describe("member sections", () => {
     expect(cardList).toContain("<CardAction");
     expect(cardList).toContain("<CardFooter");
     expect(cardList).not.toContain('"gap-0"');
-    expect(cardList).toContain("<Button");
-    expect(cardList).toContain('variant="ghost"');
+    expect(cardList).toContain("buttonVariants");
+    expect(cardList).toContain('variant: "ghost"');
     expect(cardList).toContain("Lihat Detail");
-    expect(cardList).toContain("/coach/members/[id]");
+    expect(cardList).toContain("`/coach/members/${member.id}`");
     expect(cardList).toContain("Tidak ada atlet yang cocok");
     expect(cardList).toContain("stageBadgeVariant");
     expect(cardList).toContain('role="img"');
