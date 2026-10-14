@@ -69,6 +69,6 @@ describe("dummyCoachOverview", () => {
 
     // Assert
     expect(dummyCoachOverview.posture).toHaveLength(5);
-    expect(flagged).toEqual(["siku-kanan", "pronasi-pergelangan"]);
+    expect(flagged).toEqual(["siku-kanan", "pergelangan"]);
   });
 });

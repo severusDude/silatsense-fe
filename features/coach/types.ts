@@ -1,3 +1,5 @@
+import type { PilarSlug, PostureParamId } from "@/components/shared/silat-reference";
+
 export type AthleteStage = "siap" | "remediasi" | "lolos";
 
 export interface CoachAthlete {
@@ -13,7 +15,7 @@ export interface CoachAthlete {
 export type PillarStatus = "stabil" | "optimal" | "deviasi" | "remediasi";
 
 export interface CoachPillar {
-  slug: "kuda-kuda" | "tangkisan" | "pukulan" | "tendangan";
+  slug: PilarSlug;
   name: string;
   avgPct: number;
   status: PillarStatus;
@@ -31,7 +33,7 @@ export interface CoachStat {
 }
 
 export interface PosturePoint {
-  id: "bahu-leher" | "siku-kanan" | "torsi-pinggul" | "fleksi-lutut" | "pronasi-pergelangan";
+  id: PostureParamId;
   name: string;
   scorePct: number;
   statusLabel: string;
