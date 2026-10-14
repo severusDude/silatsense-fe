@@ -1,3 +1,5 @@
+import type { PilarSlug, PostureParamId } from "@/components/shared/silat-reference";
+
 export type PillarStatus = "stabil" | "optimal" | "perlu-koreksi";
 export type DayState = "filled" | "rest" | "empty" | "active";
 export type ObservationTone = "good" | "warning" | "neutral";
@@ -17,7 +19,7 @@ export interface HeroMetricData {
 }
 
 export interface PillarStat {
-  slug: "kuda-kuda" | "pukulan" | "tangkisan" | "tendangan";
+  slug: PilarSlug;
   name: string;
   status: PillarStatus;
   statusLabel: string;
@@ -70,7 +72,7 @@ export interface MemberDashboard {
 }
 
 export interface TrainingModule {
-  slug: "kuda-kuda" | "pukulan" | "tangkisan" | "tendangan";
+  slug: PilarSlug;
   order: number;
   orderLabel: string;
   name: string;
@@ -92,7 +94,7 @@ export interface MemberTraining {
   modules: TrainingModule[];
 }
 
-export type PersiapanSlug = "kuda-kuda" | "pukulan" | "tangkisan" | "tendangan";
+export type PersiapanSlug = PilarSlug;
 
 export interface CalibrationCheck {
   title: string;
@@ -154,7 +156,7 @@ export type EvaluasiSlug = PersiapanSlug;
 export type PostureStatus = "sesuai" | "perlu-koreksi";
 
 export interface PostureAssessment {
-  id: "bahu" | "siku-kanan" | "pinggul" | "lutut" | "pergelangan";
+  id: PostureParamId;
   name: string;
   status: PostureStatus;
   statusLabel: string; // "SESUAI" | "PERLU KOREKSI" — status word only
@@ -192,7 +194,7 @@ export type RiwayatSlug = PersiapanSlug;
 export type HistoryStatus = "sesuai" | "perlu-koreksi";
 
 export interface RiwayatParam {
-  id: "bahu" | "siku-kanan" | "pinggul" | "lutut" | "pergelangan";
+  id: PostureParamId;
   name: string;
   reading: string;
   deviated: boolean;
@@ -232,7 +234,7 @@ export interface MemberHistory {
 export type SessionDecision = "menunggu" | "remidiasi";
 
 export interface SessionPillar {
-  id: "kuda-kuda" | "tangkisan" | "pukulan" | "tendangan";
+  id: PilarSlug;
   name: string;
   detail: string;
   scorePct: number;
