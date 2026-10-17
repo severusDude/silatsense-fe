@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardAction, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { stageBadgeVariant } from "@/features/coach/components/coach-stage";
 import type { TeamMember } from "@/features/coach/types";
@@ -42,17 +43,13 @@ export function MemberCardList({ members, totalAktif }: { members: TeamMember[];
                       <span className="shrink-0 text-sm font-bold tabular-nums">{member.scorePct}%</span>
                     </CardAction>
                   </CardHeader>
-                  {/* TODO: wire to /coach/members/[id] when the Phase 11 detail move lands */}
                   <CardFooter className="p-0">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      aria-disabled="true"
-                      title={`Lihat detail ${member.name} (TODO)`}
-                      className="h-auto w-full justify-center gap-1 rounded-none border-0 px-2.5 py-2 text-xs font-bold text-primary hover:text-primary"
+                    <Link
+                      href={`/coach/members/${member.id}`}
+                      className={buttonVariants({ variant: "ghost", size: "sm", className: "h-auto w-full justify-center gap-1 rounded-none border-0 px-2.5 py-2 text-xs font-bold text-primary" })}
                     >
                       Lihat Detail <ChevronRight className="size-3.5" aria-hidden="true" />
-                    </Button>
+                    </Link>
                   </CardFooter>
                 </Card>
               </li>
