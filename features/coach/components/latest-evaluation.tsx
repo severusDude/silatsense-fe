@@ -30,10 +30,14 @@ export function LatestEvaluationSection({ evaluation }: { evaluation: LatestEval
       </div>
       <ul className="grid grid-cols-2 gap-2.5">
         {evaluation.metrics.map((metric) => (
-          <li key={metric.label} className="flex flex-col gap-0.5 rounded-2xl border p-2.5">
-            <p className="text-[11px] text-muted-foreground">{metric.label}</p>
-            <p className="text-sm font-bold tabular-nums">{metric.value}</p>
-            <p className="text-[11px] text-muted-foreground">{metric.sub}</p>
+          <li key={metric.label}>
+            <Card size="sm">
+              <CardContent className="flex flex-col gap-0.5">
+                <p className="text-[11px] text-muted-foreground">{metric.label}</p>
+                <p className="text-sm font-bold tabular-nums">{metric.value}</p>
+                <p className="text-[11px] text-muted-foreground">{metric.sub}</p>
+              </CardContent>
+            </Card>
           </li>
         ))}
       </ul>
