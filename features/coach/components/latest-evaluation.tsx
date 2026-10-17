@@ -18,16 +18,18 @@ export function LatestEvaluationSection({ evaluation }: { evaluation: LatestEval
         </h2>
         <p className="text-[11px] text-muted-foreground">{evaluation.metaLabel}</p>
       </div>
-      <div className="flex items-end justify-between gap-3 rounded-2xl border p-3">
-        <div className="flex flex-col gap-0.5">
-          <p className="text-[11px] text-muted-foreground">Skor kinematika</p>
-          <p className="text-2xl font-bold tabular-nums">{evaluation.bigScorePct}%</p>
-        </div>
-        <div className="flex flex-col items-end gap-0.5">
-          <p className="text-xs tabular-nums">Target {evaluation.targetValue}</p>
-          <p className="text-[11px] text-muted-foreground tabular-nums">Selisih {evaluation.deltaValue}</p>
-        </div>
-      </div>
+      <Card>
+        <CardContent className="flex items-end justify-between gap-3">
+          <div className="flex flex-col gap-0.5">
+            <p className="text-[11px] text-muted-foreground">Skor kinematika</p>
+            <p className="text-2xl font-bold tabular-nums">{evaluation.bigScorePct}%</p>
+          </div>
+          <div className="flex flex-col items-end gap-0.5">
+            <p className="text-xs tabular-nums">Target {evaluation.targetValue}</p>
+            <p className="text-[11px] text-muted-foreground tabular-nums">Selisih {evaluation.deltaValue}</p>
+          </div>
+        </CardContent>
+      </Card>
       <ul className="grid grid-cols-2 gap-2.5">
         {evaluation.metrics.map((metric) => (
           <li key={metric.label}>

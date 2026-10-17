@@ -42,7 +42,7 @@ describe("member detail sections", () => {
     expect(feedbackForm).toContain("Kirim ke Member");
   });
 
-  it("wraps evaluation metrics, quick stats, and posture rows in Cards", () => {
+  it("wraps evaluation score, metrics, quick stats, and posture rows in Cards", () => {
     // Arrange + Act + Assert
     expect(evaluasi).toContain("<Card");
     expect(evaluasi).toContain("Penilaian Postur Anatomis");
