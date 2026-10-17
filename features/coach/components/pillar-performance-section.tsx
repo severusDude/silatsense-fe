@@ -1,7 +1,7 @@
 import { ChevronRight, Footprints, Hand, PersonStanding, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { META_BADGE_VARIANT, performanceBadgeLabel, performanceBadgeVariant } from "@/components/shared/silat-reference";
 import type { PilarPerformance } from "@/features/coach/types";
 
@@ -12,17 +12,19 @@ const pilarIcons = {
   tendangan: Footprints,
 } as const;
 
-export function PilarPerformanceCard({ pilares }: { pilares: PilarPerformance[] }) {
+export function PilarPerformanceSection({ pilares }: { pilares: PilarPerformance[] }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Performa 4 Pilar Dasar</CardTitle>
-        <CardDescription>Penilaian per gerakan pokok pencak silat</CardDescription>
-        <CardAction>
-          <Badge variant={META_BADGE_VARIANT.count}>4 Pilar</Badge>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="grid grid-cols-2 gap-2.5">
+    <section aria-labelledby="pilar-performance-heading" className="flex flex-col gap-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-0.5">
+          <h2 id="pilar-performance-heading" className="text-sm font-bold">
+            Performa 4 Pilar Dasar
+          </h2>
+          <p className="text-xs text-muted-foreground">Penilaian per gerakan pokok pencak silat</p>
+        </div>
+        <Badge variant={META_BADGE_VARIANT.count}>4 Pilar</Badge>
+      </div>
+      <div className="grid grid-cols-2 gap-2.5">
         {pilares.map((pilar) => {
           const Icon = pilarIcons[pilar.slug];
           return (
@@ -40,16 +42,11 @@ export function PilarPerformanceCard({ pilares }: { pilares: PilarPerformance[] 
             </Card>
           );
         })}
-      </CardContent>
-      <CardFooter className="p-0">
-        {/* TODO: wire to full pillar breakdown when the backend lands */}
-        <span
-          aria-disabled="true"
-          className={buttonVariants({ variant: "ghost", size: "sm", className: "w-full" })}
-        >
-          Lihat semua <ChevronRight data-icon="inline-end" />
-        </span>
-      </CardFooter>
-    </Card>
+      </div>
+      {/* TODO: wire to full pillar breakdown when the backend lands */}
+      <span aria-disabled="true" className={buttonVariants({ variant: "ghost", size: "sm", className: "w-full" })}>
+        Lihat semua <ChevronRight data-icon="inline-end" />
+      </span>
+    </section>
   );
 }

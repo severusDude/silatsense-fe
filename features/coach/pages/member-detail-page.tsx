@@ -5,7 +5,7 @@ import { getMemberDetail } from "@/features/coach/data/get-member-detail";
 import { LatestEvaluationSection } from "@/features/coach/components/latest-evaluation";
 import { MemberDetailProfile } from "@/features/coach/components/member-detail-profile";
 import { MemberFeedbackCard } from "@/features/coach/components/member-feedback-card";
-import { PilarPerformanceCard } from "@/features/coach/components/pillar-performance-card";
+import { PilarPerformanceSection } from "@/features/coach/components/pillar-performance-section";
 import { SessionHistoryLog } from "@/features/coach/components/session-history-log";
 
 export function MemberDetailPage({ id }: { id: string }) {
@@ -39,7 +39,7 @@ async function ProfileSection({ id }: { id: string }) {
 async function PilarSection({ id }: { id: string }) {
   const detail = await getMemberDetail(id);
   if (detail === null) notFound();
-  return <PilarPerformanceCard pilares={detail.pilares} />;
+  return <PilarPerformanceSection pilares={detail.pilares} />;
 }
 
 async function EvaluationSection({ id }: { id: string }) {

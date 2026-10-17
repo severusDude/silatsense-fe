@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
 const profile = readFileSync("features/coach/components/member-detail-profile.tsx", "utf8");
-const pilar = readFileSync("features/coach/components/pillar-performance-card.tsx", "utf8");
+const pilar = readFileSync("features/coach/components/pillar-performance-section.tsx", "utf8");
 const evaluasi = readFileSync("features/coach/components/latest-evaluation.tsx", "utf8");
 const posture = readFileSync("features/coach/components/posture-param-row.tsx", "utf8");
 const feedbackCard = readFileSync("features/coach/components/member-feedback-card.tsx", "utf8");
@@ -11,25 +11,28 @@ const history = readFileSync("features/coach/components/session-history-log.tsx"
 const all = [profile, pilar, evaluasi, posture, feedbackCard, feedbackForm, history].join("\n");
 
 describe("member detail sections", () => {
-  it("keeps profile, evaluation, and history out of Card chrome", () => {
+  it("keeps every section a <section> root, with the profile blocks inside Cards", () => {
     // Arrange + Act + Assert
     expect(profile).toContain("<section");
-    expect(profile).not.toContain("<Card");
+    expect(profile).toContain("<Card");
     expect(evaluasi).toContain("<section");
-    expect(evaluasi).not.toContain("<Card");
     expect(history).toContain("<section");
     expect(history).toContain("Riwayat Sesi Terkini");
   });
 
-  it("builds pilar and feedback as full Cards with footers", () => {
+  it("builds pilar as a section with per-pilar tile Cards (no outer Card chrome)", () => {
     // Arrange + Act + Assert
-    expect(pilar).toContain("<CardHeader");
-    expect(pilar).toContain("<CardAction");
-    expect(pilar).toContain("4 Pilar");
-    expect(pilar).toContain("<CardContent");
-    expect(pilar).toContain("<CardFooter");
+    expect(pilar).toContain("<section");
     expect(pilar).toContain("Performa 4 Pilar Dasar");
+    expect(pilar).toContain("4 Pilar");
+    expect(pilar).toContain('size="sm"');
     expect(pilar).toContain("Lihat semua");
+    expect(pilar).not.toContain("<CardFooter");
+    expect(pilar).not.toContain("<CardAction");
+  });
+
+  it("builds feedback as a full Card with a footer", () => {
+    // Arrange + Act + Assert
     expect(feedbackCard).toContain("<CardHeader");
     expect(feedbackCard).toContain("<CardTitle");
     expect(feedbackCard).toContain("Feedback Koreksi Pelatih");
@@ -37,6 +40,14 @@ describe("member detail sections", () => {
     expect(feedbackForm).toContain("<CardFooter");
     expect(feedbackForm).toContain("Simpan Draft");
     expect(feedbackForm).toContain("Kirim ke Member");
+  });
+
+  it("wraps evaluation quick stats and posture rows in Cards", () => {
+    // Arrange + Act + Assert
+    expect(evaluasi).toContain("<Card");
+    expect(evaluasi).toContain("Penilaian Postur Anatomis");
+    expect(posture).toContain("<Card");
+    expect(posture).toContain("<li>");
   });
 
   it("restricts Badges to the allowlist with bare performance labels", () => {

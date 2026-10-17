@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { ImagePlaceholder } from "@/components/shared/image-placeholder";
 import { META_BADGE_VARIANT } from "@/components/shared/silat-reference";
 import { PostureParamRow } from "@/features/coach/components/posture-param-row";
@@ -37,12 +38,16 @@ export function LatestEvaluationSection({ evaluation }: { evaluation: LatestEval
         ))}
       </ul>
       <ImagePlaceholder label="Visual tracking Pukulan Lurus Depan" />
-      <ul className="grid grid-cols-4 gap-2">
+      <ul className="grid grid-cols-2 gap-2">
         {evaluation.quickStats.map((stat) => (
-          <li key={stat.label} className="flex flex-col items-center gap-0.5 rounded-2xl border p-2 text-center">
-            <p className="text-[10px] text-muted-foreground">{stat.label}</p>
-            <p className="text-xs font-bold tabular-nums">{stat.value}</p>
-            <p className="text-[10px] text-muted-foreground">{stat.sub}</p>
+          <li key={stat.label}>
+            <Card size="sm">
+              <CardContent className="flex flex-col items-center gap-0.5 text-center">
+                <p className="text-[10px] text-muted-foreground">{stat.label}</p>
+                <p className="text-xs font-bold tabular-nums">{stat.value}</p>
+                <p className="text-[10px] text-muted-foreground">{stat.sub}</p>
+              </CardContent>
+            </Card>
           </li>
         ))}
       </ul>

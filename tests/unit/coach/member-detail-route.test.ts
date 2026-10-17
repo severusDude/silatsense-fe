@@ -26,7 +26,7 @@ describe("member detail route", () => {
   it("streams five sections behind Suspense units with 404 on unknown id", () => {
     // Arrange + Act + Assert
     expect(detailPage).toContain("MemberDetailProfile");
-    expect(detailPage).toContain("PilarPerformanceCard");
+    expect(detailPage).toContain("PilarPerformanceSection");
     expect(detailPage).toContain("LatestEvaluationSection");
     expect(detailPage).toContain("MemberFeedbackCard");
     expect(detailPage).toContain("SessionHistoryLog");
