@@ -29,6 +29,8 @@ describe("member history sections", () => {
     expect(card).toContain("size-1.5");
     expect(card).toContain("performanceBadgeLabel");
     expect(card).toContain("performanceBadgeVariant");
+    expect(card).toContain("text-success-foreground");
+    expect(card).toContain("bg-warning-foreground");
     expect(card).toContain("<CardFooter");
     expect(card).not.toContain("href=");
   });
