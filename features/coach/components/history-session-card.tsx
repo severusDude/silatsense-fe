@@ -6,15 +6,15 @@ import type { HistoryPageSession } from "@/features/coach/types";
 type ToneVariant = ReturnType<typeof performanceBadgeVariant>;
 
 const TONE_TEXT: Record<ToneVariant, string> = {
-  success: "text-success",
-  warning: "text-warning",
+  success: "text-success-foreground",
+  warning: "text-warning-foreground",
   destructive: "text-destructive",
   secondary: "text-muted-foreground",
 };
 
 const TONE_DOT: Record<ToneVariant, string> = {
-  success: "bg-success",
-  warning: "bg-warning",
+  success: "bg-success-foreground",
+  warning: "bg-warning-foreground",
   destructive: "bg-destructive",
   secondary: "bg-muted-foreground",
 };
@@ -42,7 +42,7 @@ export function HistorySessionCard({ session }: { session: HistoryPageSession })
       </CardHeader>
       <CardFooter className="justify-between gap-2">
         <p className="text-[10px] text-muted-foreground">{session.repetisiLabel}</p>
-        <Badge variant={performanceBadgeVariant(session.badgeKey)}>{performanceBadgeLabel(session.badgeKey)}</Badge>
+        <Badge variant={tone}>{performanceBadgeLabel(session.badgeKey)}</Badge>
       </CardFooter>
     </Card>
   );
