@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { META_BADGE_VARIANT, performanceBadgeLabel, performanceBadgeVariant } from "@/components/shared/silat-reference";
 import type { HistorySession } from "@/features/coach/types";
 
-export function SessionHistoryLog({ history }: { history: HistorySession[] }) {
+export function SessionHistoryLog({ history, memberId }: { history: HistorySession[]; memberId: string }) {
   return (
     <section aria-labelledby="session-history-heading" className="flex flex-col gap-2.5">
       <h2 id="session-history-heading" className="text-sm font-bold">
@@ -31,8 +31,10 @@ export function SessionHistoryLog({ history }: { history: HistorySession[] }) {
           </li>
         ))}
       </ul>
-      {/* TODO: wire to full history when the backend lands */}
-      <Link href="/coach/members" className={buttonVariants({ variant: "ghost", size: "sm", className: "w-full" })}>
+      <Link
+        href={`/coach/members/${memberId}/riwayat`}
+        className={buttonVariants({ variant: "ghost", size: "sm", className: "w-full" })}
+      >
         Buku Semua Riwayat Atlet <ChevronRight data-icon="inline-end" />
       </Link>
     </section>
