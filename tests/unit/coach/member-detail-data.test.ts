@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { dummyMemberDetail } from "@/features/coach/data/member-detail-dummy";
 import { performanceBadgeLabel, performanceBadgeVariant } from "@/components/shared/silat-reference";
+
+const getSource = readFileSync("features/coach/data/get-member-detail.ts", "utf8");
 
 describe("dummyMemberDetail", () => {
   it("pins the Aced Suryana detail with Figma scores and no initials field", () => {
@@ -57,5 +60,12 @@ describe("dummyMemberDetail", () => {
     expect(raw).not.toContain("Perlu Poles");
     expect(raw).not.toContain("Perlu Perbaikan");
     expect(raw).not.toContain("Tahap Remediasi");
+  });
+});
+
+describe("getMemberDetail source", () => {
+  it("guards the dummy lookup against prototype keys", () => {
+    // Arrange + Act + Assert
+    expect(getSource).toContain("Object.hasOwn(dummyMemberDetail, id)");
   });
 });

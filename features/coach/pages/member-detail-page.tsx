@@ -57,5 +57,5 @@ async function FeedbackSection({ id }: { id: string }) {
 async function HistorySection({ id }: { id: string }) {
   const detail = await getMemberDetail(id);
   if (detail === null) notFound();
-  return <SessionHistoryLog history={detail.history} />;
+  return <SessionHistoryLog history={detail.history} memberId={detail.id} />;
 }

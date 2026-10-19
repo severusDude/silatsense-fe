@@ -17,11 +17,12 @@ Sync both when phases change. Parent issue: PSR-69.
 
 | Slot | Phase | Outcome |
 |---|---|---|
-| Now | Close 7 | Rekam/sesi/evaluasi `Done`, overflow + gates green |
-| Next | 8 | `[Phase 8] Riwayat history` — demoable `/riwayat` + `/riwayat/[id]` before/after |
-| Next | 9 | `[Phase 9] Member profile` — demoable `/profil` biodata + kamera + keamanan |
-| Later | 10 | `[Phase 10] Coach foundation` — `/coach` dashboard + `/coach/members` list + coach shell |
-| Later | 11 | `[Phase 11] Coach detail` — `/coach/members/[id]` + feedback mutation + riwayat log |
+| Done | 7 | Rekam/sesi/evaluasi shipped; phase closed |
+| Done | 8 | `[Phase 8] Riwayat history` — shipped `/riwayat` + `/riwayat/[id]` before/after |
+| Done | 9 | `[Phase 9] Member profile` — shipped `/profil` biodata + kamera + keamanan |
+| Done | 10 | `[Phase 10] Coach foundation` — shipped `/coach` dashboard + `/coach/members` list + coach shell |
+| Done | 11 | `[Phase 11] Coach detail` — shipped `/coach/members/[id]` + feedback mutation + riwayat log |
+| Now | 12 | [Phase 12] Coach member history — demoable /coach/members/[id]/riwayat (reused profile + paginated log) |
 
 ## 2. Phase table
 
@@ -31,6 +32,7 @@ Sync both when phases change. Parent issue: PSR-69.
 | 9 | Profile renders athlete card (avatar + sabuk + akurasi + 2 mini stats + logout), biodata form (3 fields, RHF+Zod), kamera select, keamanan card, Batal/Simpan with `toast.promise` stubs | 94:41585 | `docs/superpowers/specs/2026-*-member-profile-design.md` | 1 parent + 2–3 subs |
 | 10 | Coach dashboard renders 4 stats + 5 athlete cards + 4 pillars + posture grid; members list renders 4 stats + search + 5 cards; coach shell (top + bottom nav, `laporan` tab) | 94:37791, 94:40178 | `docs/superpowers/specs/2026-*-coach-foundation-design.md` | 1 parent + 4–5 subs |
 | 11 | Member detail renders profile + belt/attendance + aggregate score + 4 pillars + evaluasi terbaru (score + 4 tiles + skeletal placeholder + pills + 5 params) + feedback textarea + dual CTA + riwayat log 4 cards; feedback `useMutation` stub `(POST /coach/feedback)` | 94:40427 | `docs/superpowers/specs/2026-*-coach-detail-design.md` | 1 parent + 4–5 subs |
+| 12 | Member history renders reused profile + Daftar Riwayat Sesi (count badge, 10 cards/page, tone dot + bare badge, range text, ?page= clamp); no overflow 390px | 94:40907 | docs/superpowers/specs/2026-10-19-coach-member-history-design.md | 1 parent + 3 subs |
 
 ## 3. Figma index (skim, 2026-10-11 — structure only, no pixel audit)
 
@@ -43,8 +45,9 @@ Sync both when phases change. Parent issue: PSR-69.
 | 5 | Coach dashboard | 94:37791 `Dashboard - Coach` | `/coach` | Eyebrow + heading + desc + CTA; 4 stats (5 Atlet / 84.6% / 2 Sesi antrean / Elevasi Siku +8cm); 5 athlete cards (avatar initials, name, pilar note, score, Lihat Detail); 4 pillars progress; posture 2×2 + alert banner; coach shell (KF avatar, `Dashboard` crumb, Dasbor/Member/Laporan nav) | `CoachOverview { totalAthletes: 5, teamAccuracy: 84.6, reviewQueue[2], topIssue, athletes[5], pillars[4] }` — `TODO (GET /coach/overview)` |
 | 6 | Coach member list | 94:40178 `Member List - Coach` | `/coach/members` | Breadcrumb + count badge; 4 stats (5 Atlet 3 Siap/2 Remidiasi / 84.6% / 60% / 24 sesi); search input; 5 cards (avatar, name, stage pill, score + stage, movement note + status pill, Lihat Detail) | `TeamMember[]` (length 5: id, initials, name, stage `siap\|remidiasi\|lolos`, score, movementNote) — `TODO (GET /coach/members)` + client search filter (no backend) |
 | 7 | Coach member detail | 94:40427 `Member detail - Coach` | `/coach/members/[id]` | Athlete header (badges, belt/attendance ×3, aggregate + 3 mini metrics); 4 pillars (pukulan = fokus); evaluasi terbaru (score + 4 tiles + skeletal placeholder + 4 pills + 5 params); feedback textarea + dual CTA; riwayat log 4 cards (#24 amber … #21 red) + more link | `CoachMemberDetail { athlete, pillars[4], latestEval, feedbackDraft, history[4] }` — `TODO (GET /coach/members/:id)` + `TODO (POST /coach/feedback)` |
+| 8 | Coach member history | 94:40907 Daftar Riwayat sesi - Coach | /coach/members/[id]/riwayat | Reused athlete profile; header + 10/24 count badge + description; 24 static session cards (sesi #, date, Skor AI, tone dot, title, subtitle, repetisi + badge footer); range text + prev/pages/next pagination | MemberHistory { memberId, totalSessions: 24, pageSize: 10, sessions[24] HistoryPageSession { id, sesiLabel, dateLabel, title, subtitle, repetisiLabel, scorePct, badgeKey } } — TODO (GET /coach/members/[id]/history?page=N) |
 
-Resolved 2026-10-11: the 8th link duplicated node 94:40427 — the intended pair is session detail without feedback (94:38951) vs with feedback (94:39232), both already indexed above. 7 unique nodes cover all scope; no 8th screen. Coach §6 log cards deep-link into member `/riwayat/[id]`.
+Resolved 2026-10-11: the duplicate 8th link pointed at node 94:40427 — the intended pair is session detail without feedback (94:38951) vs with feedback (94:39232), both indexed above. Superseded 2026-10-19: Phase 12 added a genuine screen #8 — `94:40907` (coach member history, indexed above), so the "no 8th screen" note applies only to the 2026-10-11 skim. Coach §6 log cards deep-link into member `/riwayat/[id]`.
 
 ## 4. Issue scaffolds (create JIT, titles ≤60 chars)
 
@@ -67,6 +70,7 @@ Resolved 2026-10-11: the 8th link duplicated node 94:40427 — the intended pair
 - Coach scope confirmed ≈ member-sized (7 frames skimmed); session-detail duplicate id is the only unknown.
 - `Perlu Perbaikan` (riwayat) vs `Perlu Koreksi` (evaluasi) wording — unify to `Perlu Koreksi` at Phase 8 spec time, log as decision comment.
 - Amber/green failure tone (no red) except coach log #21 red card — confirm with coach at Phase 11.
+- Figma card badges carry descriptive text ("Sesuai Skor Kualitas (80.0%)", "Sayap Siku Kanan (+8cm)") — user override: cards ship bare Sesuai/Remediasi/Tidak Sesuai badges only; isolated-node screenshots render component defaults, only the full frame (94:40907) is authoritative.
 
 ## 7. Audit script
 

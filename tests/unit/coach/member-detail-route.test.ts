@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
-const page = readFileSync("app/(coach)/coach/members/[id]/page.tsx", "utf8");
-const layout = readFileSync("app/(coach)/coach/members/[id]/layout.tsx", "utf8");
+const page = readFileSync("app/(coach)/coach/members/[id]/(detail)/page.tsx", "utf8");
+const layout = readFileSync("app/(coach)/coach/members/[id]/(detail)/layout.tsx", "utf8");
 const detailPage = readFileSync("features/coach/pages/member-detail-page.tsx", "utf8");
 const cardList = readFileSync("features/coach/components/member-card-list.tsx", "utf8");
 
