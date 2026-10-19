@@ -54,7 +54,7 @@ export interface MemberHistory {
   memberId: string;               // "aced-suryana"
   totalSessions: number;          // 24
   pageSize: number;               // 10
-  sessions: HistoryPageSession[]; // 24, newest first (sesi-24 .. sesi-01)
+  sessions: HistoryPageSession[]; // 24, newest first (ids sesi-24 .. sesi-1)
 }
 // Endpoint: TODO (GET /coach/members/[id]/history?page=N)
 ```
@@ -74,7 +74,7 @@ Dummy first-page literals (Figma full-frame render, page 1 — tone from card co
 | 16 | 28 Jan 2026, 15:30 WIB | Pukulan Tungkai & Passer Siku | Perisai Serangan | 40/40 (95%) | 85.5 | sesuai |
 | 15 | 24 Jan 2026, 15:30 WIB | Kuda-kuda | Kekuatan Tumpuan | 50/50 (100%) | 95.5 | sesuai |
 
-Sub-lines marked above are screenshot-read approximations (`18`, `17`, `16`, `15`, `23` subtitles) — verification note §2; test pins only row 24 + tone sequence. Tones for #14..01: mixed subset of the same 3 keys; dates continue roughly biweekly descending from Jan 2026; ids `sesi-14`..`sesi-01`.
+Sub-lines marked above are screenshot-read approximations (`18`, `17`, `16`, `15`, `23` subtitles) — verification note §2; test pins only row 24 + tone sequence. Tones for #14..01: mixed subset of the same 3 keys; dates continue roughly biweekly descending from Jan 2026; ids `sesi-14`..`sesi-1`.
 
 ## 5. UI pattern
 
@@ -129,7 +129,7 @@ export function paginateHistory(sessions: HistoryPageSession[], page: number, pa
 
 ## 7. Verification
 
-- `tests/unit/coach/member-history-data.test.ts`: dummy shape (24 sessions, ids `sesi-24`..`sesi-01` descending, `pageSize` 10, `totalSessions` 24, memberId `aced-suryana`); card #24 Figma literals (`Sesi #24`, `06 Mar 2026, 15:45 WIB`, `Pukulan Lurus Depan`, `Penetapan Sasaran Target`, `Repetisi: 42/50 (84%)`, 82, `remediasi`); first-10 tone sequence `[remediasi, sesuai, sesuai, tidak-sesuai, remediasi, sesuai, sesuai, tidak-sesuai, sesuai, sesuai]`; badge keys ⊆ `{sesuai, remediasi, tidak-sesuai}` (never `evaluasi`); `paginateHistory` math (page 1 → 10 items range 1-10; page 2 → 10, 11-20; page 3 → 4, 21-24; clamps 0→1, 4→3, NaN→1); `parseHistoryPage` (number, array, junk, undefined); `get-member-history.ts` source carries the TODO endpoint and no `"use client"`.
+- `tests/unit/coach/member-history-data.test.ts`: dummy shape (24 sessions, ids `sesi-24`..`sesi-1` descending, `pageSize` 10, `totalSessions` 24, memberId `aced-suryana`); card #24 Figma literals (`Sesi #24`, `06 Mar 2026, 15:45 WIB`, `Pukulan Lurus Depan`, `Penetapan Sasaran Target`, `Repetisi: 42/50 (84%)`, 82, `remediasi`); first-10 tone sequence `[remediasi, sesuai, sesuai, tidak-sesuai, remediasi, sesuai, sesuai, tidak-sesuai, sesuai, sesuai]`; badge keys ⊆ `{sesuai, remediasi, tidak-sesuai}` (never `evaluasi`); `paginateHistory` math (page 1 → 10 items range 1-10; page 2 → 10, 11-20; page 3 → 4, 21-24; clamps 0→1, 4→3, NaN→1); `parseHistoryPage` (number, array, junk, undefined); `get-member-history.ts` source carries the TODO endpoint and no `"use client"`.
 - `tests/unit/coach/member-history-sections.test.ts` (source-text pattern, `readFileSync`): section root `<section>` + heading string; cards `Card size="sm"`; badges only via `performanceBadgeLabel` / `performanceBadgeVariant` with negatives for every Figma badge string family (`Sesuai Skor Kualitas`, `Optimal (`, `Sayap Siku`, `Skor Kualitas`, `Standar IPSI`, `Perlu Poles`, `(-6.5`, `(+8cm)`); pagination strings + `` `?page=` `` href pattern + `aria-current`; range text; reused `MemberDetailProfile` present in page composition; no `next/image`, no `absolute`, no `<svg`; lucide `ChevronLeft`/`ChevronRight`; `session-history-log.tsx` links `` `/coach/members/${memberId}/riwayat` `` with no TODO.
 - `tests/unit/coach/member-history-route.test.ts`: thin RSC route (`MemberHistoryPage`, `generateStaticParams`, `memberHistoryIds`, no `"use client"`, no direct `getMemberHistory` call, `searchParams` passed not awaited); history layout trail strings + `activeTab="members"`; router restructure sanity (`(detail)` layout still carries the `Detail` trail). Update `member-detail-route.test.ts` paths to the `(detail)` group.
 - Green: `pnpm build` + `tsc --noEmit` + `eslint` + `pnpm test`.
