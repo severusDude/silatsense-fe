@@ -53,6 +53,13 @@ describe("dummyMemberHistory", () => {
     ]);
     expect(sessions.every((s) => s.badgeKey !== "evaluasi")).toBe(true);
   });
+
+  it("keeps prototype keys out of the dummy lookup surface", () => {
+    // Arrange + Act + Assert
+    expect(Object.hasOwn(dummyMemberHistory, "__proto__")).toBe(false);
+    expect(Object.hasOwn(dummyMemberHistory, "constructor")).toBe(false);
+    expect(dummyMemberHistory["constructor"]).toBeTruthy();
+  });
 });
 
 describe("parseHistoryPage", () => {
@@ -95,6 +102,7 @@ describe("getMemberHistory source", () => {
     expect(getSource).toContain('"use cache"');
     expect(getSource).toContain('cacheLife("minutes")');
     expect(getSource).toContain("export const memberHistoryIds = Object.keys(dummyMemberHistory);");
+    expect(getSource).toContain("Object.hasOwn(dummyMemberHistory, id)");
     expect(getSource).toContain(
       "TODO: connect backend via lib/api-client.ts (GET /coach/members/[id]/history?page=N) — dummy for now"
     );

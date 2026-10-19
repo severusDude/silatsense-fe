@@ -11,5 +11,5 @@ export async function getMemberHistory(id: string): Promise<MemberHistory | null
   "use cache";
   cacheLife("minutes");
   // TODO: connect backend via lib/api-client.ts (GET /coach/members/[id]/history?page=N) — dummy for now
-  return dummyMemberHistory[id] ?? null;
+  return Object.hasOwn(dummyMemberHistory, id) ? dummyMemberHistory[id] : null;
 }

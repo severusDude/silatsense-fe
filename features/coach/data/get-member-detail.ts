@@ -11,5 +11,5 @@ export async function getMemberDetail(id: string): Promise<MemberDetail | null> 
   "use cache";
   cacheLife("minutes");
   // TODO: connect backend via lib/api-client.ts (GET /coach/members/[id]) — dummy for now
-  return dummyMemberDetail[id] ?? null;
+  return Object.hasOwn(dummyMemberDetail, id) ? dummyMemberDetail[id] : null;
 }
