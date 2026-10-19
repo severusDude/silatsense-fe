@@ -101,6 +101,24 @@ export interface HistorySession {
   badgeKey: PerformanceBadgeKey;
 }
 
+export interface HistoryPageSession {
+  id: string;
+  sesiLabel: string;
+  dateLabel: string;
+  title: string;
+  subtitle: string;
+  repetisiLabel: string;
+  scorePct: number;
+  badgeKey: PerformanceBadgeKey;
+}
+
+export interface MemberHistory {
+  memberId: string;
+  totalSessions: number;
+  pageSize: number;
+  sessions: HistoryPageSession[];
+}
+
 export interface MemberDetail {
   id: string;
   name: string;
