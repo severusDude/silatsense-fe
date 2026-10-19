@@ -15,6 +15,7 @@ describe("member history route", () => {
     expect(page).toContain("generateStaticParams");
     expect(page).toContain("memberHistoryIds");
     expect(page).toContain("searchParams");
+    expect(page).not.toMatch(/await\s+searchParams/);
     expect(page).not.toContain('"use client"');
     expect(page).not.toContain("getMemberHistory");
   });
