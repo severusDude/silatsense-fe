@@ -107,7 +107,7 @@ export async function getMemberHistory(id: string): Promise<MemberHistory | null
   "use cache";
   cacheLife("minutes");
   // TODO: connect backend via lib/api-client.ts (GET /coach/members/[id]/history?page=N) — dummy for now
-  return dummyMemberHistory[id] ?? null;
+  return Object.hasOwn(dummyMemberHistory, id) ? dummyMemberHistory[id] : null;
 }
 ```
 
@@ -129,7 +129,8 @@ export function paginateHistory(sessions: HistoryPageSession[], page: number, pa
 
 ## 7. Verification
 
-- `tests/unit/coach/member-history-data.test.ts`: dummy shape (24 sessions, ids `sesi-24`..`sesi-1` descending, `pageSize` 10, `totalSessions` 24, memberId `aced-suryana`); card #24 Figma literals (`Sesi #24`, `06 Mar 2026, 15:45 WIB`, `Pukulan Lurus Depan`, `Penetapan Sasaran Target`, `Repetisi: 42/50 (84%)`, 82, `remediasi`); first-10 tone sequence `[remediasi, sesuai, sesuai, tidak-sesuai, remediasi, sesuai, sesuai, tidak-sesuai, sesuai, sesuai]`; badge keys ⊆ `{sesuai, remediasi, tidak-sesuai}` (never `evaluasi`); `paginateHistory` math (page 1 → 10 items range 1-10; page 2 → 10, 11-20; page 3 → 4, 21-24; clamps 0→1, 4→3, NaN→1); `parseHistoryPage` (number, array, junk, undefined); `get-member-history.ts` source carries the TODO endpoint and no `"use client"`.
+- `tests/unit/coach/member-history-data.test.ts`: dummy shape (24 sessions, ids `sesi-24`..`sesi-1` descending, `pageSize` 10, `totalSessions` 24, memberId `aced-suryana`); card #24 Figma literals (`Sesi #24`, `06 Mar 2026, 15:45 WIB`, `Pukulan Lurus Depan`, `Penetapan Sasaran Target`, `Repetisi: 42/50 (84%)`, 82, `remediasi`); first-10 tone sequence `[remediasi, sesuai, sesuai, tidak-sesuai, remediasi, sesuai, sesuai, tidak-sesuai, sesuai, sesuai]`; badge keys ⊆ `{sesuai, remediasi, tidak-sesuai}` (never `evaluasi`); `paginateHistory` math (page 1 → 10 items range 1-10; page 2 → 10, 11-20; page 3 → 4, 21-24; clamps 0→1, 4→3, NaN→1); `parseHistoryPage` (number, array, junk, undefined); `get-member-history.ts` source carries the TODO endpoint and no `"use client"`, and pins the hardened own-key lookup (`Object.hasOwn(dummyMemberHistory, id)`) plus the prototype-key hazard (`__proto__`/`constructor` are not own keys).
+- `tests/unit/coach/member-detail-data.test.ts`: source pin for the same own-key guard on `get-member-detail.ts` (prototype-key ids → `notFound()` fix).
 - `tests/unit/coach/member-history-sections.test.ts` (source-text pattern, `readFileSync`): section root `<section>` + heading string; cards `Card size="sm"`; badges only via `performanceBadgeLabel` / `performanceBadgeVariant` with negatives for every Figma badge string family (`Sesuai Skor Kualitas`, `Optimal (`, `Sayap Siku`, `Skor Kualitas`, `Standar IPSI`, `Perlu Poles`, `(-6.5`, `(+8cm)`); pagination strings + `` `?page=` `` href pattern + `aria-current`; range text; reused `MemberDetailProfile` present in page composition; no `next/image`, no `absolute`, no `<svg`; lucide `ChevronLeft`/`ChevronRight`; `session-history-log.tsx` links `` `/coach/members/${memberId}/riwayat` `` with no TODO.
 - `tests/unit/coach/member-history-route.test.ts`: thin RSC route (`MemberHistoryPage`, `generateStaticParams`, `memberHistoryIds`, no `"use client"`, no direct `getMemberHistory` call, `searchParams` passed not awaited); history layout trail strings + `activeTab="members"`; router restructure sanity (`(detail)` layout still carries the `Detail` trail). Update `member-detail-route.test.ts` paths to the `(detail)` group.
 - Green: `pnpm build` + `tsc --noEmit` + `eslint` + `pnpm test`.
