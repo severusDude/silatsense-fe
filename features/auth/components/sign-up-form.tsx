@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -11,10 +12,13 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { PasswordField } from "@/features/auth/components/password-field";
 import { signUpSchema, type SignUpInput } from "@/features/auth/schemas";
-import type { SignUpResponse } from "@/features/auth/types";
+import { signUpAction } from "@/features/auth/actions/sign-up";
+import type { AuthSuccessResult } from "@/features/auth/types";
 
 export function SignUpForm() {
-  const { control, handleSubmit } = useForm<SignUpInput>({
+  const router = useRouter();
+
+  const { control, handleSubmit, setError } = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
     mode: "onChange",
     criteriaMode: "firstError",
@@ -27,17 +31,36 @@ export function SignUpForm() {
     },
   });
 
-  const mutation = useMutation<SignUpResponse, Error, SignUpInput>({
-    mutationFn: async () => {
-      // TODO: connect backend via lib/api-client.ts (POST /auth/sign-up)
-      throw new Error("Backend belum tersambung");
+  const mutation = useMutation<AuthSuccessResult, Error, SignUpInput>({
+    mutationFn: async (values) => {
+      const payload = {
+        fullName: values.fullName,
+        identifier: values.identifier,
+        password: values.password,
+      };
+      const res = await signUpAction(payload);
+      if (!res.ok) {
+        if (res.error.fieldErrors) {
+          for (const [field, msg] of Object.entries(res.error.fieldErrors)) {
+            if (field === "fullName" || field === "identifier" || field === "password") {
+              setError(field, { message: msg });
+            }
+          }
+        }
+        throw new Error(res.error.message);
+      }
+      return res.data;
+    },
+    onSuccess: (data) => {
+      router.replace(data.redirectTo);
+      router.refresh();
     },
   });
 
   const onSubmit = (values: SignUpInput) =>
     toast.promise(mutation.mutateAsync(values), {
       loading: "Mendaftarkan akun…",
-      success: "Berhasil — backend belum tersambung (stub)",
+      success: "Pendaftaran berhasil",
       error: (e) => (e instanceof Error ? e.message : "Gagal mendaftar"),
     });
 
@@ -70,13 +93,14 @@ export function SignUpForm() {
         control={control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="sign-up-identifier">NPM / Email Mahasiswa</FieldLabel>
+            <FieldLabel htmlFor="sign-up-identifier">Email Mahasiswa</FieldLabel>
             <InputGroup>
               <InputGroupInput
                 {...field}
                 id="sign-up-identifier"
-                placeholder="npm@student.unsil.ac.id atau nama"
-                autoComplete="username"
+                placeholder="nama@student.unsil.ac.id"
+                autoComplete="email"
+                type="email"
                 aria-invalid={fieldState.invalid}
               />
               <InputGroupAddon>
@@ -92,6 +116,7 @@ export function SignUpForm() {
         name="password"
         id="sign-up-password"
         label="Kata Sandi"
+        placeholder="Minimal 8 karakter"
         autoComplete="new-password"
       />
       <PasswordField

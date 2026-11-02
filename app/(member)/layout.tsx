@@ -1,7 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 import { AuthGate } from "@/features/auth/components/auth-gate";
 
-export default function MemberLayout({ children }: { children: ReactNode }) {
+export default function Layout({ children }: { children: ReactNode }) {
   return (
     <Suspense fallback={null}>
       <AuthGate role="member">{children}</AuthGate>

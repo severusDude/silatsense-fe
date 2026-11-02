@@ -3,9 +3,11 @@ import { signInSchema, signUpSchema } from "@/features/auth/schemas";
 
 const signInBase = { identifier: "227006104", password: "secretpassword", rememberMe: false };
 
-describe("identifier (NPM/email union)", () => {
-  it("accepts a 9-digit NPM", () => {
+describe("identifier (NPM/email union on sign-in)", () => {
+  it("accepts an 8 to 12 digit NPM", () => {
     expect(signInSchema.safeParse(signInBase).success).toBe(true);
+    expect(signInSchema.safeParse({ ...signInBase, identifier: "12345678" }).success).toBe(true);
+    expect(signInSchema.safeParse({ ...signInBase, identifier: "123456789012" }).success).toBe(true);
   });
 
   it("accepts a student email", () => {
@@ -22,11 +24,27 @@ describe("identifier (NPM/email union)", () => {
     const r = signInSchema.safeParse({ ...signInBase, identifier: "1234567" });
     expect(r.success).toBe(false);
   });
+
+  it("rejects identifier longer than 254 characters", () => {
+    const tooLongEmail = `${"a".repeat(246)}@unsil.ac.id`;
+    expect(tooLongEmail.length).toBeGreaterThan(254);
+    expect(signInSchema.safeParse({ ...signInBase, identifier: tooLongEmail }).success).toBe(false);
+  });
 });
 
-describe("signInSchema password", () => {
+describe("signInSchema password boundaries", () => {
   it("rejects passwords shorter than 8 chars", () => {
     const r = signInSchema.safeParse({ ...signInBase, password: "short" });
+    expect(r.success).toBe(false);
+  });
+
+  it("accepts password of 128 chars", () => {
+    const r = signInSchema.safeParse({ ...signInBase, password: "a".repeat(128) });
+    expect(r.success).toBe(true);
+  });
+
+  it("rejects password exceeding 128 chars", () => {
+    const r = signInSchema.safeParse({ ...signInBase, password: "a".repeat(129) });
     expect(r.success).toBe(false);
   });
 });
@@ -40,8 +58,13 @@ describe("signUpSchema", () => {
     terms: true,
   };
 
-  it("accepts a complete valid registration", () => {
+  it("accepts a complete valid registration with email", () => {
     expect(signUpSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("rejects raw NPM for sign-up (Decision A1: email required)", () => {
+    const r = signUpSchema.safeParse({ ...valid, identifier: "227006104" });
+    expect(r.success).toBe(false);
   });
 
   it("rejects mismatched confirmation on confirmPassword", () => {
@@ -60,5 +83,15 @@ describe("signUpSchema", () => {
   it("rejects a 2-char name", () => {
     const r = signUpSchema.safeParse({ ...valid, fullName: "Ab" });
     expect(r.success).toBe(false);
+  });
+
+  it("rejects a name exceeding 120 chars", () => {
+    const r = signUpSchema.safeParse({ ...valid, fullName: "A".repeat(121) });
+    expect(r.success).toBe(false);
+  });
+
+  it("accepts a name up to 120 chars", () => {
+    const r = signUpSchema.safeParse({ ...valid, fullName: "A".repeat(120) });
+    expect(r.success).toBe(true);
   });
 });
