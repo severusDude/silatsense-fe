@@ -4,14 +4,18 @@ Mirror of the Linear Doc `[Roadmap] SilatSense FE — Member closeout + Coach`.
 The Linear Doc is source of truth; this file keeps agents productive offline.
 Sync both when phases change. Parent issue: PSR-69.
 
+Phase 13 is the first backend-connected phase. Its spec and the reusable integration
+conventions live in `docs/integration/`; later modules start from that guide.
+
 ## 0. Operating rules (linear-tracking, non-negotiable)
 
 - Milestones are shippable phases (`[Phase N] Outcome`), 3–10 issues, 1–4 cycles. Max 2 open. Create just-in-time at phase start — never pre-create the roadmap.
 - One parent (1–3 days, shippable) + subs (each <4h), max 1 level. Title `[area] Verb outcome`, ≤60 chars.
 - Exactly one label (`feature|bug|chore|docs|spike`); `feature`/`bug` carry exactly one milestone. Assignee `me`.
 - Description = 4-field header only (Goal / Scope+Out / Acceptance boxes / Links), ≤15 lines. Longer specs → Linear Doc linked under `Links:`.
-- Close `[Phase 7] Rekam dan ulas sesi` before opening Phase 8. Phase 7 shipped with 19 issues — do not repeat; split oversized phases.
+- Close `[Phase 12] Coach member history` before opening Phase 13. Phase 7 shipped with 19 issues — do not repeat; split oversized phases.
 - Backend-not-yet-built: dummy in `data/*-dummy.ts` (pure, no `server-only`), TODO names exact endpoint (`TODO (GET /path)`), DTOs in `types` + copied into spec, characterization test pins shape.
+- Backend-connected (Phase 13+): generated `src/api` client is the only wire layer; specs live in `docs/integration/`; never hand-write a duplicate DTO.
 
 ## 1. Now / Next / Later
 
@@ -22,7 +26,8 @@ Sync both when phases change. Parent issue: PSR-69.
 | Done | 9 | `[Phase 9] Member profile` — shipped `/profil` biodata + kamera + keamanan |
 | Done | 10 | `[Phase 10] Coach foundation` — shipped `/coach` dashboard + `/coach/members` list + coach shell |
 | Done | 11 | `[Phase 11] Coach detail` — shipped `/coach/members/[id]` + feedback mutation + riwayat log |
-| Now | 12 | [Phase 12] Coach member history — demoable /coach/members/[id]/riwayat (reused profile + paginated log) |
+| Done | 12 | `[Phase 12] Coach member history` — shipped `/coach/members/[id]/riwayat` |
+| Now | 13 | `[Phase 13] Auth integration` — real BE auth: generated client seam, session cookies, proxy refresh, role guards, sign-in/up, sign-out |
 
 ## 2. Phase table
 
@@ -33,6 +38,7 @@ Sync both when phases change. Parent issue: PSR-69.
 | 10 | Coach dashboard renders 4 stats + 5 athlete cards + 4 pillars + posture grid; members list renders 4 stats + search + 5 cards; coach shell (top + bottom nav, `laporan` tab) | 94:37791, 94:40178 | `docs/superpowers/specs/2026-*-coach-foundation-design.md` | 1 parent + 4–5 subs |
 | 11 | Member detail renders profile + belt/attendance + aggregate score + 4 pillars + evaluasi terbaru (score + 4 tiles + skeletal placeholder + pills + 5 params) + feedback textarea + dual CTA + riwayat log 4 cards; feedback `useMutation` stub `(POST /coach/feedback)` | 94:40427 | `docs/superpowers/specs/2026-*-coach-detail-design.md` | 1 parent + 4–5 subs |
 | 12 | Member history renders reused profile + Daftar Riwayat Sesi (count badge, 10 cards/page, tone dot + bare badge, range text, ?page= clamp); no overflow 390px | 94:40907 | docs/superpowers/specs/2026-10-19-coach-member-history-design.md | 1 parent + 3 subs |
+| 13 | Real auth end-to-end: runtime client seam, HttpOnly session cookies, proxy refresh + role guards, NPM/email sign-in, email-only sign-up, sign-out; no tokens in JS storage; auth pages clean at 390px | — (existing auth shell) | docs/integration/authentication.md + docs/integration/README.md | 1 parent + 7 subs |
 
 ## 3. Figma index (skim, 2026-10-11 — structure only, no pixel audit)
 
@@ -55,11 +61,13 @@ Resolved 2026-10-11: the duplicate 8th link pointed at node 94:40427 — the int
 - Ph9 parent `[profile] Ship profile screen` + subs `[profile] Add profile DTOs+tests`, `[profile] Build profile cards+form`, `[profile] Wire profil route+nav`.
 - Ph10 parent `[coach] Ship coach foundation` + subs `[coach] Add coach DTOs+tests`, `[coach] Build coach dashboard UI`, `[coach] Build members list UI`, `[coach] Wire coach shell+routes`.
 - Ph11 parent `[coach] Ship member detail` + subs `[coach] Add member-detail DTOs`, `[coach] Build detail eval UI`, `[coach] Build feedback form`, `[coach] Wire detail route+history`.
+- Ph13 parent `[auth] Ship auth integration` (PSR-103) + subs `[auth] Add generated client runtime seam` (PSR-108), `[auth] Build session cookies + auth gate` (PSR-105), `[auth] Add proxy refresh + route gate` (PSR-110), `[auth] Add sign-in + sign-up actions` (PSR-106), `[auth] Wire auth forms to actions` (PSR-107), `[auth] Wire sign-out from profile` (PSR-109), `[auth] Verify auth integration` (PSR-104).
 
 ## 5. Not-list (explicitly out — fights midnight scope creep)
 
 - Real video playback / binding blob URLs (placeholder shells only, decision carried from evaluasi).
-- Backend connect (all phases ship on dummies + endpoint TODOs).
+- Backend connect outside auth (phases 1–12 stay on dummies + endpoint TODOs; auth is the pilot).
+- Password recovery and email verification/link UI (design pending, Phase 14).
 - Interactive charts (progress bars/rings are divs/SVG, no chart dep).
 - Push notifications, native app, social features.
 - Coach session-detail as separate route until distinct Figma node arrives (reuse member detail).
@@ -71,6 +79,9 @@ Resolved 2026-10-11: the duplicate 8th link pointed at node 94:40427 — the int
 - `Perlu Perbaikan` (riwayat) vs `Perlu Koreksi` (evaluasi) wording — unify to `Perlu Koreksi` at Phase 8 spec time, log as decision comment.
 - Amber/green failure tone (no red) except coach log #21 red card — confirm with coach at Phase 11.
 - Figma card badges carry descriptive text ("Sesuai Skor Kualitas (80.0%)", "Sayap Siku Kanan (+8cm)") — user override: cards ship bare Sesuai/Remediasi/Tidak Sesuai badges only; isolated-node screenshots render component defaults, only the full frame (94:40907) is authoritative.
+- Auth: BE refresh rotation grace is assumed, not verified — proxy single-flight limits the race, and a `401` fails safe to `/sign-in`.
+- Auth: email-only sign-up is the current A1 workaround; ask the BE for an explicit `email` field before reopening NPM registration.
+- Auth: BE error shapes are inconsistent — normalize once in `lib/api-client.ts`; no per-feature parsing.
 
 ## 7. Audit script
 
