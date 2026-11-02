@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "gen:api": "openapi-ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -29,6 +30,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@hey-api/openapi-ts": "^0.99.0",
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "^5.104.1",
     "@types/node": "^20",
