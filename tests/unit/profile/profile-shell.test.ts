@@ -85,7 +85,7 @@ describe("profile client islands", () => {
     // Assert
     expect(src).toContain("LogOut");
     expect(src).toContain('variant="outline"');
-    expect(src).toContain("TODO");
+    expect(src).toContain("signOutAction");
     expect(src).toContain("Logout");
   });
 

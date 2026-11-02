@@ -1,6 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { signInPayloadSchema } from "@/features/auth/schemas/sign-in";
 import { signUpPayloadSchema } from "@/features/auth/schemas/sign-up";
+
+vi.mock("next/headers", () => {
+  const store = new Map<string, { value: string }>();
+  return {
+    cookies: async () => ({
+      get: (name: string) => store.get(name),
+      set: (name: string, value: string) => store.set(name, { value }),
+      delete: (opt: { name: string }) => store.delete(opt.name),
+    }),
+  };
+});
 
 describe("signInPayloadSchema", () => {
   it("validates and sets default rememberMe to false", () => {
@@ -62,5 +73,16 @@ describe("signUpPayloadSchema", () => {
       password: "password123",
     });
     expect(res.success).toBe(false);
+  });
+});
+
+describe("signOutAction", () => {
+  it("returns ok true and redirects to /sign-in", async () => {
+    const { signOutAction } = await import("@/features/auth/actions/sign-out");
+    const res = await signOutAction();
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.data.redirectTo).toBe("/sign-in");
+    }
   });
 });
