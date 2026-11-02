@@ -4,9 +4,12 @@ export default defineConfig({
   input: "https://silatsense-be.vercel.app/openapi.json",
   output: "src/api",
   plugins: [
-    "@hey-api/client-fetch",
+    {
+      name: "@hey-api/client-fetch",
+      runtimeConfigPath: "./src/hey-api",
+    },
     "zod",
-    { name: "@hey-api/sdk", validator: true }, // validates requests/responses with Zod
+    { name: "@hey-api/sdk", validator: true },
     "@tanstack/react-query",
   ],
 });
