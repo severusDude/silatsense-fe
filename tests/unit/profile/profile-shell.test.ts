@@ -5,19 +5,22 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 const read = (path: string) => readFileSync(join(root, path), "utf8");
 
-const athleteSrc = () => read("features/profile/components/profile-athlete-card.tsx");
-const securitySrc = () => read("features/profile/components/profile-security-card.tsx");
+const athleteSrc = () =>
+  read("features/profile/components/profile-athlete-card.tsx");
+const securitySrc = () =>
+  read("features/profile/components/profile-security-card.tsx");
 
 describe("profile server cards", () => {
-  it("renders placeholder avatar with initials and no logout inside the athlete card", () => {
+  it("renders avatar with dynamic initials, honest stats and no logout inside athlete card", () => {
     // Arrange + Act
     const src = athleteSrc();
 
     // Assert
     expect(src).toContain('role="img"');
-    expect(src).toContain("AS");
+    expect(src).toContain("profile.initials");
+    expect(src).toContain("Coming soon");
     expect(src).toContain("Camera");
-    expect(src).toContain("TODO");
+    expect(src).toContain("TODO: wire avatar upload");
     expect(src).not.toContain("Logout");
     expect(src).not.toContain("Batal");
   });
@@ -33,13 +36,13 @@ describe("profile server cards", () => {
     expect(src).toContain("Pelatih Kepala UKM");
   });
 
-  it("keeps Ubah Kata Sandi a dead stub with a TODO", () => {
+  it("wires Ubah Kata Sandi to ChangePasswordDialog", () => {
     // Arrange + Act
     const src = securitySrc();
 
     // Assert
     expect(src).toContain("Ubah Kata Sandi");
-    expect(src).toContain("TODO");
+    expect(src).toContain("ChangePasswordDialog");
     expect(src).toContain("Kata Sandi Akun");
   });
 });
@@ -56,17 +59,17 @@ describe("profile client islands", () => {
     expect(src).not.toContain("Batal");
   });
 
-  it("validates the stub update at the server-action boundary with PATCH TODO", () => {
+  it("wires real server action calling updateMemberProfileApiV1MemberProfilePatch", () => {
     // Arrange + Act
     const src = read("features/profile/actions/update-profile.ts");
 
     // Assert
-    expect(src).toContain("profileSchema.parse");
-    expect(src).toContain("PATCH /member/profile");
-    expect(src).toContain("TODO");
+    expect(src).toContain("updateProfileSchema.safeParse");
+    expect(src).toContain("updateMemberProfileApiV1MemberProfilePatch");
+    expect(src).toContain("getAccessToken");
   });
 
-  it("saves once with the Save icon over toast.promise and invalidates the profile key", () => {
+  it("saves with Save icon, invalidates generated member query key, and refreshes router", () => {
     // Arrange + Act
     const src = read("features/profile/components/profile-save-action.tsx");
 
@@ -74,11 +77,22 @@ describe("profile client islands", () => {
     expect(src).toContain("Save");
     expect(src).toContain("toast.promise");
     expect(src).toContain("Simpan Perubahan");
-    expect(src).toContain('["profile"]');
+    expect(src).toContain("memberProfileApiV1MemberProfileGetQueryKey()");
+    expect(src).toContain("router.refresh()");
     expect(src).not.toContain("Batal");
   });
 
-  it("logs out via a non-primary outline button with a sign-out TODO", () => {
+  it("keeps NPM and Email read-only with explanatory captions in biodata form", () => {
+    // Arrange + Act
+    const src = read("features/profile/components/profile-biodata-form.tsx");
+
+    // Assert
+    expect(src).toContain("Nomor Induk Mahasiswa terdaftar permanen");
+    expect(src).toContain("Ubah email melalui menu verifikasi keamanan akun");
+    expect(src).toContain("readOnly");
+  });
+
+  it("logs out via a non-primary outline button with a sign-out action", () => {
     // Arrange + Act
     const src = read("features/profile/components/profile-logout-button.tsx");
 
@@ -97,6 +111,7 @@ describe("profile client islands", () => {
       "features/profile/components/profile-camera-card.tsx",
       "features/profile/components/profile-save-action.tsx",
       "features/profile/components/profile-logout-button.tsx",
+      "features/profile/components/profile-security-card.tsx",
     ]) {
       expect(read(file)).not.toContain("absolute");
     }
