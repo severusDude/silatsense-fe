@@ -29,7 +29,7 @@ conventions live in `docs/integration/`; later modules start from that guide.
 | Done | 12 | `[Phase 12] Coach member history` — shipped `/coach/members/[id]/riwayat` |
 | Done | 13 | `[Phase 13] Auth integration` — real BE auth: generated client seam, session cookies, proxy refresh, role guards, sign-in/up, sign-out |
 | Done | 14 | `[Phase 14] Profile integration` — real profile read/update, ViewModel mapper, honest stats, camera decoupling |
-| Now | 15 | `[Phase 15] Training integration` — `/latihan` catalog, prep, record, session review, evaluation against the real BE; upload transport spike first |
+| Review | 15 | `[Phase 15] Training integration` — `/latihan` catalog, prep, record, session review, evaluation against the real BE; upload transport spike first. PR #33; live BE verification waits on movement-category data |
 
 ## 2. Phase table
 
@@ -61,6 +61,8 @@ Resolved 2026-10-11: the duplicate 8th link pointed at node 94:40427 — the int
 
 Training (Phase 15) reuses the Phase 5–7 frames already shipped; no new node in this index.
 
+Phase 15 is in review (PR #33). The deployed BE still returns an empty `GET /member/training-modules`, `404` for `GET /record-config/{slug}`, and `{"code":"not_found"}` for `POST /sessions` (kategori gerakan), so live end-to-end verification is blocked. The five-screen pass ran against production-shaped mock fixtures; the real data path is wired and ready.
+
 ## 4. Issue scaffolds (create JIT, titles ≤60 chars)
 
 - Ph8 parent `[riwayat] Ship history screens` + subs `[riwayat] Add history DTOs+tests`, `[riwayat] Build history list UI`, `[riwayat] Build session detail UI`, `[riwayat] Wire riwayat routes+nav`, `[riwayat] Build coach-note+drills cards`.
@@ -89,9 +91,9 @@ Training (Phase 15) reuses the Phase 5–7 frames already shipped; no new node i
 - Auth: BE refresh rotation grace is assumed, not verified — proxy single-flight limits the race, and a `401` fails safe to `/sign-in`.
 - Auth: email-only sign-up is the current A1 workaround; ask the BE for an explicit `email` field before reopening NPM registration.
 - Auth: BE error shapes are inconsistent — normalize once in `lib/api-client.ts`; no per-feature parsing.
-- Training: upload transport is the one open infrastructure gap — the HttpOnly token blocks direct-to-BE, and a Vercel body cap (~4.5 MB) may reject a normal clip; spike the same-origin rewrite first (D4 in `docs/integration/Training.md`).
+- Training: upload transport is solved by same-origin BFF routes (D4) with a 4.5 MB request cap, idempotency keys, and `Range` forwarding; pre-signed production upload remains an open BE request.
 - Training: `EvaluationOut.score` is 0–100 similarity points, not accuracy; no 85% target until product confirms the scale.
-- Training: generated Zod is wrong for the multipart video body and the video response — bypass those two with the low-level client.
+- Training: generated Zod is wrong for the multipart video body and the video response, and its request validators cannot read required headers — bypass with the low-level client (D17).
 
 ## 7. Audit script
 
