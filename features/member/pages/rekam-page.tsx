@@ -4,7 +4,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getRekam } from "@/features/member/data/get-rekam";
 import { isTrainingModuleSlug } from "@/features/member/data/training-mapper";
 import { RekamViewport } from "@/features/member/components/rekam-viewport";
-import { RekamSelesaiCta } from "@/features/member/components/rekam-selesai-cta";
 
 export function RekamPage({ slug }: { slug: string }) {
   return (
@@ -29,9 +28,6 @@ async function RekamContent({ slug }: { slug: string }) {
   if (!detail) notFound();
 
   return (
-    <>
-      <RekamViewport detail={detail} />
-      <RekamSelesaiCta slug={detail.slug} />
-    </>
+    <RekamViewport detail={detail} />
   );
 }

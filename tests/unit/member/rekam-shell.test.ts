@@ -54,20 +54,14 @@ describe("rekam components", () => {
     expect(src).not.toContain("setInterval");
   });
 
-  it("links the Selesai CTA live to the sesi route with no evaluation CTA", () => {
+  it("removes the fake Selesai CTA until recording controls land", () => {
     // Arrange + Act
-    const cta = read("features/member/components/rekam-selesai-cta.tsx");
-    const viewport = read("features/member/components/rekam-viewport.tsx");
+    const page = read("features/member/pages/rekam-page.tsx");
 
     // Assert
-    expect(cta).toContain("Selesai");
-    expect(cta).toContain("/latihan/${slug}/sesi");
-    expect(cta).toContain("Link");
-    expect(cta).not.toContain("aria-disabled");
-    expect(cta).not.toContain("TODO");
-    expect(cta).not.toContain("useState");
-    expect(cta).not.toContain("Lihat Evaluasi");
-    expect(viewport).not.toContain("Lihat Evaluasi");
+    expect(page).not.toContain("RekamSelesaiCta");
+    expect(page).not.toContain("/latihan/${detail.slug}/sesi");
+    expect(() => read("features/member/components/rekam-selesai-cta.tsx")).toThrow();
   });
 
   it("links the persiapan CTA to the rekam route", () => {
@@ -110,7 +104,7 @@ describe("rekam route", () => {
     expect(src).not.toContain("getCameras");
     expect(src).not.toContain("defaultCameraId");
     expect(src).toContain("RekamViewport");
-    expect(src).toContain("RekamSelesaiCta");
+    expect(src).not.toContain("RekamSelesaiCta");
   });
 
   it("owns one member shell per leaf without double chrome", () => {

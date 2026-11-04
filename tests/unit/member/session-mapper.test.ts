@@ -403,8 +403,50 @@ describe("toEvaluationViewModel", () => {
       statusLabel: "Eksperimental",
       reason: null,
       variantLabel: "pukulan-lurus-depan",
-      summary: "1 dari 1 parameter perlu koreksi.",
+      summary: "1 dari 1 parameter yang dinilai perlu koreksi.",
     });
+  });
+
+  it("counts only assessed parameters in the score summary", () => {
+    // Arrange + Act
+    const vm = toEvaluationViewModel(
+      evaluationFixture({
+        score: 48,
+        measurements: [
+          measurementFixture({
+            feature: "stance_symmetry",
+            bodyPart: "Simetri tumpuan",
+            assessment: "within_reference",
+          }),
+          measurementFixture({
+            feature: "knee_angle",
+            bodyPart: "Lutut",
+            assessment: "not_assessed",
+          }),
+        ],
+        issues: [],
+      }),
+    );
+
+    // Assert
+    expect(vm.score.summary).toBe(
+      "1 parameter berada dalam rentang referensi.",
+    );
+
+    const none = toEvaluationViewModel(
+      evaluationFixture({
+        score: 0,
+        measurements: [
+          measurementFixture({
+            feature: "knee_angle",
+            bodyPart: "Lutut",
+            assessment: "not_assessed",
+          }),
+        ],
+        issues: [],
+      }),
+    );
+    expect(none.score.summary).toBe("Tidak ada parameter postur yang dinilai.");
   });
 
   it("renders an honest unavailable score with the server reasons", () => {

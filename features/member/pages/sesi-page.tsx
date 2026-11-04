@@ -1,41 +1,59 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getSesi } from "@/features/member/data/get-sesi";
-import { SesiPlayback } from "@/features/member/components/sesi-playback";
-import { SesiInfoCard } from "@/features/member/components/sesi-info-card";
+import { getSession } from "@/features/member/data/get-session";
+import { isTrainingModuleSlug } from "@/features/member/data/training-mapper";
 import { SesiActions } from "@/features/member/components/sesi-actions";
+import { SesiInfoCard } from "@/features/member/components/sesi-info-card";
+import { SesiPlayback } from "@/features/member/components/sesi-playback";
+import { SessionStatusPoller } from "@/features/member/components/session-status-poller";
 
-export function SesiPage({ slug }: { slug: string }) {
+export function SesiPage({
+  slug,
+  sessionId,
+}: {
+  slug: string;
+  sessionId: string;
+}) {
   return (
     <div className="flex flex-col gap-3.5">
-      <Suspense fallback={<Skeleton className="aspect-[3/4] w-full rounded-2xl" />}>
-        <PlaybackSection slug={slug} />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-48 w-full rounded-2xl" />}>
-        <InfoSection slug={slug} />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-12 w-full rounded-full" />}>
-        <ActionsSection slug={slug} />
+      <Suspense
+        fallback={
+          <div className="flex flex-col gap-3.5">
+            <Skeleton className="aspect-[3/4] w-full rounded-2xl" />
+            <Skeleton className="h-72 w-full rounded-2xl" />
+            <Skeleton className="h-12 w-full rounded-full" />
+          </div>
+        }
+      >
+        <SesiContent slug={slug} sessionId={sessionId} />
       </Suspense>
     </div>
   );
 }
 
-async function PlaybackSection({ slug }: { slug: string }) {
-  const session = await getSesi(slug);
-  if (!session) notFound();
-  return <SesiPlayback session={session} />;
-}
+async function SesiContent({
+  slug,
+  sessionId,
+}: {
+  slug: string;
+  sessionId: string;
+}) {
+  if (!isTrainingModuleSlug(slug)) notFound();
 
-async function InfoSection({ slug }: { slug: string }) {
-  const session = await getSesi(slug);
-  if (!session) notFound();
-  return <SesiInfoCard session={session} />;
-}
+  const session = await getSession(sessionId);
+  if (!session || session.slug !== slug) notFound();
 
-async function ActionsSection({ slug }: { slug: string }) {
-  const session = await getSesi(slug);
-  if (!session) notFound();
-  return <SesiActions session={session} />;
+  const processing =
+    session.processingStatus === "queued" ||
+    session.processingStatus === "processing";
+
+  return (
+    <>
+      <SessionStatusPoller active={processing} />
+      <SesiPlayback session={session} />
+      <SesiInfoCard session={session} />
+      <SesiActions session={session} />
+    </>
+  );
 }

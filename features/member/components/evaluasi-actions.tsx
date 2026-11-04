@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RotateCcw, Save } from "lucide-react";
+import { ArrowLeft, RotateCcw } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -8,33 +8,41 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { EvaluationSession } from "@/features/member/types";
+import type { EvaluationViewModel } from "@/features/member/types";
 
-export function EvaluasiActions({ session }: { session: EvaluationSession }) {
+export function EvaluasiActions({
+  evaluation,
+}: {
+  evaluation: EvaluationViewModel;
+}) {
   return (
     <section aria-label="Tindak lanjut evaluasi" className="flex flex-col gap-2">
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-bold">Siap Memperbaiki Deviasi Gerakan?</CardTitle>
-          <CardDescription>Targetkan akurasi ≥ 85% untuk lulus standar uji.</CardDescription>
+          <CardTitle className="text-sm font-bold">
+            Siap Memperbaiki Gerakan?
+          </CardTitle>
+          <CardDescription>
+            Rekam ulang gerakan yang sama untuk membandingkan skor kemiripan
+            berikutnya.
+          </CardDescription>
         </CardHeader>
         <CardFooter className="flex-col items-stretch gap-2">
-          {/* TODO: connect backend via lib/api-client.ts (POST /member/evaluations/:slug/ack) — dead CTA for now */}
-          <span
-            aria-disabled="true"
+          <Link
+            href={`/latihan/${evaluation.slug}/rekam`}
             className={buttonVariants({ size: "lg", className: "w-full rounded-full" })}
           >
-            <Save data-icon="inline-start" /> Selesai dan Simpan
-          </span>
+            <RotateCcw data-icon="inline-start" /> Latihan Ulang
+          </Link>
           <Link
-            href={`/latihan/${session.slug}/rekam`}
+            href={`/latihan/${evaluation.slug}/sesi/${evaluation.sessionId}`}
             className={buttonVariants({
               variant: "outline",
               size: "lg",
               className: "w-full rounded-full",
             })}
           >
-            <RotateCcw data-icon="inline-start" /> Latihan Ulang
+            <ArrowLeft data-icon="inline-start" /> Kembali ke Sesi
           </Link>
         </CardFooter>
       </Card>

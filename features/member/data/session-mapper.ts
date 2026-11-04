@@ -154,14 +154,17 @@ function buildScoreSummary(
     return "Skor kemiripan belum tersedia.";
   }
 
+  const assessed = postures.filter(
+    (posture) => posture.status !== "tidak-dinilai",
+  ).length;
   const deviations = postures.filter(
     (posture) => posture.status === "perlu-koreksi",
   ).length;
   if (deviations > 0) {
-    return `${deviations} dari ${postures.length} parameter perlu koreksi.`;
+    return `${deviations} dari ${assessed} parameter yang dinilai perlu koreksi.`;
   }
-  if (postures.length > 0) {
-    return `${postures.length} parameter berada dalam rentang referensi.`;
+  if (assessed > 0) {
+    return `${assessed} parameter berada dalam rentang referensi.`;
   }
   return "Tidak ada parameter postur yang dinilai.";
 }

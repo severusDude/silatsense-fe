@@ -138,6 +138,12 @@ export interface RekamViewModel {
   scoringAvailable: boolean;
 }
 
+export type SessionMediaStatus =
+  | "available"
+  | "expired"
+  | "deleted"
+  | "unavailable";
+
 export interface SessionViewModel {
   id: string;
   slug: TrainingModuleSlug;
@@ -159,7 +165,7 @@ export interface SessionViewModel {
   fileSizeLabel: string;
   resolutionLabel: string;
   formatLabel: string;
-  mediaStatus: "available" | "expired" | "deleted" | "unavailable";
+  mediaStatus: SessionMediaStatus;
   mediaStatusLabel: string;
   mediaExpiresAtLabel: string;
   error: { code: string; detail: string } | null;
@@ -212,7 +218,7 @@ export interface EvaluationViewModel {
   score: EvaluationScoreViewModel;
   postures: PostureAssessmentViewModel[];
   unavailableReasons: string[];
-  mediaStatus: "available" | "expired" | "deleted" | "unavailable";
+  mediaStatus: SessionMediaStatus;
   mediaMetaLabel: string;
 }
 
@@ -228,20 +234,6 @@ export interface CameraDevice {
 
 export type SesiUploadState = "idle" | "uploading" | "failed" | "success";
 
-export interface TrainingSession {
-  slug: PersiapanSlug;
-  trainingName: string;
-  eyebrow: string;
-  durationSec: number;
-  durationLabel: string;
-  recordedAtLabel: string;
-  fileSizeLabel: string;
-  camera: CameraDevice;
-  videoStatus: "recorded";
-}
-
-export type EvaluasiSlug = PersiapanSlug;
-
 export type PostureStatus = "sesuai" | "perlu-koreksi";
 
 export interface PostureAssessment {
@@ -254,28 +246,6 @@ export interface PostureAssessment {
   correctionCue: string; // e.g. "Tarik siku ~8 cm ke dalam." — empty on sesuai
   thumbnailLabel: string; // e.g. "Siku kanan"
   thumbnailSrc: null; // literal until the pose-render move binds a real asset
-}
-
-export interface KinematicScore {
-  value: number;
-  unit: "%";
-  targetPct: number;
-  targetLabel: string;
-  deltaLabel: string;
-  alertLabel: string;
-  summary: string;
-}
-
-export interface EvaluationSession {
-  slug: EvaluasiSlug;
-  techniqueName: string;
-  evaluatedAtLabel: string;
-  validReps: number;
-  deviatedReps: number;
-  qualityLabel: string;
-  score: KinematicScore;
-  postures: PostureAssessment[];
-  videoStatus: "placeholder";
 }
 
 export type RiwayatSlug = PersiapanSlug;
