@@ -1,41 +1,62 @@
+import type { ProfileOut } from "@/api";
 import type { CameraDevice } from "@/features/member/types";
-import type {
-  AthleteProfile,
-  CoachProfile,
-  Profile,
-  ProfileRole,
-} from "@/features/profile/types";
+import { toProfileViewModel } from "@/features/profile/data/profile-mapper";
+import type { ProfileRole, ProfileViewModel } from "@/features/profile/types";
 
-export const dummyAthleteProfile: AthleteProfile = {
+export const dummyMemberProfileDto: ProfileOut = {
+  id: "dummy-member-1",
   role: "member",
-  name: "Aced Suryana",
-  handle: "@aced_suryana",
-  nim: "2307051",
+  fullName: "Aced Suryana",
+  npm: "2307051",
   email: "aced.suryana@student.unsil.ac.id",
-  roleLabel: "Pesilat Binaan (Anggota Pemula)",
+  emailVerifiedAt: "2025-01-01T00:00:00Z",
   division: "UKM Pencak Silat Universitas Siliwangi",
-  beltLabel: "Sabuk Kuning (Ragam 2)",
-  beltTargetLabel: "Target Evaluasi: Sabuk Hijau (Q3 2025)",
-  avgAccuracyPct: 91.4,
-  accuracyNote: "Optimal",
-  totalSessionsLabel: "48 Sesi",
-  totalPosturesLabel: "1,240 Postur",
-  cameraDeviceLabel: "FaceTime HD Camera (Ultra Wide …)",
-  passwordUpdatedLabel: "Terakhir diperbarui 2 bulan yang lalu",
+  title: null,
+  belt: "Sabuk Kuning (Ragam 2)",
+  beltTarget: "Sabuk Hijau (Q3 2025)",
+  passwordChangedAt: "2026-09-03T00:00:00Z",
+  coach: {
+    id: "coach-1",
+    fullName: "Kang Fauzan",
+    title: "Pelatih Kepala UKM",
+  },
+  createdAt: "2025-10-01T00:00:00Z",
+  statistics: {
+    completedSessionCount: 48,
+    totalDurationSeconds: 14400,
+    durationSampleCount: 48,
+    scoredSessionCount: 45,
+    excludedScoreCount: 3,
+    similarityGroups: [],
+  },
 };
 
-export const dummyCoachProfile: CoachProfile = {
+export const dummyCoachProfileDto: ProfileOut = {
+  id: "dummy-coach-1",
   role: "coach",
-  name: "Kang Fauzan",
-  handle: "@kang_fauzan",
+  fullName: "Kang Fauzan",
+  npm: null,
   email: "fauzan@unsil.ac.id",
-  titleLabel: "Pelatih Kepala UKM",
+  emailVerifiedAt: "2024-01-01T00:00:00Z",
   division: "UKM Pencak Silat Universitas Siliwangi",
-  teamAccuracyPct: 84.6,
-  coachedSessionsLabel: "24 Sesi",
-  cameraDeviceLabel: "FaceTime HD Camera (Ultra Wide …)",
-  passwordUpdatedLabel: "Terakhir diperbarui 2 bulan yang lalu",
+  title: "Pelatih Kepala UKM",
+  belt: null,
+  beltTarget: null,
+  passwordChangedAt: "2026-09-03T00:00:00Z",
+  coach: null,
+  createdAt: "2024-01-01T00:00:00Z",
+  statistics: null,
 };
+
+export const dummyAthleteProfile: ProfileViewModel = toProfileViewModel(
+  dummyMemberProfileDto,
+  { baseDate: new Date("2026-11-03T00:00:00Z") }
+);
+
+export const dummyCoachProfile: ProfileViewModel = toProfileViewModel(
+  dummyCoachProfileDto,
+  { baseDate: new Date("2026-11-03T00:00:00Z") }
+);
 
 export const dummyProfileCameras: CameraDevice[] = [
   {
@@ -54,7 +75,7 @@ export const dummyProfileCameras: CameraDevice[] = [
   },
 ];
 
-export function dummyProfileForRole(role: ProfileRole): Profile | null {
+export function dummyProfileForRole(role: ProfileRole): ProfileViewModel | null {
   if (role === "coach") return dummyCoachProfile;
   if (role === "member") return dummyAthleteProfile;
   return null;

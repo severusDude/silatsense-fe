@@ -5,7 +5,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type UpdateProfileInput } from "@/features/profile/schemas";
 import type { CameraDevice } from "@/features/member/types";
-import type { Profile } from "@/features/profile/types";
+import type { ProfileViewModel } from "@/features/profile/types";
 import { ProfileBiodataForm } from "@/features/profile/components/profile-biodata-form";
 import { ProfileCameraCard } from "@/features/profile/components/profile-camera-card";
 import { ProfileLogoutButton } from "@/features/profile/components/profile-logout-button";
@@ -16,7 +16,7 @@ export function ProfileEditor({
   cameras,
   children,
 }: {
-  profile: Profile;
+  profile: ProfileViewModel;
   cameras: CameraDevice[];
   children: ReactNode;
 }) {
@@ -26,8 +26,8 @@ export function ProfileEditor({
     criteriaMode: "firstError",
     defaultValues: {
       name: profile.name,
-      nim: profile.role === "member" ? profile.nim : "",
-      email: profile.email,
+      nim: profile.npm !== "-" ? profile.npm : "",
+      email: profile.email !== "Email belum ditautkan" ? profile.email : "",
       cameraDeviceId: cameras[0]?.id ?? "",
     },
   });

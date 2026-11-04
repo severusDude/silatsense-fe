@@ -1,10 +1,10 @@
 # FE ↔ BE Integration Guide
 
 Reusable conventions for every SilatSense feature that talks to the backend. Auth-specific
-decisions live in [`authentication.md`](./authentication.md); this file is the default that
-later modules start from.
+decisions live in [`authentication.md`](./authentication.md); this file is the canonical default that
+all feature modules start from to maintain a high degree of architectural consistency.
 
-- **Status:** active convention (2026-11-02)
+- **Status:** active convention (updated 2026-11-03)
 - **Applies to:** any `features/<name>` that reads or mutates backend data
 - **Canonical contract:** `https://silatsense-be.vercel.app/openapi.json`
 - **Baseline:** Next.js 16 App Router, generated `@hey-api` client, TanStack Query 5, Zod 4
@@ -34,6 +34,21 @@ Rules:
   checkout builds without regenerating.
 - Import wire types from `@/api` (the generated barrel), never from deep `src/api/*.gen`
   paths unless the barrel does not re-export the symbol.
+
+### 1.1 The ViewModel & Mapper Pattern
+
+Generated wire DTOs (`src/api/types.gen.ts`) mirror backend database structures and serializers,
+which often differ from UI presentation models (field naming, nullability, formatting).
+
+- **Never modify generated DTOs** or tack client-only fields onto them.
+- In `features/<name>/data/<name>-mapper.ts`, define a pure, testable mapper function:
+  `to<Entity>ViewModel(dto: WireDto): EntityViewModel`.
+- The mapper is responsible for:
+  - Providing safe nullability fallbacks (`null` / `undefined` -> readable defaults like `"-"`).
+  - Formatting ISO 8601 datetimes into localized relative or absolute human-readable strings.
+  - Generating avatar initials, handle slugs, and badge labels.
+  - Categorizing metrics into **active** (BE-supported) vs **inactive / coming soon** (unsupported).
+- Every mapper must be covered by unit tests in `tests/unit/<name>/<name>-mapper.test.ts`.
 
 ---
 
@@ -155,8 +170,7 @@ Rules:
 - Do not call `redirect()` inside an action. Return `redirectTo` and let the client call
   `router.replace()` + `router.refresh()`. This keeps `toast.promise` usable and avoids
   `NEXT_REDIRECT` being treated as a failure.
-- Read auth tokens from server-side cookies inside the action. Never accept a token from the
-  client payload.
+- Read auth tokens from server-side cookies inside the action via `getAccessToken()`. Never accept a token from the client payload.
 - After a mutation, revalidate/invalidate the affected query key (read-your-own-write), or
   return the fresh object when the BE already does.
 - Log `X-Request-ID` from `response.headers` on unexpected failures.
@@ -205,12 +219,38 @@ Rules:
 
 ---
 
-## 6. Zod has three layers
+## 6. Honest UI: Unmet Backend Capabilities & Statistical Data Policy
+
+When integrating screens designed in Figma, discrepancies often emerge where the UI displays
+metrics, aggregations, or actions that the backend REST contract does not currently support.
+
+### 6.1 Strict Policy on Unsupported Metrics
+1. **Never fabricate data:** Do not invent mock numbers, random averages, or synthetic computations that pretend backend endpoints exist.
+2. **Never silently delete UI elements:** Do not quietly erase a card or metric without explicit product agreement.
+3. **Visually "Inactive" (Greyed Out):** Render the container with dimmed, inactive styling:
+   - Container classes: `opacity-60 bg-muted/20 border-dashed border-border/80`
+   - Text classes: `text-muted-foreground/70`
+   - Icon styling: `opacity-50`
+4. **Explicit "Coming soon" Badge / Tag:**
+   - Display a distinct status indicator: `<Badge variant="outline" className="text-[10px] uppercase font-semibold text-muted-foreground">Coming soon</Badge>` or localized text `"Segera hadir"`.
+   - Users and QA immediately recognize that the feature is intentionally scheduled for future backend phases rather than broken.
+
+### 6.2 Policy on Immutable & Auth-Governed Identity Fields
+- Identifiers such as student numbers (`npm`) or institutional IDs are permanent database identity anchors. If the backend update endpoint does not permit mutating them, render them as **read-only / disabled inputs** with informative helper captions (`"NPM terdaftar permanen"`).
+- Security-sensitive attributes (such as `email` or `password`) that require verification or password re-authentication must not be bundled into generic entity PATCH forms. They belong to dedicated security flows or dialogs.
+
+### 6.3 Policy on Hardware / Browser Preferences
+- Device settings (e.g. camera selection, microphone devices, local playback preferences) are hardware properties specific to the client's current browser session.
+- **Do not send client hardware settings to backend entity PATCH endpoints.** Persist them in browser `localStorage` or client React context.
+
+---
+
+## 7. Zod has three layers
 
 1. **Wire validators (generated)** — `zSignIn`, `zSignUp`, `zAuthTokens`, … used by the SDK.
-   Never hand-write or edit these.
+    Never hand-write or edit these.
 2. **Form validators (RHF)** — client UX in `features/<name>/schemas/`. May be stricter than
-   the wire schema, never looser. Keep messages in Indonesian and field-specific.
+    the wire schema, never looser. Keep messages in Indonesian and field-specific.
 3. **Action payload validators** — derived from the generated schema, plus FE-only tightening:
 
 ```ts
@@ -231,7 +271,7 @@ export const signInPayloadSchema = zSignIn.extend({
 
 ---
 
-## 7. Sessions and authorization
+## 8. Sessions and authorization
 
 The full model is in [`authentication.md`](./authentication.md). Module code only needs the
 invariants:
@@ -240,7 +280,7 @@ invariants:
   auth-related goes to `localStorage`/`sessionStorage`.
 - `proxy.ts` refreshes near expiry and forwards the fresh access token as an internal
   request header. It is an optimistic gate, never the only authorization layer.
-- `features/auth/data/session.ts` owns `getSession()`, `requireSession()`, `requireRole()`.
+- `features/auth/data/session.ts` owns `getSession()`, `requireSession()`, `requireRole()`, `getAccessToken()`.
   Other modules consume these helpers; they do not parse cookies themselves.
 - Authoritative role checks run in the `(member)` and `(coach)` layouts through `AuthGate`.
   Session reads sit behind `<Suspense>` because Cache Components forbids cookie reads in a
@@ -249,36 +289,39 @@ invariants:
 
 ---
 
-## 8. Caching in Next 16
+## 9. Caching in Next 16 (Cache Components Rule)
 
-- Default to request-time reads for user-specific data. `'use cache'` is only for public or
-  shared data; never cache a token-dependent response.
-- `getSession()` is per-request (`cache()` from React), not `'use cache'`, and its SDK call
-  must use `cache: "no-store"`.
-- Keep the route shell static and wrap each async dynamic unit in
-  `<Suspense fallback={<Skeleton />}>`. Do not opt the whole route dynamic.
-- Prefetch shared page data in `features/<name>/pages/` with a fresh `QueryClient`, then
-  `dehydrate()` into `HydrationBoundary` (see `docs/CODE_STANDARD.md` §1–2).
-- If the generated SDK options are used for a query, pass `cache: "no-store"` for any
-  per-user read. When in doubt, prefer a `data/` function over a generated hook.
+Under Next.js 16 with `cacheComponents: true`:
+
+- **STRICT PROHIBITION:** **Never use `'use cache'` on user-authenticated or token-dependent data reads.**
+  - `'use cache'` memoizes results across requests and attempts to pre-render static HTML.
+  - Accessing cookies or `headers()` inside a `'use cache'` scope throws a build error under Cache Components or leaks private session data between users.
+- Authenticated reads must execute at request time:
+  - Memoize within the single request lifecycle using React `cache()` from `'react'`.
+  - Pass `cache: "no-store"` to the underlying generated SDK call.
+  - Wrap async server components in `<Suspense fallback={<Skeleton />}>` so the outer shell remains instantly streamable.
+- Server Actions must revalidate data upon mutation:
+  - Return fresh updated entities directly to the client.
+  - Invalidate TanStack Query cache keys in `useMutation.onSuccess`.
+  - Invoke `router.refresh()` to update surrounding Server Component trees.
 
 ---
 
-## 9. TanStack Query usage
+## 10. TanStack Query usage
 
 - Server prefetch: `queryClient.query({ queryKey, queryFn })` inside the page composition.
   Client components use the same key with `useQuery`/`useSuspenseQuery`.
 - Generated query options/keys are preferred over hand-written strings:
-  `authSessionApiV1AuthSessionGetOptions()` and its `QueryKey`.
+  `memberProfileApiV1MemberProfileGetOptions()` and its `QueryKey`.
 - Mutations stay in client components and call server actions. Do not call the generated
-  `useMutation` hook for cookie-writing flows — the browser cannot set `httpOnly` cookies.
+  `useMutation` hook for cookie-writing or token-dependent flows directly from the browser.
 - If a generated mutation hook is ever used, its variables are `Options<...>` (for example
   `{ body: SignIn }`), not a bare DTO.
 - After a mutation, invalidate the exact generated key; do not reload the page.
 
 ---
 
-## 10. Testing and gates
+## 11. Testing and gates
 
 Per `docs/CODE_STANDARD.md` §6:
 
@@ -295,6 +338,7 @@ Test layers:
 - **Schemas:** main path + boundary values + error messages.
 - **Actions:** payload parsing, client-only field stripping, error mapping, cookie capture.
   Mock the SDK module (or `lib/api-client`), not the network.
+- **Mappers & ViewModels:** mapping logic, nullability fallbacks, initials generation, inactive metric labeling.
 - **Data reads:** `401` vs `5xx` behavior, cache options, role checks.
 - **Proxy/pure logic:** `shouldRefresh()`, header forwarding, cookie clear/preserve decisions.
 - **Browser:** layout overflow (`scrollWidth <= innerWidth`), mutation freshness, redirects,
@@ -304,32 +348,18 @@ No task moves to `In Review` with a red gate.
 
 ---
 
-## 11. New module checklist
+## 12. Standard Module Integration Checklist & Playbook
 
-1. Read the OpenAPI document and regenerate; confirm `git diff src/api` is understood.
-2. Write `docs/integration/<module>.md`: endpoint table, DTO snapshot, gap analysis,
-   decisions, phases, risks, open questions.
-3. Resolve FE/BE conflicts with the user before coding; record the answer in the spec.
-4. Add `lib/api-client.ts` bindings if the module needs auth/error handling the seam does
-   not yet cover (extend it, do not fork it).
-5. Add `features/<name>/schemas/`, `data/`, `actions/`, `components/`, `pages/` in that
-   order; keep `app/` routes thin.
-6. Delete hand-written DTOs that duplicate `src/api/types.gen.ts`.
-7. Add unit tests for schemas/actions/data; add browser checks for visual flows.
-8. Run all gates, then attach evidence (commands + result) to the Linear review comment.
-9. Update this guide if the module establishes a new convention.
+For every new module integration (Latihan, Riwayat, Evaluasi, Coach, Profile):
 
----
-
-## 12. Known BE quirks
-
-- Error bodies are not uniform (see §5); OpenAPI documents only `422` for auth endpoints.
-- `429` occurs under probe load; the body is undocumented. Do not retry automatically.
-- CORS allows `http://localhost:3000` with credentials, but the recommended design is
-  server-mediated and does not depend on it.
-- The auth refresh cookie is `HttpOnly; Path=/api/v1/auth; SameSite=strict` and was observed
-  without `Secure`. See `authentication.md` for the FE cookie translation.
-- Some email-link endpoints are documented as Bearer-protected even though users arrive
-  from an email client. Treat that as a BE contract question, not an FE workaround.
-- There is no account-delete endpoint; test accounts created on the dev BE cannot be removed
-  through the API.
+1. **Contract Analysis:** Fetch the live OpenAPI JSON. Verify generated SDK, Zod schemas, and query options in `src/api/`.
+2. **Gap Analysis Table:** Catalog every FE screen need against BE endpoints. Categorize fields as:
+   - `Match`: Directly supported.
+   - `Mismatch`: Field name, enum, or nullability difference (resolved via ViewModel mapper).
+   - `Missing in BE`: Unmet metric or endpoint (resolved via Inactive/Coming Soon styling or read-only treatment).
+   - `Unused in BE`: BE field not currently needed by FE.
+3. **Spec Document:** Write `docs/integration/<module>.md` following this structure. Include architecture diagram, decisions, and Zod strategy.
+4. **ViewModel & Mapper:** Create `features/<name>/data/<name>-mapper.ts` + unit tests.
+5. **Server Actions & Reads:** Implement `features/<name>/actions/` and `data/` using `getAccessToken()` and React `cache()`.
+6. **UI States:** Update components with RHF + Zod form validation, read-only identity indicators, and inactive "Coming soon" badges for unmet metrics.
+7. **Verification:** Pass Vitest unit tests, `tsc --noEmit`, ESLint, `pnpm build`, and browser layout checks.
