@@ -138,6 +138,84 @@ export interface RekamViewModel {
   scoringAvailable: boolean;
 }
 
+export interface SessionViewModel {
+  id: string;
+  slug: TrainingModuleSlug;
+  trainingName: string;
+  eyebrow: string;
+  processingStatus: "queued" | "processing" | "completed" | "failed";
+  processingLabel: string;
+  analysisStatus: string | null;
+  analysisStatusLabel: string | null;
+  evaluationId: string | null;
+  canViewEvaluation: boolean;
+  canRetryAnalysis: boolean;
+  startedAtLabel: string;
+  uploadedAtLabel: string;
+  completedAtLabel: string;
+  durationSec: number | null;
+  durationLabel: string;
+  byteSize: number | null;
+  fileSizeLabel: string;
+  resolutionLabel: string;
+  formatLabel: string;
+  mediaStatus: "available" | "expired" | "deleted" | "unavailable";
+  mediaStatusLabel: string;
+  mediaExpiresAtLabel: string;
+  error: { code: string; detail: string } | null;
+  acknowledgedAtLabel: string;
+  retryOf: string | null;
+}
+
+export type PostureStatusViewModel = "sesuai" | "perlu-koreksi" | "tidak-dinilai";
+
+export interface PostureAssessmentViewModel {
+  id: string;
+  name: string;
+  status: PostureStatusViewModel;
+  statusLabel: string;
+  reading: string;
+  detail: string;
+  correctionCue: string;
+  thumbnailLabel: string;
+  thumbnailSrc: null;
+}
+
+export interface EvaluationScoreViewModel {
+  available: boolean;
+  value: number | null;
+  unitLabel: "poin";
+  max: 100;
+  status:
+    | "experimental"
+    | "reference_not_ready"
+    | "insufficient_pose"
+    | "insufficient_features";
+  statusLabel: string;
+  reason: string | null;
+  variantLabel: string | null;
+  summary: string;
+}
+
+export interface EvaluationViewModel {
+  id: string;
+  sessionId: string;
+  slug: TrainingModuleSlug;
+  techniqueName: string;
+  evaluatedAtLabel: string;
+  framesProcessed: number;
+  validPoseFrames: number;
+  featuresCompared: number | null;
+  poseStatus: "detected" | "not_detected";
+  postureQualityLabel: string;
+  repetitionCountingAvailable: false;
+  score: EvaluationScoreViewModel;
+  postures: PostureAssessmentViewModel[];
+  unavailableReasons: string[];
+  mediaStatus: "available" | "expired" | "deleted" | "unavailable";
+  mediaMetaLabel: string;
+}
+
 export type PersiapanSlug = TrainingModuleSlug;
 
 export interface CameraDevice {

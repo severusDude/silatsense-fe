@@ -15,6 +15,10 @@ const decimalFormatter = new Intl.NumberFormat("id-ID", {
   maximumFractionDigits: 1,
 });
 
+const measurementFormatter = new Intl.NumberFormat("id-ID", {
+  maximumFractionDigits: 2,
+});
+
 export function formatDateTimeId(value: string | null): string {
   if (!value) return "—";
   const date = new Date(value);
@@ -53,6 +57,44 @@ export function formatMinutesId(totalSeconds: number | null): string | undefined
 
 export function formatScore(value: number): string {
   return decimalFormatter.format(value);
+}
+
+export function formatMeasurementValue(
+  value: number | null,
+  unit: "deg" | "shoulder_width",
+): string {
+  if (value === null) return "—";
+  return unit === "deg"
+    ? `${measurementFormatter.format(value)}°`
+    : `${measurementFormatter.format(value)}× shoulder width`;
+}
+
+export function formatReferenceTarget(
+  median: number | null,
+  iqr: number | null,
+  unit: "deg" | "shoulder_width",
+): string | null {
+  if (median === null) return null;
+  const suffix = unit === "deg" ? "°" : "× shoulder width";
+  if (iqr !== null && iqr > 0) {
+    const half = iqr / 2;
+    return `${measurementFormatter.format(Math.max(0, median - half))}–${measurementFormatter.format(
+      median + half,
+    )}${suffix}`;
+  }
+  return `${measurementFormatter.format(median)}${suffix}`;
+}
+
+export function formatReading(
+  value: number | null,
+  unit: "deg" | "shoulder_width",
+  referenceMedian: number | null,
+  referenceIqr: number | null,
+): string {
+  const current = formatMeasurementValue(value, unit);
+  if (current === "—") return current;
+  const target = formatReferenceTarget(referenceMedian, referenceIqr, unit);
+  return target ? `${current} → target ${target}` : current;
 }
 
 export function formatBytes(bytes: number | null): string {
