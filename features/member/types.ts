@@ -232,7 +232,25 @@ export interface CameraDevice {
   latencyMs: number | null;
 }
 
-export type SesiUploadState = "idle" | "uploading" | "failed" | "success";
+export type CameraStatus = "idle" | "scanning" | "live" | "error";
+
+export type RecorderPhase =
+  | "idle"
+  | "countdown"
+  | "recording"
+  | "recorded"
+  | "uploading"
+  | "failed";
+
+/** Client-only recording result; never crosses the RSC boundary. */
+export interface RecordedClip {
+  blob: Blob;
+  previewUrl: string;
+  durationSec: number;
+  byteSize: number;
+  mimeType: string;
+  fileName: string;
+}
 
 export type PostureStatus = "sesuai" | "perlu-koreksi";
 

@@ -121,9 +121,14 @@ describe("persiapan route", () => {
     expect(src).toContain("PersiapanCta");
     expect(experience).toContain("PersiapanViewport");
     expect(experience).toContain("CameraSourceCard");
-    expect(experience).toContain("getUserMedia");
-    expect(experience).toContain("getTracks");
+    expect(experience).toContain("useCamera");
+    expect(experience).not.toContain("getUserMedia");
+    expect(experience).not.toContain("getTracks");
     expect(experience).not.toContain("cameras: CameraDevice[]");
+    expect(read("features/member/hooks/use-camera.ts")).toContain(
+      "getUserMedia",
+    );
+    expect(read("features/member/hooks/use-camera.ts")).toContain("getTracks");
   });
 
   it("syncs the viewport badge to the live stream without a Ganti badge", () => {

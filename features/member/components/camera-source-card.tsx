@@ -12,21 +12,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatFps } from "@/features/member/camera-format";
-import type { CameraDevice } from "@/features/member/types";
-
-export type CameraScanStatus = "idle" | "scanning" | "live" | "denied";
+import type { CameraDevice, CameraStatus } from "@/features/member/types";
 
 export function CameraSourceCard({
   cameras,
   selectedId,
   onSelect,
   status,
+  error,
   onScan,
 }: {
   cameras: CameraDevice[];
   selectedId: string;
   onSelect: (id: string) => void;
-  status: CameraScanStatus;
+  status: CameraStatus;
+  error?: string | null;
   onScan: () => void;
 }) {
   const selected = cameras.find((camera) => camera.id === selectedId);
@@ -68,7 +68,11 @@ export function CameraSourceCard({
               if (typeof next === "string") onSelect(next);
             }}
           >
-            <SelectTrigger className="w-full" aria-label="Sumber kamera">
+            <SelectTrigger
+              className="w-full"
+              aria-label="Sumber kamera"
+              disabled={status === "scanning"}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -94,9 +98,9 @@ export function CameraSourceCard({
             Ketuk Pindai Kamera untuk membaca kamera perangkat ini.
           </p>
         ) : null}
-        {status === "denied" ? (
+        {error ? (
           <p role="status" className="text-[11px] text-muted-foreground">
-            Tidak dapat mengakses kamera. Periksa izin browser lalu pindai ulang.
+            {error}
           </p>
         ) : null}
 
