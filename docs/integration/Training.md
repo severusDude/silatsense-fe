@@ -820,8 +820,8 @@ No redirects are needed: the old session/evaluation URLs have no meaning without
 | `features/member/data/training-mapper.ts` | Pure mappers: `toTrainingCatalogViewModel`, `toTrainingModuleViewModel`, `toPersiapanViewModel`, `toRekamViewModel`. |
 | `features/member/data/session-mapper.ts` | Pure mappers: `toSessionViewModel`, `toEvaluationViewModel`, `toPostureAssessmentViewModel`, `toScoreViewModel`. |
 | `features/member/data/format.ts` | `formatDateTimeId`, `formatDateId`, `formatDuration`, `formatBytes`, `formatMinutes`. |
-| `features/member/data/upload-session.ts` | Server-only: build `FormData`, call `client.post`, validate `zAcceptedSession`, normalize errors. |
-| `features/member/data/get-session-video.ts` | Server-only: `client.get({ parseAs: "stream" })`, forward status/headers/Range. |
+| `lib/domain-error-response.ts` | BFF-only: build `DomainErrorOut` JSON and forward sanitized upstream errors. |
+| `lib/upload-limits.ts` | `MEMBER_UPLOAD_MAX_BYTES`, the interim deployment cap shared by the upload route and the recorder. |
 | `features/member/actions/acknowledge-session.ts` | `"use server"` + Zod + `acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePost`. |
 | `features/member/actions/delete-session.ts` | `"use server"` + Zod + `removeSessionApiV1MemberSessionsSessionIdDelete`. |
 | `features/member/actions/retry-session.ts` | `"use server"` + Zod + `retryApiV1MemberSessionsSessionIdFollowUpsPost`. |
@@ -839,6 +839,7 @@ No redirects are needed: the old session/evaluation URLs have no meaning without
 | `tests/unit/member/training-schemas.test.ts` | Recording schema boundaries (size, MIME, duration), slug enum. |
 | `tests/unit/member/upload-route.test.ts` | BFF auth, 413/415 mapping, FormData forwarding, idempotency header. |
 | `tests/unit/member/video-route.test.ts` | BFF auth, Range forwarding, 206 headers, no-store. |
+| `tests/unit/shared/proxy-matcher.test.ts` | Upload route excluded from the proxy buffer; video route still refreshes. |
 
 ### 7.2 Modified files
 
@@ -1277,7 +1278,7 @@ B2 was measured with Next.js 16.3.8, a local echo server, and the proxy rewrite 
 
 ### 11.3 Decision
 
-1. **Interim: option B (BFF route handler) with a hard size guard.** Read `Content-Length` before consuming the body; return a `DomainErrorOut`-shaped `413` when it exceeds the floor of `UploadConfig.maxBytes` and the platform cap. Exclude `/api/member/sessions` from the `proxy.ts` matcher so the proxy does not buffer the body first — the matcher currently covers `/api/*`, which would double-buffer and cap the route at 10 MB before it runs. Use `runtime = "nodejs"` and a `maxDuration` sized for the upload.
+1. **Interim: option B (BFF route handler) with a hard size guard.** Read `Content-Length` before consuming the body; return a `DomainErrorOut`-shaped `413` when it exceeds `MEMBER_UPLOAD_MAX_BYTES` (`lib/upload-limits.ts`). Exclude only the exact upload path (`/api/member/sessions`) from the `proxy.ts` matcher so the proxy does not buffer the body first — the video route stays in the matcher so token refresh still applies. Under Cache Components route handlers are Node-only and the build rejects a `runtime` export, so set `maxDuration` and omit `runtime`.
 2. **Production: ask the BE for a pre-signed upload flow** (option D): `POST /member/sessions/uploads` returns `{ uploadUrl, objectKey, expiresAt }`; the browser PUTs directly to object storage with progress; then `POST /member/sessions` registers `objectKey` + `movementSlug`. This keeps the token server-side, avoids both proxies, and gives real progress for any clip size.
 3. **Do not use B2 for uploads**, even with a raised cap. It is acceptable only if a future measurement proves the deployment runs the rewrite at the edge *and* the BE `maxBytes` is below the buffer ceiling.
 
