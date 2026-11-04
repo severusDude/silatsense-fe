@@ -43,18 +43,26 @@ describe("sesi components", () => {
     expect(src).toContain("eyebrow");
   });
 
-  it("links review actions to the session-keyed evaluation and retake routes", () => {
+  it("wires review, retry, and delete actions to the real session endpoints", () => {
     // Arrange + Act
-    const src = read("features/member/components/sesi-actions.tsx");
+    const src = read("features/member/components/session-actions.tsx");
 
     // Assert
+    expect(src).toContain("use client");
     expect(src).toContain("Lihat Evaluasi");
     expect(src).toContain("/latihan/${session.slug}/evaluasi/${session.id}");
+    expect(src).toContain("retrySessionAction");
+    expect(src).toContain("retryRecordingHref");
+    expect(src).toContain("Rekam Ulang");
     expect(src).toContain("/latihan/${session.slug}/rekam");
     expect(src).toContain("Latihan Ulang");
-    expect(src).toContain("Rekam Ulang");
+    expect(src).toContain("deleteSessionAction");
+    expect(src).toContain("Hapus Sesi");
+    expect(src).toContain("<Dialog");
+    expect(src).toContain("router.replace");
+    expect(src).toContain("router.push");
     expect(src).toContain("processingStatus");
-    expect(src).not.toContain("use client");
+    expect(src).toContain("session.acknowledged");
     expect(src).not.toContain("setInterval");
     expect(src).not.toContain("Attachment");
     expect(src).not.toContain("Upload");
@@ -79,7 +87,7 @@ describe("sesi components", () => {
     const files = [
       "features/member/components/sesi-playback.tsx",
       "features/member/components/sesi-info-card.tsx",
-      "features/member/components/sesi-actions.tsx",
+      "features/member/components/session-actions.tsx",
       "features/member/components/session-status-poller.tsx",
       "features/member/components/media-unavailable.tsx",
     ];
@@ -88,7 +96,7 @@ describe("sesi components", () => {
     for (const file of files) {
       expect(read(file)).not.toContain("absolute");
     }
-    expect(read("features/member/components/sesi-actions.tsx")).toContain(
+    expect(read("features/member/components/session-actions.tsx")).toContain(
       "lucide-react",
     );
     expect(read("features/member/components/media-unavailable.tsx")).toContain(
@@ -129,7 +137,7 @@ describe("sesi route", () => {
     expect(src).toContain("SessionStatusPoller");
     expect(src).toContain("SesiPlayback");
     expect(src).toContain("SesiInfoCard");
-    expect(src).toContain("SesiActions session");
+    expect(src).toContain("SessionActions session");
   });
 
   it("owns one member shell per leaf without double chrome", () => {

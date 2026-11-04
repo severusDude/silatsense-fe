@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSession } from "@/features/member/data/get-session";
 import { isTrainingModuleSlug } from "@/features/member/data/training-mapper";
-import { SesiActions } from "@/features/member/components/sesi-actions";
+import { SessionActions } from "@/features/member/components/session-actions";
 import { SesiInfoCard } from "@/features/member/components/sesi-info-card";
 import { SesiPlayback } from "@/features/member/components/sesi-playback";
 import { SessionStatusPoller } from "@/features/member/components/session-status-poller";
@@ -53,7 +53,7 @@ async function SesiContent({
       <SessionStatusPoller active={processing} />
       <SesiPlayback session={session} />
       <SesiInfoCard session={session} />
-      <SesiActions session={session} />
+      <SessionActions session={session} />
     </>
   );
 }

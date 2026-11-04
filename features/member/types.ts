@@ -1,4 +1,9 @@
 import type { PilarSlug, PostureParamId } from "@/components/shared/silat-reference";
+import type { NormalizedApiError } from "@/lib/api-client";
+
+export type ActionResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; error: NormalizedApiError };
 
 export type PillarStatus = "stabil" | "optimal" | "perlu-koreksi";
 export type DayState = "filled" | "rest" | "empty" | "active";
@@ -169,6 +174,7 @@ export interface SessionViewModel {
   mediaStatusLabel: string;
   mediaExpiresAtLabel: string;
   error: { code: string; detail: string } | null;
+  acknowledged: boolean;
   acknowledgedAtLabel: string;
   retryOf: string | null;
 }
@@ -220,6 +226,8 @@ export interface EvaluationViewModel {
   unavailableReasons: string[];
   mediaStatus: SessionMediaStatus;
   mediaMetaLabel: string;
+  acknowledged: boolean;
+  acknowledgedAtLabel: string;
 }
 
 export type PersiapanSlug = TrainingModuleSlug;

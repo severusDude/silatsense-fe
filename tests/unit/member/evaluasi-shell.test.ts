@@ -99,13 +99,27 @@ describe("evaluasi components", () => {
     const src = read("features/member/components/evaluasi-actions.tsx");
 
     // Assert
+    expect(src).toContain("use client");
     expect(src).toContain("Latihan Ulang");
     expect(src).toContain("/latihan/${evaluation.slug}/rekam");
     expect(src).toContain("/latihan/${evaluation.slug}/sesi/${evaluation.sessionId}");
     expect(src).toContain("Kembali ke Sesi");
     expect(src).not.toContain("≥ 85");
-    expect(src).not.toContain("Selesai dan Simpan");
-    expect(src).not.toContain("aria-disabled");
+  });
+
+  it("acknowledges the evaluation through the real server action", () => {
+    // Arrange + Act
+    const src = read("features/member/components/evaluasi-actions.tsx");
+
+    // Assert
+    expect(src).toContain("acknowledgeSessionAction");
+    expect(src).toContain("{ sessionId: evaluation.sessionId }");
+    expect(src).toContain("Selesai dan Simpan");
+    expect(src).toContain("disabled={acknowledgeMutation.isPending}");
+    expect(src).toContain("evaluation.acknowledged");
+    expect(src).toContain("evaluation.acknowledgedAtLabel");
+    expect(src).toContain("router.refresh()");
+    expect(src).toContain('role="alert"');
   });
 });
 

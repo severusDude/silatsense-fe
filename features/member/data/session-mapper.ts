@@ -105,6 +105,7 @@ export function toSessionViewModel(session: SessionOut): SessionViewModel {
     mediaStatusLabel: MEDIA_STATUS_LABELS[session.media.status],
     mediaExpiresAtLabel: formatDateTimeId(session.media.expiresAt),
     error: session.error,
+    acknowledged: session.acknowledgedAt !== null,
     acknowledgedAtLabel: formatDateTimeId(session.acknowledgedAt),
     retryOf: session.retryOf,
   };
@@ -217,5 +218,7 @@ export function toEvaluationViewModel(
     unavailableReasons: evaluation.unavailableReasons,
     mediaStatus: session?.mediaStatus ?? "unavailable",
     mediaMetaLabel: mediaMetaLabel(session),
+    acknowledged: session?.acknowledged ?? false,
+    acknowledgedAtLabel: session?.acknowledgedAtLabel ?? "—",
   };
 }

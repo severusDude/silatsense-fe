@@ -127,8 +127,20 @@ describe("toSessionViewModel", () => {
       uploadedAtLabel: "4 Nov 2026, 09.01 WIB",
       completedAtLabel: "4 Nov 2026, 09.00 WIB",
       mediaExpiresAtLabel: "5 Nov 2026, 09.01 WIB",
+      acknowledged: false,
       acknowledgedAtLabel: "—",
     });
+  });
+
+  it("marks an acknowledged session and keeps the timestamp", () => {
+    // Arrange + Act
+    const vm = toSessionViewModel(
+      sessionFixture({ acknowledgedAt: "2026-11-04T03:15:00.000Z" }),
+    );
+
+    // Assert
+    expect(vm.acknowledged).toBe(true);
+    expect(vm.acknowledgedAtLabel).toBe("4 Nov 2026, 10.15 WIB");
   });
 
   it.each([
@@ -393,6 +405,8 @@ describe("toEvaluationViewModel", () => {
       repetitionCountingAvailable: false,
       mediaStatus: "available",
       mediaMetaLabel: "1080×1920 · video/webm",
+      acknowledged: false,
+      acknowledgedAtLabel: "—",
     });
     expect(vm.score).toEqual({
       available: true,
@@ -405,6 +419,20 @@ describe("toEvaluationViewModel", () => {
       variantLabel: "pukulan-lurus-depan",
       summary: "1 dari 1 parameter yang dinilai perlu koreksi.",
     });
+  });
+
+  it("carries the session acknowledgment into the evaluation view model", () => {
+    // Arrange + Act
+    const vm = toEvaluationViewModel(
+      evaluationFixture(),
+      toSessionViewModel(
+        sessionFixture({ acknowledgedAt: "2026-11-04T03:15:00.000Z" }),
+      ),
+    );
+
+    // Assert
+    expect(vm.acknowledged).toBe(true);
+    expect(vm.acknowledgedAtLabel).toBe("4 Nov 2026, 10.15 WIB");
   });
 
   it("counts only assessed parameters in the score summary", () => {
