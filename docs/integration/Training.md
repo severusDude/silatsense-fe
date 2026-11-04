@@ -687,7 +687,7 @@ These comments must be deleted, not implemented:
 
 **Why:** `RetryOut` contains only `id`, `sourceSessionId`, and `createdAt`; it exposes no media or evaluation, so it cannot be a finished retake. A fresh recording is the only flow the current contract supports end to end.
 
-**Consequence:** `retrySessionAction` returns the follow-up id and the source session id; the `/rekam` page reads `retryOf` as an optional search param and passes it to the upload body. `SesiActions` no longer navigates straight to a session route. If the BE later confirms that a follow-up session accepts an attach/upload call, this decision can move to “navigate to the follow-up session”.
+**Consequence:** `retrySessionAction` returns the follow-up id and the source session id; the `/rekam` page reads `retryOf` as an optional search param and passes it to the upload body. `SessionActions` no longer navigates straight to a session route. If the BE later confirms that a follow-up session accepts an attach/upload call, this decision can move to “navigate to the follow-up session”.
 
 **Open detail (non-blocking):** whether the upload's `retryOf` expects `RetryOut.sourceSessionId` or `RetryOut.id`. Start with `sourceSessionId`; pin the choice in one mapper so it is a one-line change.
 
@@ -701,6 +701,16 @@ These comments must be deleted, not implemented:
 - Notifications and follow-up task list (`/member/follow-up-tasks`).
 
 **Why:** keeps the phase shippable and avoids the Phase-7 bloat pattern noted in the roadmap.
+
+### D17 — Disable the generated request validator when an endpoint requires a header
+
+**Decision (2026-11-04):** for `POST /follow-ups`, pass `requestValidator: undefined` to the generated SDK and keep the action-boundary Zod schema as the request check. Response validation stays on.
+
+**Why:** the generated request validator receives `headers` as a `Headers` instance, but its Zod schema reads `"Idempotency-Key"` as a plain-object property. The header always looks missing, so the SDK returns a `ZodError` before any network call. Passing a lowercase header does not help; the schema key is case-sensitive.
+
+**Consequence:** `retrySessionAction` validates `sessionId` and `idempotencyKey` with Zod before calling the SDK. Any future SDK call with a required header (for example coach publish) needs the same override or the low-level `client` + explicit `z*` response parse. Do not edit `src/api/*`.
+
+**BE change:** none.
 
 ---
 
