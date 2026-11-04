@@ -33,7 +33,7 @@ There are four integration realities that change the shape of the module:
 - **Session identity is opaque.** The BE has no slug-keyed session endpoint. `/sesi` and `/evaluasi` must become `/latihan/[slug]/sesi/[sessionId]` and `/latihan/[slug]/evaluasi/[sessionId]`.
 - **There is no real capture/upload today.** The BE expects a multipart video and an `Idempotency-Key`; the FE has neither. Upload must move to `/rekam` (where the blob still exists), then navigate to the session-ID route.
 - **The evaluation score is not an accuracy percentage.** `EvaluationOut.score` is `number | null` on a 0–100 scale with `scoreUnit: "similarity_points"`. It is not “Akurasi Kinematika %”, and the BE exposes no 85% pass target. Repetition counts are permanently `null`.
-- **Upload transport is the one open infrastructure gap.** The token is HttpOnly on the FE origin, so the browser cannot call the BE directly with `Authorization`. A same-origin BFF proxy works, but a Vercel-style host caps request bodies at ~4.5 MB — below a normal 60 s video. The next step is a timeboxed same-origin rewrite spike (D4); if it buffers, fall back to a BFF proxy with a size guard and request a BE pre-signed flow.
+- **Upload transport is the one open infrastructure gap.** The token is HttpOnly on the FE origin, so the browser cannot call the BE directly with `Authorization`. A same-origin BFF proxy works, but a Vercel-style host caps request bodies at ~4.5 MB — below a normal 60 s video. The `proxy.ts` spike rejected the rewrite option (it buffers, 10 MB default), so the interim is a guarded BFF route plus a BE request for pre-signed uploads (D4, §11).
 
 Everything else is adaptable with the ViewModel + mapper pattern: real fields are rendered active, unsupported metrics become visually inactive with a “Segera hadir” badge, and nothing is fabricated.
 
@@ -549,9 +549,9 @@ These comments must be deleted, not implemented:
 
 **BE change:** none for the proxy itself; see D4 for the upload limit.
 
-### D4 — Upload transport: spike the same-origin rewrite first
+### D4 — Upload transport: B2 rejected, BFF interim, pre-signed requested
 
-**Decision (approved 2026-11-04):** timebox a spike of option B2 — a `proxy.ts` / `next.config` rewrite that forwards the upload to the BE and injects `Authorization` while streaming the body. If it forwards the full `record-config.maxBytes` without buffering and without a platform body cap, B2 is the upload transport. If it does not, fall back to B (BFF route handler) with an explicit size guard and open a BE request for A/D before long recordings ship. No fake or best-effort upload.
+**Decision (spike complete 2026-11-04):** the same-origin `proxy.ts` rewrite (B2) buffers the whole body, defaults to a 10 MB cap, and truncates over the cap into a `500` socket hang-up. It is not a streaming transport. Use option B (BFF route handler) with a `Content-Length` guard as the interim, and request a BE pre-signed upload (D) for production. Details and measurements: §11.
 
 **Why:** the access token is HttpOnly on the FE origin, so browser JS cannot call the BE with `Authorization`. The BE does allow CORS (`Authorization`, `Idempotency-Key`, `Range`), but that does not solve the missing credential. A same-origin BFF proxy works functionally, but a Vercel-style serverless host caps request bodies at ~4.5 MB, which a normal 60 s video exceeds. Server Actions have the same platform cap plus a 1 MB default.
 
@@ -561,7 +561,7 @@ These comments must be deleted, not implemented:
 |---|---|---|---|---|
 | A. Browser → BE direct | Needs a short-lived upload token or signed URL; HttpOnly token is unreadable | Native XHR | BE `maxBytes` | **Requires BE change**; best long-term. |
 | B. Browser → FE route handler → BE | Works today | Native XHR | Platform request-body cap (~4.5 MB on Vercel) | **Interim only** if recordings fit; otherwise fails. |
-| B2. Browser → same-origin rewrite → BE, `proxy.ts` injects `Authorization` | Works today | Native XHR | Depends on whether the rewrite is a pure edge proxy; needs a spike | **Approved for a timeboxed spike**; the measured byte ceiling decides. |
+| B2. Browser → same-origin rewrite → BE, `proxy.ts` injects `Authorization` | Works today | Native XHR | Buffers the body; 10 MB default cap; truncates to `500` | **Rejected by the 2026-11-04 spike** (§11.2). |
 | C. Browser → Server Action → BE | Works today | None (indeterminate only) | 1 MB default + platform cap | **Rejected.** |
 | D. Browser → pre-signed object storage → BE registers key | BE-issued signed URL | Native XHR | Object storage | **Recommended production design**; requires BE change. |
 
@@ -1250,9 +1250,9 @@ Add a max-duration guard (e.g. stop after 5 minutes) and a manual “Muat ulang�
 
 ---
 
-## 11. Upload Transport (Blocking Detail)
+## 11. Upload Transport (Decided Detail)
 
-This section is the only part of the module that cannot be resolved from the OpenAPI contract alone.
+This section is the only part of the module that could not be resolved from the OpenAPI contract alone.
 
 ### 11.1 Facts
 
@@ -1262,13 +1262,32 @@ This section is the only part of the module that cannot be resolved from the Ope
 - Next.js Server Actions default to a 1 MB body limit (`serverActions.bodySizeLimit`), and platform hosts may cap request bodies further (Vercel serverless functions: 4.5 MB).
 - A normal 60 s 720p WebM/MP4 is well above 4.5 MB.
 
-### 11.2 Recommended path
+### 11.2 Spike result (2026-11-04)
 
-1. **Ask the BE owner for a pre-signed upload flow** (option D): `POST /member/sessions/uploads` returns `{ uploadUrl, objectKey, expiresAt }`; the browser PUTs the file directly to object storage with progress; then `POST /member/sessions` registers `objectKey` + `movementSlug`. This keeps the token server-side (the signed URL is short-lived and scoped) and avoids the FE proxy limit.
-2. **Fallback if the BE cannot change:** spike option B2 (same-origin rewrite with `proxy.ts` injecting `Authorization`) to see whether the platform passes the body through without the serverless cap. Do not assume it does.
-3. **Interim only for small clips:** option B (BFF route handler) if the deployment is self-hosted or the product accepts a short recording limit that fits the cap. Document the cap in the UI.
+B2 was measured with Next.js 16.3.8, a local echo server, and the proxy rewrite injecting `Authorization`:
 
-### 11.3 What not to do
+| Test | Result |
+|---|---|
+| 8 MB multipart, default config | Full body forwarded (8,388,926 bytes), but only after the proxy had buffered it. |
+| 5 MB at 512 KB/s, default config | Upstream received its first chunk at `0 ms` and all 5,243,198 bytes in `14 ms` — proof the proxy waits for the full body before opening the upstream request. |
+| 20 MB, default config | `Request body exceeded 10MB ... Only the first 10MB will be available`, then `Failed to proxy ... socket hang up`; the client got `500`. |
+| 20 MB, `proxyClientMaxBodySize: "30mb"` | Full body forwarded (20,971,839 bytes), still fully buffered (321 chunks in `46 ms`). |
+
+**Conclusion:** `proxy.ts` clones and buffers the request body (`proxyClientMaxBodySize`, default **10 MB**). It does not stream, it truncates above the cap, and the upstream request dies with a socket hang-up instead of a clean `413`. Raising the cap only moves the memory ceiling; it does not remove buffering. B2 is **rejected as the production upload transport**.
+
+### 11.3 Decision
+
+1. **Interim: option B (BFF route handler) with a hard size guard.** Read `Content-Length` before consuming the body; return a `DomainErrorOut`-shaped `413` when it exceeds the floor of `UploadConfig.maxBytes` and the platform cap. Exclude `/api/member/sessions` from the `proxy.ts` matcher so the proxy does not buffer the body first — the matcher currently covers `/api/*`, which would double-buffer and cap the route at 10 MB before it runs. Use `runtime = "nodejs"` and a `maxDuration` sized for the upload.
+2. **Production: ask the BE for a pre-signed upload flow** (option D): `POST /member/sessions/uploads` returns `{ uploadUrl, objectKey, expiresAt }`; the browser PUTs directly to object storage with progress; then `POST /member/sessions` registers `objectKey` + `movementSlug`. This keeps the token server-side, avoids both proxies, and gives real progress for any clip size.
+3. **Do not use B2 for uploads**, even with a raised cap. It is acceptable only if a future measurement proves the deployment runs the rewrite at the edge *and* the BE `maxBytes` is below the buffer ceiling.
+
+### 11.4 Remaining unknowns
+
+- Production deployment target (Vercel vs self-hosted) and its actual request-body cap.
+- Production `UploadConfig.maxBytes`; the UI must compare it to the deployment cap and show the tighter one.
+- Whether the BE will ship a pre-signed flow in this phase.
+
+### 11.5 What not to do
 
 - Do not return the access token to the browser.
 - Do not store the token in `localStorage`/`sessionStorage`.
@@ -1348,7 +1367,7 @@ Do not commit tokens or recordings.
 
 | Risk | Severity | Mitigation |
 |---|---|---|
-| Upload proxy exceeds the platform body cap | **High** | Spike B2 first (D4); if it buffers, use BFF with a size guard and request a pre-signed BE flow; do not fake progress. |
+| Upload proxy exceeds the platform body cap | **High** | B2 rejected (§11.2); use the guarded BFF route, exclude `/api/member/sessions` from the proxy matcher, and request a pre-signed BE flow. Do not fake progress. |
 | Similarity score misrepresented as accuracy | **High** | D5: “Skor Kemiripan (poin)”; remove the 85% target until product/BE confirms the scale. |
 | `bodyPart`/`feature` free strings break fixed UI assumptions | **Medium** | D7: dynamic rows; change `PostureAssessment.id` to `string`; add `tidak-dinilai`; unit-test unknown values. |
 | Retry semantics unclear (`RetryOut` has no status/evaluation URLs) | **Medium** | Open question; do not navigate blindly. If `RetryOut.id` is a new session, route to `/sesi/{id}`; otherwise show a confirmation. |
@@ -1369,7 +1388,7 @@ Do not commit tokens or recordings.
 
 All former blocking questions were resolved on 2026-11-04; residual unknowns are noted inline.
 
-1. **Upload transport (decided 2026-11-04):** spike B2 first, per D4. Residual unknowns: where the FE is deployed (Vercel vs self-hosted Node), the production `record-config.maxBytes`, and whether the rewrite buffers the body. The spike answers the last one; the deployment and `maxBytes` values set the acceptance bar.
+1. **Upload transport (decided 2026-11-04):** B2 rejected, BFF interim, pre-signed requested, per D4 and §11. Residual unknowns: the production deployment target and its request-body cap, the production `record-config.maxBytes`, and whether the BE will ship a pre-signed flow.
 2. **Score semantics (decided 2026-11-04):** the UI ships “Skor Kemiripan” in points with no target, per D5. Residual unknowns: whether 100 is perfect similarity, whether a pass threshold exists, and whether product wants a normalized `%` later.
 3. **Retry follow-up (decided 2026-11-04):** fresh recording flow per D15. Residual unknown: whether upload `retryOf` expects `RetryOut.sourceSessionId` or `RetryOut.id`.
 4. **Acknowledge semantics:** what does `POST /acknowledge` change? Is it required for history? Can it be called when `score === null`? Is a second call `409` or idempotent `200`?
@@ -1407,4 +1426,4 @@ All former blocking questions were resolved on 2026-11-04; residual unknowns are
 - [x] Open questions 1–3 answered. (2026-11-04)
 - [x] Spec committed on `docs/training-integration-spec`.
 - [ ] Linear parent + sub-issues created after this approval.
-- [ ] B2 upload spike complete; fallback chosen if the rewrite buffers.
+- [x] B2 upload spike complete: rejected (buffers, 10 MB cap, truncates to 500). BFF interim + pre-signed request. (2026-11-04)
