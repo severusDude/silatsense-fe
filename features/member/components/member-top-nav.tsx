@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CloudCheck, Play } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -14,10 +15,14 @@ export function MemberTopNav({ trail = ["Dashboard"] }: { trail?: string[] }) {
             <span className="font-heading text-base font-bold tracking-tight">SILATSENSE</span>
           </div>
           <div className="flex items-center gap-2">
-            {/* TODO: wire quick-start to the /latihan session flow when the route lands */}
-            <span aria-disabled="true" title="Mulai latihan (TODO)" className={buttonVariants({ size: "icon", className: "rounded-full" })}>
+            <Link
+              href="/latihan"
+              aria-label="Mulai latihan"
+              title="Mulai latihan"
+              className={buttonVariants({ size: "icon", className: "rounded-full" })}
+            >
               <Play className="size-4" />
-            </span>
+            </Link>
             <span className="flex items-center gap-1.5 border-l pl-2">
               <span className="flex size-8 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-foreground ring-1 ring-border ring-inset">
                 AS

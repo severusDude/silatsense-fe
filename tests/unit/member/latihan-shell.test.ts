@@ -89,7 +89,7 @@ describe("latihan route", () => {
     expect(card).toContain("formatScore");
   });
 
-  it("marks Latihan active with real links and keeps dead TODOs for the rest", () => {
+  it("marks Latihan active with real links", () => {
     // Arrange + Act
     const bottom = read("features/member/components/member-bottom-nav.tsx");
 
