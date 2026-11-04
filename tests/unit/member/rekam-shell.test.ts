@@ -6,7 +6,7 @@ const root = process.cwd();
 const read = (path: string) => readFileSync(join(root, path), "utf8");
 
 describe("rekam components", () => {
-  it("layers a hardware badge and camera select over the placeholder without absolute", () => {
+  it("layers the duration badge and camera select over the placeholder without absolute", () => {
     // Arrange + Act
     const src = read("features/member/components/rekam-viewport.tsx");
 
@@ -17,7 +17,9 @@ describe("rekam components", () => {
     expect(src).toContain("aspect-[3/4]");
     expect(src).toContain("qualityLabel");
     expect(src).toContain("Siaga");
-    expect(src).toContain("REC");
+    expect(src).toContain("formatClock");
+    expect(src).toContain("targetDurationSec");
+    expect(src).toContain("maxDurationSec");
     expect(src).toContain("<video");
     expect(src).not.toContain("Ganti");
     expect(src).not.toContain("Pesilat Terdeteksi");
@@ -38,7 +40,7 @@ describe("rekam components", () => {
     expect(src).toContain('aria-label="Pilih kamera"');
   });
 
-  it("probes the live stream on interaction with a recording-control TODO", () => {
+  it("probes the live stream on interaction with no fake mount timer", () => {
     // Arrange + Act
     const src = read("features/member/components/rekam-viewport.tsx");
 
@@ -48,7 +50,8 @@ describe("rekam components", () => {
     expect(src).toContain("enumerateDevices");
     expect(src).toContain("denied");
     expect(src).toContain("TODO");
-    expect(src).toContain("react-media-recorder");
+    expect(src).toContain("MediaRecorder");
+    expect(src).not.toContain("setInterval");
   });
 
   it("links the Selesai CTA live to the sesi route with no evaluation CTA", () => {
@@ -80,7 +83,7 @@ describe("rekam components", () => {
 });
 
 describe("rekam route", () => {
-  it("keeps the rekam route thin with static params and no client boundary", () => {
+  it("keeps the rekam route thin without static params or a client boundary", () => {
     // Arrange + Act
     const layout = read("app/(member)/latihan/[slug]/rekam/layout.tsx");
     const page = read("app/(member)/latihan/[slug]/rekam/page.tsx");
@@ -88,13 +91,13 @@ describe("rekam route", () => {
     // Assert
     expect(layout).not.toContain("use client");
     expect(page).not.toContain("use client");
-    expect(page).toContain("generateStaticParams");
-    expect(page).toContain("rekamSlugs");
+    expect(page).not.toContain("generateStaticParams");
+    expect(page).not.toContain("rekamSlugs");
     expect(page).toContain("@/features/member/pages/rekam-page");
     expect(page).toContain("RekamPage");
   });
 
-  it("suspends the viewport and CTA behind skeleton fallbacks", () => {
+  it("reads the record config once and hands it to the client viewport", () => {
     // Arrange + Act
     const src = read("features/member/pages/rekam-page.tsx");
 
@@ -103,7 +106,9 @@ describe("rekam route", () => {
     expect(src).toContain("Skeleton");
     expect(src).toContain("notFound");
     expect(src).toContain("getRekam");
-    expect(src).toContain("getCameras");
+    expect(src.match(/getRekam\(/g)).toHaveLength(1);
+    expect(src).not.toContain("getCameras");
+    expect(src).not.toContain("defaultCameraId");
     expect(src).toContain("RekamViewport");
     expect(src).toContain("RekamSelesaiCta");
   });

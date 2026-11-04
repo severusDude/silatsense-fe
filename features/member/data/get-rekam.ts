@@ -1,24 +1,60 @@
 import "server-only";
 
-import { cacheLife } from "next/cache";
+import { cache } from "react";
+import {
+  prepApiV1MemberTrainingPrepSlugGet,
+  recordConfigApiV1MemberRecordConfigSlugGet,
+} from "@/api";
+import { getAccessToken } from "@/features/auth/data/session";
+import { toRekamViewModel } from "@/features/member/data/training-mapper";
+import type { RekamViewModel } from "@/features/member/types";
 
-import { dummyRekamBySlug } from "@/features/member/data/rekam-dummy";
-import { persiapanSlugs } from "@/features/member/data/persiapan-dummy";
-import type {
-  PersiapanSlug,
-  RekamSession,
-} from "@/features/member/types";
+export const getRekam = cache(
+  async (slug: string): Promise<RekamViewModel | null> => {
+    const token = await getAccessToken();
+    if (!token) {
+      return null;
+    }
 
-export { persiapanSlugs as rekamSlugs };
+    const [configResult, prepResult] = await Promise.all([
+      recordConfigApiV1MemberRecordConfigSlugGet({
+        path: { slug },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+        throwOnError: false,
+      }),
+      prepApiV1MemberTrainingPrepSlugGet({
+        path: { slug },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+        throwOnError: false,
+      }),
+    ]);
 
-function isRekamSlug(slug: string): slug is PersiapanSlug {
-  return (persiapanSlugs as string[]).includes(slug);
-}
+    const statuses = [
+      configResult.response?.status,
+      prepResult.response?.status,
+    ];
+    if (statuses.some((status) => status === 401 || status === 404)) {
+      return null;
+    }
 
-export async function getRekam(slug: string): Promise<RekamSession | null> {
-  "use cache";
-  cacheLife("minutes");
-  // TODO: connect backend via lib/api-client.ts (GET /member/record-config/:slug) — dummy for now
-  if (!isRekamSlug(slug)) return null;
-  return dummyRekamBySlug[slug];
-}
+    const failure = configResult.error ?? prepResult.error;
+    if (failure || !configResult.data || !prepResult.data) {
+      const status = configResult.error
+        ? configResult.response?.status
+        : prepResult.response?.status;
+      throw new Error(
+        `Gagal mengambil konfigurasi rekaman (status: ${status ?? "unknown"}): ${
+          typeof failure === "string" ? failure : "Layanan rekaman bermasalah"
+        }`,
+      );
+    }
+
+    return toRekamViewModel(configResult.data, prepResult.data);
+  },
+);

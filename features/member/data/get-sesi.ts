@@ -3,16 +3,16 @@ import "server-only";
 import { cacheLife } from "next/cache";
 
 import { dummySesiBySlug } from "@/features/member/data/sesi-dummy";
-import { persiapanSlugs } from "@/features/member/data/persiapan-dummy";
+import { TRAINING_MODULE_SLUGS } from "@/features/member/data/training-mapper";
 import type {
   PersiapanSlug,
   TrainingSession,
 } from "@/features/member/types";
 
-export { persiapanSlugs as sesiSlugs };
+export { TRAINING_MODULE_SLUGS as sesiSlugs };
 
 function isSesiSlug(slug: string): slug is PersiapanSlug {
-  return (persiapanSlugs as string[]).includes(slug);
+  return (TRAINING_MODULE_SLUGS as readonly string[]).includes(slug);
 }
 
 export async function getSesi(slug: string): Promise<TrainingSession | null> {

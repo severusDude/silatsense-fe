@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest";
 import type { TrainingSession } from "@/features/member/types";
 import { dummySesiBySlug } from "@/features/member/data/sesi-dummy";
-import { persiapanSlugs } from "@/features/member/data/persiapan-dummy";
+import { TRAINING_MODULE_SLUGS } from "@/features/member/data/training-mapper";
 
 describe("dummySesiBySlug", () => {
   it("resolves all four module slugs", () => {
     // Arrange + Act
-    const slugs = [...persiapanSlugs].sort();
+    const slugs = [...TRAINING_MODULE_SLUGS].sort();
 
     // Assert
     expect(slugs).toEqual(["kuda-kuda", "pukulan", "tangkisan", "tendangan"]);
-    for (const slug of persiapanSlugs) {
+    for (const slug of TRAINING_MODULE_SLUGS) {
       expect(dummySesiBySlug[slug].slug).toBe(slug);
     }
   });

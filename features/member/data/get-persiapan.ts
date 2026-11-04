@@ -1,37 +1,40 @@
 import "server-only";
 
-import { cacheLife } from "next/cache";
+import { cache } from "react";
+import { prepApiV1MemberTrainingPrepSlugGet } from "@/api";
+import { getAccessToken } from "@/features/auth/data/session";
+import { toPersiapanViewModel } from "@/features/member/data/training-mapper";
+import type { PersiapanViewModel } from "@/features/member/types";
 
-import {
-  dummyCameras,
-  dummyPersiapanBySlug,
-  persiapanSlugs,
-} from "@/features/member/data/persiapan-dummy";
-import type {
-  CameraDevice,
-  PersiapanDetail,
-  PersiapanSlug,
-} from "@/features/member/types";
+export const getPersiapan = cache(
+  async (slug: string): Promise<PersiapanViewModel | null> => {
+    const token = await getAccessToken();
+    if (!token) {
+      return null;
+    }
 
-export { persiapanSlugs };
+    const { data, error, response } =
+      await prepApiV1MemberTrainingPrepSlugGet({
+        path: { slug },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+        throwOnError: false,
+      });
 
-function isPersiapanSlug(slug: string): slug is PersiapanSlug {
-  return (persiapanSlugs as string[]).includes(slug);
-}
+    if (response?.status === 401 || response?.status === 404) {
+      return null;
+    }
 
-export async function getPersiapan(
-  slug: string,
-): Promise<PersiapanDetail | null> {
-  "use cache";
-  cacheLife("minutes");
-  // TODO: connect backend via lib/api-client.ts (GET /member/training-prep/:slug) — dummy for now
-  if (!isPersiapanSlug(slug)) return null;
-  return dummyPersiapanBySlug[slug];
-}
+    if (error || !data) {
+      throw new Error(
+        `Gagal mengambil persiapan latihan (status: ${response?.status ?? "unknown"}): ${
+          typeof error === "string" ? error : "Layanan latihan bermasalah"
+        }`,
+      );
+    }
 
-export async function getCameras(): Promise<CameraDevice[]> {
-  "use cache";
-  cacheLife("minutes");
-  // TODO: connect backend via lib/api-client.ts (GET /member/cameras) — dummy for now
-  return dummyCameras;
-}
+    return toPersiapanViewModel(data);
+  },
+);

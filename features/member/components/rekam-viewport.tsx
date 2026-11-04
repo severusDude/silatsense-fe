@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Camera } from "lucide-react";
+import { Camera, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -13,48 +14,27 @@ import {
 } from "@/components/ui/select";
 import { ImagePlaceholder } from "@/features/member/components/shared/image-placeholder";
 import { qualityLabel } from "@/features/member/camera-format";
-import type { CameraDevice } from "@/features/member/types";
+import { formatClock } from "@/features/member/data/format";
+import type { CameraDevice, RekamViewModel } from "@/features/member/types";
 
-// TODO: bind timer + Selesai to a recording control when the capture move lands.
-// Evaluated candidate (2026-10-10): `react-media-recorder`
-// `useReactMediaRecorder({ video: { deviceId }, audio: false, askPermissionOnMount: false,
-// onStop: (blobUrl, blob) => hand to sesi store, stopStreamsOnStop: true })` —
-// `previewStream` feeds this viewport, `status` drives the timer/REC dot, `mediaBlobUrl`
-// feeds sesi playback. Caveats: must live in a dynamically imported (`ssr: false`)
-// client island (Worker/Blob SSR crash); pin >=1.7.1 (StrictMode encoder bug on 1.6.6).
-// Alternative: hand-rolled native MediaRecorder hook (repo already owns half the probing).
-
-type ProbeStatus = "dummy" | "scanning" | "live" | "denied";
+// TODO: bind countdown, recording, and auto-stop to a MediaRecorder control in
+// the recorder move. Camera probing stays on this client island.
+type ProbeStatus = "idle" | "scanning" | "live" | "denied";
 
 function stopStream(stream: MediaStream | null) {
   stream?.getTracks().forEach((track) => track.stop());
 }
 
-function formatElapsed(totalSec: number): string {
-  const minutes = Math.floor(totalSec / 60).toString().padStart(2, "0");
-  const seconds = (totalSec % 60).toString().padStart(2, "0");
-  return `${minutes}:${seconds}`;
-}
-
-export function RekamViewport({
-  label,
-  cameras: fallbackCameras,
-  defaultCameraId,
-}: {
-  label: string;
-  cameras: CameraDevice[];
-  defaultCameraId: string;
-}) {
-  const [cameras, setCameras] = useState<CameraDevice[]>(fallbackCameras);
-  const [selectedId, setSelectedId] = useState<string>(defaultCameraId);
-  const [status, setStatus] = useState<ProbeStatus>("dummy");
+export function RekamViewport({ detail }: { detail: RekamViewModel }) {
+  const [cameras, setCameras] = useState<CameraDevice[]>([]);
+  const [selectedId, setSelectedId] = useState<string>("");
+  const [status, setStatus] = useState<ProbeStatus>("idle");
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [live, setLive] = useState<{
     width: number;
     height: number;
     fps: number;
   } | null>(null);
-  const [elapsedSec, setElapsedSec] = useState(0);
   const streamRef = useRef<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -68,12 +48,7 @@ export function RekamViewport({
   }, [stream]);
 
   useEffect(() => {
-    // Stub simplification — counts from mount; binds to recorder status when the control lands.
-    const timer = window.setInterval(() => {
-      setElapsedSec((prev) => prev + 1);
-    }, 1000);
     return () => {
-      window.clearInterval(timer);
       stopStream(streamRef.current);
     };
   }, []);
@@ -107,12 +82,6 @@ export function RekamViewport({
       const devices = await navigator.mediaDevices.enumerateDevices();
       const inputs = devices.filter((device) => device.kind === "videoinput");
       const found: CameraDevice[] = [];
-      let kept: {
-        stream: MediaStream;
-        width: number;
-        height: number;
-        fps: number;
-      } | null = null;
       let index = 0;
       for (const input of inputs) {
         index += 1;
@@ -122,17 +91,7 @@ export function RekamViewport({
             audio: false,
           });
           const settings = probe.getVideoTracks()[0]?.getSettings();
-          // Keep the first probe stream open as the live preview; close the rest.
-          if (!kept && settings?.width && settings?.height) {
-            kept = {
-              stream: probe,
-              width: settings.width,
-              height: settings.height,
-              fps: settings.frameRate ?? 30,
-            };
-          } else {
-            stopStream(probe);
-          }
+          stopStream(probe);
           found.push({
             id: input.deviceId,
             label: input.label || `Kamera ${index}`,
@@ -151,14 +110,14 @@ export function RekamViewport({
         setStatus("denied");
         return;
       }
-      stopStream(streamRef.current);
-      setCameras(found);
       const first = found[0];
-      if (first) setSelectedId(first.id);
-      if (kept) {
-        setStream(kept.stream);
-        setLive({ width: kept.width, height: kept.height, fps: kept.fps });
+      setCameras(found);
+      if (!first) {
+        setStatus("denied");
+        return;
       }
+      setSelectedId(first.id);
+      await openDevice(first.id);
       setStatus("live");
     } catch {
       setStatus("denied");
@@ -167,11 +126,6 @@ export function RekamViewport({
 
   async function handleSelect(nextId: string) {
     setSelectedId(nextId);
-    // Lazy probe on first explicit interaction — never on mount.
-    if (status === "dummy") {
-      await handleScan();
-      return;
-    }
     if (status !== "live") return;
     try {
       await openDevice(nextId);
@@ -180,9 +134,7 @@ export function RekamViewport({
     }
   }
 
-  const badge = live
-    ? qualityLabel(live.width, live.height, live.fps)
-    : null;
+  const badge = live ? qualityLabel(live.width, live.height, live.fps) : null;
 
   return (
     <section
@@ -195,12 +147,12 @@ export function RekamViewport({
           autoPlay
           muted
           playsInline
-          aria-label={`${label} — pratinjau langsung`}
+          aria-label={`${detail.trainingName} — pratinjau langsung`}
           className="col-start-1 row-start-1 h-full w-full bg-black object-cover"
         />
       ) : (
         <ImagePlaceholder
-          label={label}
+          label={detail.trainingName}
           className="col-start-1 row-start-1 h-full rounded-none border-0"
         />
       )}
@@ -214,12 +166,9 @@ export function RekamViewport({
             {badge ?? "Siaga"}
           </Badge>
           <span className="flex-1" />
-          <Badge variant="destructive" className="bg-background/80 backdrop-blur-sm">
-            <span
-              aria-hidden="true"
-              className="size-1.5 animate-pulse rounded-full bg-destructive"
-            />
-            REC {formatElapsed(elapsedSec)}
+          <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">
+            Target {formatClock(detail.targetDurationSec)} · Maks{" "}
+            {formatClock(detail.maxDurationSec)}
           </Badge>
           <span
             aria-hidden="true"
@@ -232,7 +181,8 @@ export function RekamViewport({
               role="status"
               className="w-fit rounded-md bg-background/80 px-2 py-1 text-[11px] text-muted-foreground backdrop-blur-sm"
             >
-              Tidak dapat mengakses kamera — menampilkan daftar contoh.
+              Tidak dapat mengakses kamera. Periksa izin browser lalu pindai
+              ulang.
             </p>
           ) : null}
           <div className="flex items-end gap-2">
@@ -240,33 +190,64 @@ export function RekamViewport({
               aria-hidden="true"
               className="size-4 shrink-0 rounded-bl-md border-b-2 border-l-2 border-foreground/40"
             />
-            <Select
-              items={cameras.map((camera) => ({
-                label: camera.label,
-                value: camera.id,
-              }))}
-              value={selectedId}
-              onValueChange={(next) => {
-                if (typeof next === "string") void handleSelect(next);
-              }}
-            >
-              <SelectTrigger
-                aria-label="Pilih kamera"
-                className="h-7 border-0 bg-background/80 text-xs backdrop-blur-sm"
+            {cameras.length > 0 ? (
+              <>
+                <Select
+                  items={cameras.map((camera) => ({
+                    label: camera.label,
+                    value: camera.id,
+                  }))}
+                  value={selectedId}
+                  onValueChange={(next) => {
+                    if (typeof next === "string") void handleSelect(next);
+                  }}
+                >
+                  <SelectTrigger
+                    aria-label="Pilih kamera"
+                    className="h-7 border-0 bg-background/80 text-xs backdrop-blur-sm"
+                  >
+                    <Camera className="size-3.5" aria-hidden="true" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {cameras.map((camera) => (
+                        <SelectItem key={camera.id} value={camera.id}>
+                          {camera.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <button
+                  type="button"
+                  onClick={handleScan}
+                  disabled={status === "scanning"}
+                  aria-label="Pindai ulang kamera"
+                  className={buttonVariants({
+                    variant: "secondary",
+                    size: "icon-xs",
+                    className: "bg-background/80 backdrop-blur-sm",
+                  })}
+                >
+                  <RefreshCw className="size-3.5" aria-hidden="true" />
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={handleScan}
+                disabled={status === "scanning"}
+                className={buttonVariants({
+                  variant: "secondary",
+                  size: "xs",
+                  className: "bg-background/80 backdrop-blur-sm",
+                })}
               >
-                <Camera className="size-3.5" aria-hidden="true" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {cameras.map((camera) => (
-                    <SelectItem key={camera.id} value={camera.id}>
-                      {camera.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+                <RefreshCw className="size-3" aria-hidden="true" />
+                {status === "scanning" ? "Memindai…" : "Pindai Kamera"}
+              </button>
+            )}
             <span className="flex-1" />
             <span
               aria-hidden="true"

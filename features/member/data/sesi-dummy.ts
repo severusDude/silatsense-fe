@@ -3,19 +3,14 @@ import type {
   PersiapanSlug,
   TrainingSession,
 } from "@/features/member/types";
-import {
-  defaultCameraId,
-  dummyCameras,
-} from "@/features/member/data/persiapan-dummy";
 
-const fallbackCamera: CameraDevice =
-  dummyCameras.find((camera) => camera.id === defaultCameraId) ?? {
-    id: "integrated",
-    label: "Kamera Terintegrasi",
-    resolution: "1280×720",
-    fps: 30,
-    latencyMs: null,
-  };
+const fallbackCamera: CameraDevice = {
+  id: "integrated",
+  label: "Kamera Terintegrasi",
+  resolution: "1280×720",
+  fps: 30,
+  latencyMs: null,
+};
 
 function sesiSession(
   slug: PersiapanSlug,

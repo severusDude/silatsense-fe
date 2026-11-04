@@ -71,54 +71,74 @@ export interface MemberDashboard {
   coachNote: CoachNoteData;
 }
 
-export interface TrainingModule {
-  slug: PilarSlug;
+export type TrainingModuleSlug =
+  | "kuda-kuda"
+  | "pukulan"
+  | "tangkisan"
+  | "tendangan";
+
+export interface TrainingModuleViewModel {
+  slug: TrainingModuleSlug;
   order: number;
   orderLabel: string;
   name: string;
   levelLabel: string;
   description: string;
   estimateLabel?: string;
+  scoringAvailable: boolean;
+  scoringReason: "reference_not_ready" | null;
+  similarity: { averageScore: number; sampleCount: number } | null;
 }
 
-export interface TrainingHero {
-  badges: string[];
-  title: string;
-  subtitle: string;
-  sessionsLabel: string;
-  accuracyLabel: string;
+export interface TrainingCatalogViewModel {
+  hero: {
+    badges: string[];
+    title: string;
+    subtitle: string;
+    completedSessionsLabel: string;
+    scoredSessionsLabel: string;
+    accuracy: { available: false; label: "Segera hadir" };
+  };
+  modules: TrainingModuleViewModel[];
 }
 
-export interface MemberTraining {
-  hero: TrainingHero;
-  modules: TrainingModule[];
+export interface GuideItemViewModel {
+  id: string;
+  text: string;
+  source: string;
 }
 
-export type PersiapanSlug = PilarSlug;
-
-export interface CalibrationCheck {
-  title: string;
-  detail: string;
-  stateLabel: string;
-}
-
-export interface PostureGuide {
-  term: string;
-  detail: string;
-}
-
-export interface PersiapanDetail {
-  slug: PersiapanSlug;
+export interface PersiapanViewModel {
+  slug: TrainingModuleSlug;
   eyebrow: string;
-  accuracyLabel: string;
-  accuracyValue: string;
   title: string;
   description: string;
-  coachQuote: string;
-  readinessLabel: string;
-  checks: CalibrationCheck[];
-  guides: PostureGuide[];
+  levelLabel: string;
+  estimatedDurationLabel?: string;
+  capability: {
+    scoringAvailable: boolean;
+    reason: "reference_not_ready" | null;
+    method: "static-reference-pose";
+    referenceVersions: string[];
+  };
+  checklist: GuideItemViewModel[];
+  guides: GuideItemViewModel[];
 }
+
+export interface RekamViewModel {
+  slug: TrainingModuleSlug;
+  trainingName: string;
+  eyebrow: string;
+  countdownSec: number;
+  targetDurationSec: number;
+  maxDurationSec: number;
+  maxBytes: number;
+  acceptedMimeTypes: string[];
+  retentionSeconds: number;
+  scoringAvailable: boolean;
+}
+
+export type PersiapanSlug = TrainingModuleSlug;
 
 export interface CameraDevice {
   id: string;
@@ -126,15 +146,6 @@ export interface CameraDevice {
   resolution: string;
   fps: number;
   latencyMs: number | null;
-}
-
-export interface RekamSession {
-  slug: PersiapanSlug;
-  trainingName: string;
-  eyebrow: string;
-  countdownSec: number;
-  targetDurationSec: number;
-  camera: CameraDevice;
 }
 
 export type SesiUploadState = "idle" | "uploading" | "failed" | "success";
