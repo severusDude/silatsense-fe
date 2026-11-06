@@ -1,6 +1,12 @@
-import { zAcceptedSession } from "@/api/zod.gen";
+import { createHash } from "node:crypto";
+import {
+  zAcceptedSession,
+  zUploadRequest,
+  zUploadTicket,
+} from "@/api/zod.gen";
 import { getAccessToken } from "@/features/auth/data/session";
 import { formatBytes } from "@/features/member/data/format";
+import { baseMimeType, recordingFileName } from "@/features/member/recorder";
 import { client } from "@/lib/api-client";
 import {
   domainErrorResponse,
@@ -53,10 +59,12 @@ function uploadFailureFallback(status: number | undefined): {
 /**
  * Transport-only BFF seam for the member video upload.
  *
- * The access token is HttpOnly, so the browser cannot call the backend
- * directly. This route forwards the multipart body and auth headers without
- * shaping the payload. It is excluded from the `proxy.ts` matcher so the proxy
- * does not buffer the body before this handler runs.
+ * The access token is HttpOnly and the object storage bucket does not expose
+ * browser CORS headers, so this route executes the backend's 3-step upload
+ * flow server-side (`POST /api/v1/member/uploads` -> `PUT` to pre-signed B2
+ * URL -> `POST /api/v1/member/uploads/{upload_id}/complete`). It is excluded
+ * from the `proxy.ts` matcher so the proxy does not buffer the body before
+ * this handler runs.
  */
 export async function POST(request: Request): Promise<Response> {
   const token = await getAccessToken();
@@ -138,35 +146,129 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  const body = new FormData();
-  body.set("movementSlug", movementSlug.trim());
-  body.set("video", video, video.name);
-  if (typeof retryOf === "string" && retryOf.trim() !== "") {
-    body.set("retryOf", retryOf.trim());
+  const normalizedMimeType = baseMimeType(video.type || "video/webm");
+  const normalizedSlug = movementSlug.trim();
+  const normalizedFilename = (
+    video.name.trim() || recordingFileName(normalizedSlug, normalizedMimeType)
+  ).slice(0, 255);
+  const bytes = new Uint8Array(await video.arrayBuffer());
+  const sha256 = createHash("sha256").update(bytes).digest("hex");
+
+  const uploadRequestParsed = zUploadRequest.safeParse({
+    movementSlug: normalizedSlug,
+    filename: normalizedFilename,
+    mimeType: normalizedMimeType,
+    byteSize: video.size,
+    sha256,
+    ...(typeof retryOf === "string" && retryOf.trim() !== ""
+      ? { retryOf: retryOf.trim() }
+      : {}),
+  });
+
+  if (!uploadRequestParsed.success) {
+    const hasMimeIssue = uploadRequestParsed.error.issues.some((issue) =>
+      issue.path.includes("mimeType"),
+    );
+    if (hasMimeIssue) {
+      return domainErrorResponse(
+        415,
+        "Format rekaman tidak didukung.",
+        "UNSUPPORTED_MEDIA_TYPE",
+      );
+    }
+    return domainErrorResponse(
+      422,
+      "Data unggahan tidak valid.",
+      "VALIDATION_ERROR",
+    );
   }
 
-  const { data, error, response } = await client.post({
-    url: "/api/v1/member/sessions",
-    body,
-    bodySerializer: null,
+  const initResult = await client.post({
+    url: "/api/v1/member/uploads",
+    body: uploadRequestParsed.data,
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": null,
       "Idempotency-Key": idempotencyKey,
     },
     cache: "no-store",
     throwOnError: false,
   });
 
-  if (!response?.ok) {
+  if (!initResult.response?.ok) {
     return upstreamDomainErrorResponse(
-      response?.status,
-      error,
-      uploadFailureFallback(response?.status),
+      initResult.response?.status,
+      initResult.error,
+      uploadFailureFallback(initResult.response?.status),
     );
   }
 
-  const parsed = zAcceptedSession.safeParse(data);
+  const ticketParsed = zUploadTicket.safeParse(initResult.data);
+  if (!ticketParsed.success) {
+    return domainErrorResponse(
+      502,
+      "Respons server tidak dikenali.",
+      "SCHEMA_MISMATCH",
+    );
+  }
+
+  const ticket = ticketParsed.data;
+  if (ticket.acceptedSession) {
+    return Response.json(ticket.acceptedSession, {
+      status: 202,
+      headers: { "Cache-Control": "no-store" },
+    });
+  }
+
+  if (!ticket.uploadUrl) {
+    return domainErrorResponse(
+      502,
+      "Respons server tidak dikenali.",
+      "SCHEMA_MISMATCH",
+    );
+  }
+
+  let storageResponse: Response;
+  try {
+    storageResponse = await fetch(ticket.uploadUrl, {
+      method: ticket.method,
+      headers: ticket.headers,
+      body: bytes,
+    });
+  } catch {
+    return domainErrorResponse(
+      502,
+      "Gagal mengunggah rekaman ke penyimpanan.",
+      "STORAGE_UPLOAD_FAILED",
+    );
+  }
+
+  if (!storageResponse.ok) {
+    return domainErrorResponse(
+      502,
+      "Gagal mengunggah rekaman ke penyimpanan.",
+      "STORAGE_UPLOAD_FAILED",
+    );
+  }
+
+  const completeResult = await client.post({
+    url: "/api/v1/member/uploads/{upload_id}/complete",
+    path: { upload_id: ticket.uploadId },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+    throwOnError: false,
+  });
+
+  if (!completeResult.response?.ok) {
+    return upstreamDomainErrorResponse(
+      completeResult.response?.status,
+      completeResult.error,
+      uploadFailureFallback(completeResult.response?.status),
+    );
+  }
+
+  const parsed = zAcceptedSession.safeParse(completeResult.data);
   if (!parsed.success) {
     return domainErrorResponse(
       502,

@@ -1336,6 +1336,69 @@ export type UploadConfig = {
 };
 
 /**
+ * UploadRequest
+ */
+export type UploadRequest = {
+    /**
+     * Movementslug
+     */
+    movementSlug: 'kuda-kuda' | 'pukulan' | 'tangkisan' | 'tendangan';
+    /**
+     * Filename
+     */
+    filename: string;
+    /**
+     * Mimetype
+     */
+    mimeType: 'video/mp4' | 'video/quicktime' | 'video/webm';
+    /**
+     * Bytesize
+     */
+    byteSize: number;
+    /**
+     * Sha256
+     */
+    sha256: string;
+    /**
+     * Retryof
+     */
+    retryOf?: string | null;
+};
+
+/**
+ * UploadTicket
+ */
+export type UploadTicket = {
+    /**
+     * Uploadid
+     */
+    uploadId: string;
+    /**
+     * Uploadurl
+     */
+    uploadUrl: string | null;
+    /**
+     * Method
+     */
+    method?: 'PUT';
+    /**
+     * Headers
+     */
+    headers: {
+        [key: string]: string;
+    };
+    /**
+     * Expiresat
+     */
+    expiresAt: string;
+    /**
+     * Completepath
+     */
+    completePath: string;
+    acceptedSession?: AcceptedSession | null;
+};
+
+/**
  * ValidationError
  */
 export type ValidationError = {
@@ -2358,6 +2421,139 @@ export type AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostRespons
 };
 
 export type AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse = AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponses[keyof AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponses];
+
+export type InitiateApiV1MemberUploadsPostData = {
+    body: UploadRequest;
+    headers: {
+        /**
+         * Idempotency-Key
+         */
+        'Idempotency-Key': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/member/uploads';
+};
+
+export type InitiateApiV1MemberUploadsPostErrors = {
+    /**
+     * Unauthorized
+     */
+    401: DomainErrorOut;
+    /**
+     * Forbidden
+     */
+    403: DomainErrorOut;
+    /**
+     * Not Found
+     */
+    404: DomainErrorOut;
+    /**
+     * Conflict
+     */
+    409: DomainErrorOut;
+    /**
+     * Gone
+     */
+    410: DomainErrorOut;
+    /**
+     * Request Entity Too Large
+     */
+    413: DomainErrorOut;
+    /**
+     * Unsupported Media Type
+     */
+    415: DomainErrorOut;
+    /**
+     * Unprocessable Entity
+     */
+    422: DomainErrorOut;
+    /**
+     * Too Many Requests
+     */
+    429: DomainErrorOut;
+    /**
+     * Service Unavailable
+     */
+    503: DomainErrorOut;
+};
+
+export type InitiateApiV1MemberUploadsPostError = InitiateApiV1MemberUploadsPostErrors[keyof InitiateApiV1MemberUploadsPostErrors];
+
+export type InitiateApiV1MemberUploadsPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: UploadTicket;
+};
+
+export type InitiateApiV1MemberUploadsPostResponse = InitiateApiV1MemberUploadsPostResponses[keyof InitiateApiV1MemberUploadsPostResponses];
+
+export type CompleteApiV1MemberUploadsUploadIdCompletePostData = {
+    body?: never;
+    path: {
+        /**
+         * Upload Id
+         */
+        upload_id: string;
+    };
+    query?: never;
+    url: '/api/v1/member/uploads/{upload_id}/complete';
+};
+
+export type CompleteApiV1MemberUploadsUploadIdCompletePostErrors = {
+    /**
+     * Unauthorized
+     */
+    401: DomainErrorOut;
+    /**
+     * Forbidden
+     */
+    403: DomainErrorOut;
+    /**
+     * Not Found
+     */
+    404: DomainErrorOut;
+    /**
+     * Conflict
+     */
+    409: DomainErrorOut;
+    /**
+     * Gone
+     */
+    410: DomainErrorOut;
+    /**
+     * Request Entity Too Large
+     */
+    413: DomainErrorOut;
+    /**
+     * Unsupported Media Type
+     */
+    415: DomainErrorOut;
+    /**
+     * Unprocessable Entity
+     */
+    422: DomainErrorOut;
+    /**
+     * Too Many Requests
+     */
+    429: DomainErrorOut;
+    /**
+     * Service Unavailable
+     */
+    503: DomainErrorOut;
+};
+
+export type CompleteApiV1MemberUploadsUploadIdCompletePostError = CompleteApiV1MemberUploadsUploadIdCompletePostErrors[keyof CompleteApiV1MemberUploadsUploadIdCompletePostErrors];
+
+export type CompleteApiV1MemberUploadsUploadIdCompletePostResponses = {
+    /**
+     * Successful Response
+     */
+    202: AcceptedSession;
+};
+
+export type CompleteApiV1MemberUploadsUploadIdCompletePostResponse = CompleteApiV1MemberUploadsUploadIdCompletePostResponses[keyof CompleteApiV1MemberUploadsUploadIdCompletePostResponses];
 
 export type HistoryApiV1MemberHistoryGetData = {
     body?: never;

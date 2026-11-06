@@ -14,17 +14,15 @@ export const getEvaluation = cache(
       return null;
     }
 
-    const [session, { data, error, response }] = await Promise.all([
-      getSession(sessionId),
-      evaluationApiV1MemberSessionsSessionIdEvaluationGet({
+    const { data, error, response } =
+      await evaluationApiV1MemberSessionsSessionIdEvaluationGet({
         path: { session_id: sessionId },
         headers: {
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
         throwOnError: false,
-      }),
-    ]);
+      });
 
     if (response?.status === 401 || response?.status === 404) {
       return null;
@@ -37,6 +35,8 @@ export const getEvaluation = cache(
         }`,
       );
     }
+
+    const session = await getSession(sessionId);
 
     return toEvaluationViewModel(data, session);
   },

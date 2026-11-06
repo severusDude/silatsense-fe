@@ -16,45 +16,60 @@ export const getRekam = cache(
       return null;
     }
 
-    const [configResult, prepResult] = await Promise.all([
-      recordConfigApiV1MemberRecordConfigSlugGet({
-        path: { slug },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
-        throwOnError: false,
-      }),
-      prepApiV1MemberTrainingPrepSlugGet({
-        path: { slug },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
-        throwOnError: false,
-      }),
-    ]);
+    const {
+      data: configData,
+      error: configError,
+      response: configResponse,
+    } = await recordConfigApiV1MemberRecordConfigSlugGet({
+      path: { slug },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+      throwOnError: false,
+    });
 
-    const statuses = [
-      configResult.response?.status,
-      prepResult.response?.status,
-    ];
-    if (statuses.some((status) => status === 401 || status === 404)) {
+    if (configResponse?.status === 401 || configResponse?.status === 404) {
       return null;
     }
 
-    const failure = configResult.error ?? prepResult.error;
-    if (failure || !configResult.data || !prepResult.data) {
-      const status = configResult.error
-        ? configResult.response?.status
-        : prepResult.response?.status;
+    if (configError || !configData) {
       throw new Error(
-        `Gagal mengambil konfigurasi rekaman (status: ${status ?? "unknown"}): ${
-          typeof failure === "string" ? failure : "Layanan rekaman bermasalah"
+        `Gagal mengambil konfigurasi rekaman (status: ${configResponse?.status ?? "unknown"}): ${
+          typeof configError === "string"
+            ? configError
+            : "Layanan rekaman bermasalah"
         }`,
       );
     }
 
-    return toRekamViewModel(configResult.data, prepResult.data);
+    const {
+      data: prepData,
+      error: prepError,
+      response: prepResponse,
+    } = await prepApiV1MemberTrainingPrepSlugGet({
+      path: { slug },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+      throwOnError: false,
+    });
+
+    if (prepResponse?.status === 401 || prepResponse?.status === 404) {
+      return null;
+    }
+
+    if (prepError || !prepData) {
+      throw new Error(
+        `Gagal mengambil konfigurasi rekaman (status: ${prepResponse?.status ?? "unknown"}): ${
+          typeof prepError === "string"
+            ? prepError
+            : "Layanan rekaman bermasalah"
+        }`,
+      );
+    }
+
+    return toRekamViewModel(configData, prepData);
   },
 );
