@@ -29,7 +29,7 @@ conventions live in `docs/integration/`; later modules start from that guide.
 | Done | 12 | `[Phase 12] Coach member history` — shipped `/coach/members/[id]/riwayat` |
 | Done | 13 | `[Phase 13] Auth integration` — real BE auth: generated client seam, session cookies, proxy refresh, role guards, sign-in/up, sign-out |
 | Done | 14 | `[Phase 14] Profile integration` — real profile read/update, ViewModel mapper, honest stats, camera decoupling |
-| Review | 15 | `[Phase 15] Training integration` — `/latihan` catalog, prep, record, session review, evaluation against the real BE; upload transport spike first. PR #33; live upload verification waits on BE storage (`/health/ready` reports `storage: unavailable`) |
+| Review | 15 | `[Phase 15] Training integration` — `/latihan` catalog, prep, record, session review, evaluation against the real BE; upload transport spike first. PR #33; BE storage is now `ok` and `POST /member/sessions` returns `503 direct_upload_required` in favor of `POST /member/uploads` + B2 `PUT` + `complete` (B2 bucket lacks browser CORS; queued sessions wait on BE worker) |
 
 ## 2. Phase table
 
@@ -61,7 +61,7 @@ Resolved 2026-10-11: the duplicate 8th link pointed at node 94:40427 — the int
 
 Training (Phase 15) reuses the Phase 5–7 frames already shipped; no new node in this index.
 
-Phase 15 is in review (PR #33). Live verification on 2026-11-06 confirmed the real catalog (4 modules), prep, record config, camera capture, and preview. Upload is still blocked: `POST /member/sessions` returns `500` / `internal_error`, and `GET /health/ready` reports `{"database":"ok","storage":"unavailable"}`. Session/evaluation live reads also wait on a successful upload; the five-screen pass used production-shaped fixtures.
+Phase 15 is in review (PR #33). Live verification on 2026-11-06 confirmed the real catalog (4 modules), prep, record config, camera capture, preview, and `/latihan/kuda-kuda/sesi/[sessionId]` live session read at 390px (`scrollWidth <= innerWidth`). `GET /health/ready` now reports `storage: ok` + `workerConfiguration: ok` (with intermittent `503 database: unavailable_or_unmigrated` under concurrent requests; `get-rekam.ts` and `get-evaluation.ts` now fetch sequentially to reduce DB spikes), and `POST /api/member/sessions` now executes the new 3-step `POST /api/v1/member/uploads` → Backblaze B2 `PUT` → `POST /api/v1/member/uploads/{upload_id}/complete` contract server-side (bypassing B2's `403 CORS is not enabled for this bucket` on browser preflights; uploaded sessions remain `queued` awaiting the BE worker).
 
 ## 4. Issue scaffolds (create JIT, titles ≤60 chars)
 
