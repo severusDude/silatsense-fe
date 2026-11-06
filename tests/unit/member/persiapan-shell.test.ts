@@ -98,6 +98,8 @@ describe("persiapan route", () => {
     expect(page).not.toContain("persiapanSlugs");
     expect(page).toContain("@/features/member/pages/persiapan-page");
     expect(page).toContain("PersiapanPage");
+    expect(page).toContain("params={params}");
+    expect(page).not.toContain("await params");
   });
 
   it("reads the prep once and passes VM sections to the client camera island", () => {

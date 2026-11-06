@@ -120,6 +120,8 @@ describe("sesi route", () => {
     expect(page).toContain("sessionId");
     expect(page).toContain("@/features/member/pages/sesi-page");
     expect(page).toContain("SesiPage");
+    expect(page).toContain("params={params}");
+    expect(page).not.toContain("await params");
   });
 
   it("reads the session once and rejects a mismatched movement slug", () => {

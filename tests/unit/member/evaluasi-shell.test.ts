@@ -215,6 +215,8 @@ describe("evaluasi route", () => {
     expect(page).toContain("sessionId");
     expect(page).toContain("@/features/member/pages/evaluasi-page");
     expect(page).toContain("EvaluasiPage");
+    expect(page).toContain("params={params}");
+    expect(page).not.toContain("await params");
   });
 
   it("reads the evaluation once and rejects a mismatched movement slug", () => {

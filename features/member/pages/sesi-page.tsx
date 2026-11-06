@@ -9,11 +9,9 @@ import { SesiPlayback } from "@/features/member/components/sesi-playback";
 import { SessionStatusPoller } from "@/features/member/components/session-status-poller";
 
 export function SesiPage({
-  slug,
-  sessionId,
+  params,
 }: {
-  slug: string;
-  sessionId: string;
+  params: Promise<{ slug: string; sessionId: string }>;
 }) {
   return (
     <div className="flex flex-col gap-3.5">
@@ -26,19 +24,18 @@ export function SesiPage({
           </div>
         }
       >
-        <SesiContent slug={slug} sessionId={sessionId} />
+        <SesiContent params={params} />
       </Suspense>
     </div>
   );
 }
 
 async function SesiContent({
-  slug,
-  sessionId,
+  params,
 }: {
-  slug: string;
-  sessionId: string;
+  params: Promise<{ slug: string; sessionId: string }>;
 }) {
+  const { slug, sessionId } = await params;
   if (!isTrainingModuleSlug(slug)) notFound();
 
   const session = await getSession(sessionId);

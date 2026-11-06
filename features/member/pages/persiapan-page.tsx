@@ -8,7 +8,11 @@ import { MovementGuideCard } from "@/features/member/components/coach-instructio
 import { CalibrationCard } from "@/features/member/components/calibration-card";
 import { PersiapanCta } from "@/features/member/components/persiapan-cta";
 
-export function PersiapanPage({ slug }: { slug: string }) {
+export function PersiapanPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   return (
     <div className="flex flex-col gap-3.5">
       <Suspense
@@ -20,13 +24,18 @@ export function PersiapanPage({ slug }: { slug: string }) {
           </div>
         }
       >
-        <PersiapanContent slug={slug} />
+        <PersiapanContent params={params} />
       </Suspense>
     </div>
   );
 }
 
-async function PersiapanContent({ slug }: { slug: string }) {
+async function PersiapanContent({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   if (!isTrainingModuleSlug(slug)) notFound();
   const detail = await getPersiapan(slug);
   if (!detail) notFound();

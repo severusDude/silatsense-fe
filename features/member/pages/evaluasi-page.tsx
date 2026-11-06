@@ -10,11 +10,9 @@ import { EvaluasiPostureList } from "@/features/member/components/evaluasi-postu
 import { EvaluasiScoreCard } from "@/features/member/components/evaluasi-score-card";
 
 export function EvaluasiPage({
-  slug,
-  sessionId,
+  params,
 }: {
-  slug: string;
-  sessionId: string;
+  params: Promise<{ slug: string; sessionId: string }>;
 }) {
   return (
     <div className="flex flex-col gap-3.5">
@@ -28,19 +26,18 @@ export function EvaluasiPage({
           </div>
         }
       >
-        <EvaluasiContent slug={slug} sessionId={sessionId} />
+        <EvaluasiContent params={params} />
       </Suspense>
     </div>
   );
 }
 
 async function EvaluasiContent({
-  slug,
-  sessionId,
+  params,
 }: {
-  slug: string;
-  sessionId: string;
+  params: Promise<{ slug: string; sessionId: string }>;
 }) {
+  const { slug, sessionId } = await params;
   if (!isTrainingModuleSlug(slug)) notFound();
 
   const evaluation = await getEvaluation(sessionId);
