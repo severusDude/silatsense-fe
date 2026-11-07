@@ -1,87 +1,224 @@
 import { describe, expect, it } from "vitest";
-import { dummyMemberHistory } from "@/features/member/data/riwayat-dummy";
+import type { Dashboard, HistoryItem, HistoryPage } from "@/api";
+import {
+  toHistoryEntryViewModel,
+  toHistoryPageViewModel,
+  toHistorySummaryViewModel,
+} from "@/features/member/data/history-mapper";
+import { historyFilterQuerySchema } from "@/features/member/schemas/history";
 
-describe("dummyMemberHistory", () => {
-  it("carries the summary verbatim with four entries in order", () => {
-    // Arrange + Act
-    const { summary, entries } = dummyMemberHistory;
+describe("history mapper - summary stats", () => {
+  it("maps Dashboard statistics into honest summary ViewModel", () => {
+    const mockDashboard: Dashboard = {
+      statistics: {
+        completedSessionCount: 24,
+        totalDurationSeconds: 31500, // 8h 45m
+        durationSampleCount: 24,
+        scoredSessionCount: 18,
+        excludedScoreCount: 0,
+        similarityGroups: [
+          {
+            movementSlug: "kuda-kuda",
+            method: "static-pose",
+            analyzerVersion: "1.0",
+            featureVersion: "1.0",
+            referenceVersion: "1.0",
+            averageScore: 82.5,
+            sampleCount: 12,
+          },
+        ],
+      },
+      lastSession: null,
+      latestCoachNote: null,
+      dominantMovementSlug: "kuda-kuda",
+      weeklyActivity: [],
+    };
 
-    // Assert
+    const summary = toHistorySummaryViewModel(mockDashboard);
+
     expect(summary.totalSessionsLabel).toBe("24 Sesi");
-    expect(summary.sessionsDeltaLabel).toBe("↗ +4 minggu ini");
-    expect(summary.avgAccuracyPct).toBe(84.6);
-    expect(summary.accuracyNote).toBe("Mendekati IPSI ≥85%");
-    expect(summary.dominantFocus).toBe("Kuda Kuda");
-    expect(summary.dominantSessionsLabel).toBe("12 Sesi terekam");
-    expect(summary.sensorHoursLabel).toBe("08j 45m");
-    expect(summary.sensorNote).toBe("Telemetri aktif");
-    expect(entries.map((entry) => entry.slug)).toEqual([
-      "kuda-kuda",
-      "pukulan",
-      "tangkisan",
-      "tendangan",
-    ]);
+    expect(summary.sessionsDeltaLabel).toBe("Segera hadir");
+    expect(summary.accuracy.available).toBe(false);
+    expect(summary.accuracy.label).toBe("Segera hadir");
+    expect(summary.dominantFocusLabel).toBe("Kuda-kuda");
+    expect(summary.dominantSessionsLabel).toBe("12 sesi dinilai");
+    expect(summary.durationHoursLabel).toBe("08j 45m");
+    expect(summary.durationNoteLabel).toBe("24 sampel durasi");
   });
 
-  it("carries the pukulan entry verbatim with title-case status", () => {
-    // Arrange + Act
-    const entry = dummyMemberHistory.entries[1];
+  it("handles null dominant movement slug gracefully", () => {
+    const mockDashboard: Dashboard = {
+      statistics: {
+        completedSessionCount: 0,
+        totalDurationSeconds: 0,
+        durationSampleCount: 0,
+        scoredSessionCount: 0,
+        excludedScoreCount: 0,
+        similarityGroups: [],
+      },
+      lastSession: null,
+      latestCoachNote: null,
+      dominantMovementSlug: null,
+      weeklyActivity: [],
+    };
 
-    // Assert
-    expect(entry.techniqueName).toBe("Pukulan Lurus Depan");
-    expect(entry.dateLabel).toBe("28 SEP 2026");
-    expect(entry.timeLabel).toBe("16:45 WIB");
-    expect(entry.status).toBe("perlu-koreksi");
-    expect(entry.statusLabel).toBe("Perlu Koreksi");
-    expect(entry.scorePct).toBe(80);
-    expect(entry.scoreCaption).toBe("Standar ≥85%");
-    expect(entry.params.map((param) => param.name)).toEqual([
-      "Bahu",
-      "Siku Kanan",
-      "Pinggul",
-      "Lutut",
-      "Pergelangan",
-    ]);
-    expect(entry.params.map((param) => param.deviated)).toEqual([
-      false,
-      true,
-      false,
-      false,
-      true,
-    ]);
-    expect(entry.coachNote).toContain("Rapatkan siku kanan");
+    const summary = toHistorySummaryViewModel(mockDashboard);
+
+    expect(summary.totalSessionsLabel).toBe("0 Sesi");
+    expect(summary.dominantFocusLabel).toBe("Belum ada");
+    expect(summary.dominantSessionsLabel).toBe("0 sesi dinilai");
+    expect(summary.durationHoursLabel).toBe("00j 00m");
+  });
+});
+
+describe("history mapper - session list items", () => {
+  it("maps HistoryItem with score in points without percentage", () => {
+    const mockItem: HistoryItem = {
+      session: {
+        id: "sess-1",
+        movementSlug: "pukulan",
+        processingStatus: "completed",
+        reviewStatus: "approved",
+        startedAt: "2026-09-28T09:45:00Z",
+        uploadedAt: "2026-09-28T09:45:30Z",
+        completedAt: "2026-09-28T09:46:00Z",
+        createdAt: "2026-09-28T09:44:00Z",
+        analysisStatus: "completed",
+        evaluationId: "eval-1",
+        media: {
+          status: "available",
+          mimeType: "video/webm",
+          width: 1280,
+          height: 720,
+          durationSeconds: 15,
+          byteSize: 1000000,
+          playbackPath: "/api/member/sessions/sess-1/video",
+          expiresAt: "2026-09-29T09:45:00Z",
+        },
+        error: null,
+        acknowledgedAt: null,
+        retryOf: null,
+      },
+      movementName: "Pukulan Lurus",
+      score: 80.4,
+      scoreReason: "Sudut siku sesuai referensi.",
+      review: {
+        id: "rev-1",
+        revision: 1,
+        author: { id: "c-1", fullName: "Kang Fauzan", title: "Pelatih Utama" },
+        publishedAt: "2026-09-28T10:00:00Z",
+        decision: "approved",
+        note: "Gerakan rapi dan stabil.",
+        bodyAssessments: [
+          { bodyPart: "siku_kanan", status: "approved", note: "Posisi mantap." },
+        ],
+        taskIds: [],
+        supersedesReviewId: null,
+      },
+    };
+
+    const entry = toHistoryEntryViewModel(mockItem);
+
+    expect(entry.id).toBe("sess-1");
+    expect(entry.slug).toBe("pukulan");
+    expect(entry.techniqueName).toBe("Pukulan Lurus");
+    expect(entry.status).toBe("sesuai");
+    expect(entry.statusLabel).toBe("Disetujui");
+    expect(entry.scoreAvailable).toBe(true);
+    expect(entry.scoreLabel).toBe("80 poin");
+    expect(entry.scoreCaption).toBe("Skor Kemiripan");
+    expect(entry.params.length).toBe(1);
+    expect(entry.params[0].name).toBe("Siku Kanan");
+    expect(entry.params[0].status).toBe("sesuai");
+    expect(entry.coachNote).toBe("Gerakan rapi dan stabil.");
+    expect(entry.hasPublishedReview).toBe(true);
   });
 
-  it("pins scores and title-case statuses on all entries", () => {
-    // Arrange + Act
-    const entries = dummyMemberHistory.entries;
+  it("maps unreviewed / unscored session safely", () => {
+    const mockItem: HistoryItem = {
+      session: {
+        id: "sess-2",
+        movementSlug: "kuda-kuda",
+        processingStatus: "completed",
+        reviewStatus: "pending",
+        startedAt: "2026-09-28T09:45:00Z",
+        uploadedAt: "2026-09-28T09:45:30Z",
+        completedAt: "2026-09-28T09:46:00Z",
+        createdAt: "2026-09-28T09:44:00Z",
+        analysisStatus: "completed",
+        evaluationId: "eval-1",
+        media: {
+          status: "available",
+          mimeType: "video/webm",
+          width: 1280,
+          height: 720,
+          durationSeconds: 15,
+          byteSize: 1000000,
+          playbackPath: "/api/member/sessions/sess-1/video",
+          expiresAt: "2026-09-29T09:45:00Z",
+        },
+        error: null,
+        acknowledgedAt: null,
+        retryOf: null,
+      },
+      movementName: "",
+      score: null,
+      scoreReason: null,
+      review: null,
+    };
 
-    // Assert
-    expect(entries.map((entry) => entry.scorePct)).toEqual([91, 80, 86, 76]);
-    expect(entries.map((entry) => entry.statusLabel)).toEqual([
-      "Sesuai",
-      "Perlu Koreksi",
-      "Sesuai",
-      "Perlu Koreksi",
-    ]);
-    expect(entries.map((entry) => entry.params)).toHaveLength(4);
-    for (const entry of entries) {
-      expect(entry.params).toHaveLength(5);
-    }
+    const entry = toHistoryEntryViewModel(mockItem);
+
+    expect(entry.id).toBe("sess-2");
+    expect(entry.techniqueName).toBe("Kuda-kuda");
+    expect(entry.status).toBe("menunggu");
+    expect(entry.statusLabel).toBe("Menunggu Ulasan");
+    expect(entry.scoreAvailable).toBe(false);
+    expect(entry.scoreLabel).toBe("—");
+    expect(entry.scoreCaption).toBe("Belum dinilai");
+    expect(entry.params).toEqual([]);
+    expect(entry.coachNote).toBeNull();
+    expect(entry.hasPublishedReview).toBe(false);
   });
 
-  it("carries no pilar, numbering, telemetry, or speed keys", () => {
-    // Arrange + Act
-    const raw = JSON.stringify(dummyMemberHistory);
+  it("maps HistoryPage pagination cursor", () => {
+    const page: HistoryPage = {
+      items: [],
+      nextCursor: "cursor-token-xyz",
+    };
+    const filters = {
+      movementSlug: null,
+      reviewStatus: null,
+      processingStatus: null,
+      cursor: null,
+      limit: 20,
+    };
 
-    // Assert
-    expect(raw).not.toContain("PILAR");
-    expect(raw).not.toContain("pilar");
-    expect(raw).not.toContain("speed");
-    expect(raw).not.toContain("4.18");
-    expect(raw).not.toContain("telemetry");
-    expect(raw).not.toContain("15 Reps");
-    expect(raw).not.toContain("Perlu Perbaikan");
-    expect(raw).not.toContain("Sesuai Standar");
+    const result = toHistoryPageViewModel(page, filters);
+    expect(result.items).toEqual([]);
+    expect(result.nextCursor).toBe("cursor-token-xyz");
+    expect(result.filters).toEqual(filters);
+  });
+});
+
+describe("historyFilterQuerySchema", () => {
+  it("provides clean defaults for empty search params", () => {
+    const parsed = historyFilterQuerySchema.parse({});
+    expect(parsed.movementSlug).toBeNull();
+    expect(parsed.reviewStatus).toBeNull();
+    expect(parsed.processingStatus).toBeNull();
+    expect(parsed.cursor).toBeNull();
+    expect(parsed.limit).toBe(20);
+  });
+
+  it("sanitizes invalid slugs and statuses to null", () => {
+    const parsed = historyFilterQuerySchema.parse({
+      movementSlug: "invalid-slug",
+      reviewStatus: "unknown-status",
+      limit: 50,
+    });
+    expect(parsed.movementSlug).toBeNull();
+    expect(parsed.reviewStatus).toBeNull();
+    expect(parsed.limit).toBe(50);
   });
 });

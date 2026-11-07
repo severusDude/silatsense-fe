@@ -1,10 +1,15 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getRiwayat } from "@/features/member/data/get-riwayat";
+import { getRiwayatPage, getRiwayatSummary } from "@/features/member/data/get-riwayat";
 import { RiwayatMovementList } from "@/features/member/components/riwayat-movement-list";
 import { RiwayatStatGrid } from "@/features/member/components/riwayat-stat-grid";
+import { historyFilterQuerySchema } from "@/features/member/schemas/history";
 
-export function RiwayatPage() {
+export function RiwayatPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5 pt-1">
@@ -20,18 +25,35 @@ export function RiwayatPage() {
         <StatsSection />
       </Suspense>
       <Suspense fallback={<Skeleton className="h-96 w-full rounded-2xl" />}>
-        <MovementsSection />
+        <MovementsSection searchParams={searchParams} />
       </Suspense>
     </div>
   );
 }
 
 async function StatsSection() {
-  const history = await getRiwayat();
-  return <RiwayatStatGrid summary={history.summary} />;
+  const summary = await getRiwayatSummary();
+  if (!summary) return null;
+  return <RiwayatStatGrid summary={summary} />;
 }
 
-async function MovementsSection() {
-  const history = await getRiwayat();
-  return <RiwayatMovementList entries={history.entries} />;
+async function MovementsSection({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const rawParams = searchParams ? await searchParams : {};
+  const normalizedParams = {
+    movementSlug: typeof rawParams.movementSlug === "string" ? rawParams.movementSlug : null,
+    reviewStatus: typeof rawParams.reviewStatus === "string" ? rawParams.reviewStatus : null,
+    processingStatus: typeof rawParams.processingStatus === "string" ? rawParams.processingStatus : null,
+    cursor: typeof rawParams.cursor === "string" ? rawParams.cursor : null,
+    limit: typeof rawParams.limit === "string" ? rawParams.limit : undefined,
+  };
+
+  const filters = historyFilterQuerySchema.parse(normalizedParams);
+  const page = await getRiwayatPage(filters);
+  if (!page) return null;
+
+  return <RiwayatMovementList page={page} />;
 }
