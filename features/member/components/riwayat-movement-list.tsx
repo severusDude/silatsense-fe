@@ -21,34 +21,34 @@ export function RiwayatMovementList({ page }: { page: HistoryPageViewModel }) {
         </p>
       </div>
 
-      <RiwayatFilterBar filters={filters} nextCursor={nextCursor} />
-
-      {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed bg-muted/20 p-8 text-center">
-          <p className="text-sm font-semibold text-foreground">
-            Belum ada sesi latihan yang sesuai filter.
-          </p>
-          <p className="max-w-xs text-xs text-muted-foreground">
-            Rekam sesi latihan baru atau reset filter untuk melihat seluruh riwayat.
-          </p>
-          <Link
-            href="/latihan"
-            className={buttonVariants({ size: "sm" })}
-          >
-            Mulai Latihan Baru
-          </Link>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {items.map((entry) => (
-            <RiwayatMovementItem key={entry.id} entry={entry}>
-              <RiwayatParamChips params={entry.params} />
-              <RiwayatCoachNote note={entry.coachNote} />
-              <RiwayatCardActions sessionId={entry.id} slug={entry.slug} />
-            </RiwayatMovementItem>
-          ))}
-        </div>
-      )}
+      <RiwayatFilterBar filters={filters} nextCursor={nextCursor}>
+        {items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed bg-muted/20 p-8 text-center">
+            <p className="text-sm font-semibold text-foreground">
+              Belum ada sesi latihan yang sesuai filter.
+            </p>
+            <p className="max-w-xs text-xs text-muted-foreground">
+              Rekam sesi latihan baru atau reset filter untuk melihat seluruh riwayat.
+            </p>
+            <Link
+              href="/latihan"
+              className={buttonVariants({ size: "sm" })}
+            >
+              Mulai Latihan Baru
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {items.map((entry) => (
+              <RiwayatMovementItem key={entry.id} entry={entry}>
+                <RiwayatParamChips params={entry.params} />
+                <RiwayatCoachNote note={entry.coachNote} />
+                <RiwayatCardActions sessionId={entry.id} slug={entry.slug} />
+              </RiwayatMovementItem>
+            ))}
+          </div>
+        )}
+      </RiwayatFilterBar>
     </section>
   );
 }

@@ -108,6 +108,22 @@ describe("riwayat route and nav", () => {
     expect(page).toContain("Riwayat Latihan");
     expect(page).toContain("MediaPipe 33-point");
     expect(page).toContain("Suspense");
+    expect(page).toContain("RiwayatSectionSkeleton");
+  });
+
+  it("provides transition and suspense fallback for history filter with skeleton and spinner", () => {
+    // Arrange + Act
+    const filterBar = read("features/member/components/riwayat-filter-bar.tsx");
+    const skeleton = read("features/member/components/riwayat-movement-skeleton.tsx");
+
+    // Assert
+    expect(filterBar).toContain("useTransition");
+    expect(filterBar).toContain("startTransition");
+    expect(filterBar).toContain("Loader2");
+    expect(filterBar).toContain("animate-spin");
+    expect(filterBar).toContain("RiwayatMovementSkeleton");
+    expect(skeleton).toContain("@/components/ui/skeleton");
+    expect(skeleton).not.toContain("absolute");
   });
 
   it("makes Riwayat a real bottom-nav tab", () => {

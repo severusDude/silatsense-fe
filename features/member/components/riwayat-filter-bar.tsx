@@ -1,8 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { RiwayatMovementSkeleton } from "@/features/member/components/riwayat-movement-skeleton";
 import type { HistoryFiltersViewModel, TrainingModuleSlug } from "@/features/member/types";
 
 const MOVEMENT_OPTIONS: Array<{ label: string; value: TrainingModuleSlug | null }> = [
@@ -26,12 +30,19 @@ const REVIEW_STATUS_OPTIONS: Array<{
 export function RiwayatFilterBar({
   filters,
   nextCursor,
+  children,
 }: {
   filters: HistoryFiltersViewModel;
   nextCursor: string | null;
+  children?: ReactNode;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const [pendingFilter, setPendingFilter] = useState<{
+    type: "movement" | "review";
+    value: string | null;
+  } | null>(null);
 
   function buildUrl(updates: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -47,11 +58,26 @@ export function RiwayatFilterBar({
   }
 
   function handleMovementChange(slug: TrainingModuleSlug | null) {
-    router.push(buildUrl({ movementSlug: slug, cursor: null }));
+    if (filters.movementSlug === slug) return;
+    setPendingFilter({ type: "movement", value: slug });
+    startTransition(() => {
+      router.push(buildUrl({ movementSlug: slug, cursor: null }));
+    });
   }
 
   function handleReviewStatusChange(status: "pending" | "needs_revision" | "approved" | null) {
-    router.push(buildUrl({ reviewStatus: status, cursor: null }));
+    if (filters.reviewStatus === status) return;
+    setPendingFilter({ type: "review", value: status });
+    startTransition(() => {
+      router.push(buildUrl({ reviewStatus: status, cursor: null }));
+    });
+  }
+
+  function handleResetFilters() {
+    setPendingFilter(null);
+    startTransition(() => {
+      router.push("/riwayat");
+    });
   }
 
   const hasActiveFilters =
@@ -66,16 +92,28 @@ export function RiwayatFilterBar({
       <div className="flex flex-wrap gap-1.5" role="toolbar" aria-label="Filter gerakan">
         {MOVEMENT_OPTIONS.map((opt) => {
           const active = filters.movementSlug === opt.value;
+          const isSelectedPending =
+            isPending &&
+            pendingFilter?.type === "movement" &&
+            pendingFilter?.value === opt.value;
+
           return (
             <Button
               key={opt.label}
               type="button"
               variant={active ? "default" : "outline"}
               size="sm"
+              disabled={isPending}
               onClick={() => handleMovementChange(opt.value)}
-              className="rounded-full text-xs"
+              className="flex items-center gap-1.5 rounded-full text-xs"
             >
-              {opt.label}
+              {isSelectedPending ? (
+                <Loader2
+                  aria-hidden="true"
+                  className="size-3 animate-spin shrink-0"
+                />
+              ) : null}
+              <span>{opt.label}</span>
             </Button>
           );
         })}
@@ -86,29 +124,48 @@ export function RiwayatFilterBar({
         <div className="flex flex-wrap gap-1.5" role="toolbar" aria-label="Filter status ulasan">
           {REVIEW_STATUS_OPTIONS.map((opt) => {
             const active = filters.reviewStatus === opt.value;
+            const isSelectedPending =
+              isPending &&
+              pendingFilter?.type === "review" &&
+              pendingFilter?.value === opt.value;
+
             return (
               <Button
                 key={opt.label}
                 type="button"
                 variant={active ? "secondary" : "ghost"}
                 size="sm"
+                disabled={isPending}
                 onClick={() => handleReviewStatusChange(opt.value)}
-                className="h-7 rounded-lg px-2 text-[11px]"
+                className="flex h-7 items-center gap-1 rounded-lg px-2 text-[11px]"
               >
-                {opt.label}
+                {isSelectedPending ? (
+                  <Loader2
+                    aria-hidden="true"
+                    className="size-3 animate-spin shrink-0"
+                  />
+                ) : null}
+                <span>{opt.label}</span>
               </Button>
             );
           })}
         </div>
 
         {hasActiveFilters ? (
-          <Link
-            href="/riwayat"
-            className="text-[11px] font-medium text-muted-foreground hover:text-foreground"
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={handleResetFilters}
+            className="text-[11px] font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
           >
             Reset Filter
-          </Link>
+          </button>
         ) : null}
+      </div>
+
+      {/* History Items or Skeleton Transition Fallback */}
+      <div className="flex flex-col gap-3 pt-1">
+        {isPending ? <RiwayatMovementSkeleton /> : children}
       </div>
 
       {/* Cursor Pagination Controls */}

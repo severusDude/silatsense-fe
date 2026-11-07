@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRiwayatPage, getRiwayatSummary } from "@/features/member/data/get-riwayat";
 import { RiwayatMovementList } from "@/features/member/components/riwayat-movement-list";
+import { RiwayatSectionSkeleton } from "@/features/member/components/riwayat-movement-skeleton";
 import { RiwayatStatGrid } from "@/features/member/components/riwayat-stat-grid";
 import { historyFilterQuerySchema } from "@/features/member/schemas/history";
 
@@ -24,7 +25,7 @@ export function RiwayatPage({
       <Suspense fallback={<Skeleton className="h-44 w-full rounded-2xl" />}>
         <StatsSection />
       </Suspense>
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-2xl" />}>
+      <Suspense fallback={<RiwayatSectionSkeleton />}>
         <MovementsSection searchParams={searchParams} />
       </Suspense>
     </div>
