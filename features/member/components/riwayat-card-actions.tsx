@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { ArrowRight, RotateCcw } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import type { RiwayatSlug } from "@/features/member/types";
+import type { TrainingModuleSlug } from "@/features/member/types";
 
-export function RiwayatCardActions({ slug }: { slug: RiwayatSlug }) {
+export function RiwayatCardActions({
+  sessionId,
+  slug,
+}: {
+  sessionId: string;
+  slug: TrainingModuleSlug;
+}) {
   return (
     <div className="flex gap-2">
       <Link
@@ -12,13 +18,12 @@ export function RiwayatCardActions({ slug }: { slug: RiwayatSlug }) {
       >
         <RotateCcw data-icon="inline-start" /> Latihan Ulang
       </Link>
-      {/* TODO: wire Detail Evaluasi to lib/api-client.ts (GET /member/history/:id) when the detail move lands — dead stub for now */}
-      <span
-        aria-disabled="true"
+      <Link
+        href={`/riwayat/${sessionId}`}
         className={buttonVariants({ size: "sm", className: "flex-1" })}
       >
         Detail Evaluasi <ArrowRight data-icon="inline-end" />
-      </span>
+      </Link>
     </div>
   );
 }

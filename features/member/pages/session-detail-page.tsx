@@ -3,10 +3,11 @@ import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSessionDetail } from "@/features/member/data/get-session-detail";
 import { SessionCoachCard } from "@/features/member/components/session-coach-card";
-import { SessionKelayakanCard } from "@/features/member/components/session-kelayakan-card";
-import { SessionVideoPlaceholder } from "@/features/member/components/session-video-placeholder";
-import { SessionPostureList } from "@/features/member/components/session-posture-list";
 import { SessionDetailActions } from "@/features/member/components/session-detail-actions";
+import { SessionFollowUpTasks } from "@/features/member/components/session-follow-up-tasks";
+import { SessionKelayakanCard } from "@/features/member/components/session-kelayakan-card";
+import { SessionPostureList } from "@/features/member/components/session-posture-list";
+import { SessionVideoPlaceholder } from "@/features/member/components/session-video-placeholder";
 
 export function SessionDetailPage({ id }: { id: string }) {
   return (
@@ -32,8 +33,11 @@ export function SessionDetailPage({ id }: { id: string }) {
       <Suspense fallback={<Skeleton className="h-96 w-full rounded-2xl" />}>
         <PostureSection id={id} />
       </Suspense>
+      <Suspense fallback={<Skeleton className="h-40 w-full rounded-2xl" />}>
+        <TasksSection id={id} />
+      </Suspense>
       <Suspense fallback={<Skeleton className="h-24 w-full rounded-full" />}>
-        <ActionsSection />
+        <ActionsSection id={id} />
       </Suspense>
     </div>
   );
@@ -63,6 +67,14 @@ async function PostureSection({ id }: { id: string }) {
   return <SessionPostureList session={session} />;
 }
 
-function ActionsSection() {
-  return <SessionDetailActions />;
+async function TasksSection({ id }: { id: string }) {
+  const session = await getSessionDetail(id);
+  if (!session) notFound();
+  return <SessionFollowUpTasks tasks={session.followUpTasks} sessionId={session.id} />;
+}
+
+async function ActionsSection({ id }: { id: string }) {
+  const session = await getSessionDetail(id);
+  if (!session) notFound();
+  return <SessionDetailActions session={session} />;
 }

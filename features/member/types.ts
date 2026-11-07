@@ -1,4 +1,4 @@
-import type { PilarSlug, PostureParamId } from "@/components/shared/silat-reference";
+import type { PilarSlug } from "@/components/shared/silat-reference";
 import type { NormalizedApiError } from "@/lib/api-client";
 
 export type ActionResult<T> =
@@ -191,6 +191,9 @@ export interface PostureAssessmentViewModel {
   correctionCue: string;
   thumbnailLabel: string;
   thumbnailSrc: null;
+  deviation?: string;
+  coachNote?: string | null;
+  coachNeedsWork?: boolean;
 }
 
 export interface EvaluationScoreViewModel {
@@ -260,64 +263,148 @@ export interface RecordedClip {
   fileName: string;
 }
 
-export type PostureStatus = "sesuai" | "perlu-koreksi";
+export type HistoryReviewBadgeStatus =
+  | "sesuai"        // reviewStatus === "approved"
+  | "perlu-koreksi" // reviewStatus === "needs_revision"
+  | "menunggu"      // reviewStatus === "pending" && processingStatus === "completed"
+  | "diproses"      // processingStatus === "queued" | "processing"
+  | "gagal";        // processingStatus === "failed"
 
-export interface PostureAssessment {
-  id: PostureParamId;
-  name: string;
-  status: PostureStatus;
-  statusLabel: string; // "SESUAI" | "PERLU KOREKSI" — status word only
-  reading: string; // e.g. "142° → target 130–138°"
-  detail: string;
-  correctionCue: string; // e.g. "Tarik siku ~8 cm ke dalam." — empty on sesuai
-  thumbnailLabel: string; // e.g. "Siku kanan"
-  thumbnailSrc: null; // literal until the pose-render move binds a real asset
-}
-
-export type RiwayatSlug = PersiapanSlug;
-
-export type HistoryStatus = "sesuai" | "perlu-koreksi";
-
-export interface RiwayatParam {
-  id: PostureParamId;
+export interface HistoryParamChipViewModel {
+  id: string;
   name: string;
   reading: string;
-  deviated: boolean;
+  status: PostureStatusViewModel; // "sesuai" | "perlu-koreksi" | "tidak-dinilai"
   actionLabel?: string;
+  deviated?: boolean;
 }
 
-export interface HistoryEntry {
-  slug: RiwayatSlug;
+export interface HistoryEntryViewModel {
+  id: string; // session.id
+  slug: TrainingModuleSlug;
   techniqueName: string;
   dateLabel: string;
   timeLabel: string;
   summary: string;
-  status: HistoryStatus;
-  statusLabel: string; // "Sesuai" | "Perlu Koreksi" — title-case, status word only
-  scorePct: number;
-  scoreCaption: string; // "Kinematika IPSI" | "Standar ≥85%"
-  params: RiwayatParam[]; // length 5
-  coachNote: string; // verdict only, no telemetry
+  status: HistoryReviewBadgeStatus;
+  statusLabel: string;
+  scoreAvailable: boolean;
+  score: number | null;
+  scoreLabel: string; // e.g. "80 poin" or "—"
+  scoreCaption: string; // "Skor Kemiripan" or "Belum dinilai"
+  params: HistoryParamChipViewModel[]; // from review.bodyAssessments (may be empty)
+  coachNote: string | null;
+  hasPublishedReview: boolean;
 }
 
-export interface HistorySummary {
-  totalSessionsLabel: string;
-  sessionsDeltaLabel: string;
-  avgAccuracyPct: number;
-  accuracyNote: string;
-  dominantFocus: string;
-  dominantSessionsLabel: string;
-  sensorHoursLabel: string;
-  sensorNote: string;
+export interface HistorySummaryViewModel {
+  totalSessionsLabel: string;     // e.g. "24 Sesi"
+  sessionsDeltaLabel: string;     // e.g. "3 sesi minggu ini"
+  accuracy: {
+    available: false;
+    label: "Segera hadir";
+    note: string;                 // "Analisis gabungan belum tersedia"
+  };
+  dominantFocusLabel: string;     // e.g. "Kuda-kuda" or "Belum ada"
+  dominantSessionsLabel: string;  // e.g. "12 sesi dinilai"
+  durationHoursLabel: string;     // e.g. "08j 45m"
+  durationNoteLabel: string;      // e.g. "24 sampel durasi"
 }
 
+export interface HistoryFiltersViewModel {
+  movementSlug: TrainingModuleSlug | null;
+  reviewStatus: "pending" | "needs_revision" | "approved" | null;
+  processingStatus: "queued" | "processing" | "completed" | "failed" | null;
+  cursor: string | null;
+  limit: number;
+}
+
+export interface HistoryPageViewModel {
+  items: HistoryEntryViewModel[];
+  nextCursor: string | null;
+  filters: HistoryFiltersViewModel;
+}
+
+export interface FollowUpTaskViewModel {
+  id: string;
+  sessionId: string;
+  reviewId: string;
+  authorName: string;
+  instruction: string;
+  status: "open" | "completed" | "dismissed";
+  statusLabel: string;
+  updatedAtLabel: string;
+}
+
+export interface PublishedNoteViewModel {
+  id: string;
+  authorName: string;
+  text: string;
+  publishedAtLabel: string;
+}
+
+export interface ReviewHistoryItemViewModel {
+  id: string;
+  revision: number;
+  authorName: string;
+  publishedAtLabel: string;
+  decision: "approved" | "needs_revision";
+  decisionLabel: string;
+  note: string | null;
+}
+
+export interface SessionDetailViewModel {
+  id: string;
+  slug: TrainingModuleSlug;
+  techniqueName: string;
+  techniqueDesc: string;
+  session: SessionViewModel;
+  evaluation: EvaluationViewModel | null;
+  coach: {
+    assigned: boolean;
+    initials: string;
+    name: string;
+    role: string;
+  };
+  reviewDecision: "pending" | "approved" | "needs_revision";
+  reviewDecisionLabel: string; // "Menunggu Ulasan" | "Disetujui" | "Perlu Revisi"
+  reviewRevision: number | null;
+  decidedAtLabel: string | null;
+  reviewNote: string | null;
+  focusTechnique: string;
+  score: {
+    available: boolean;
+    value: number | null;
+    label: string; // e.g. "80 poin" | "Belum dinilai"
+    unitLabel: "poin";
+    analysisStatusLabel: string | null;
+    passThreshold: { available: false; label: "Segera hadir" };
+  };
+  retestSchedule: {
+    available: false;
+    label: "Jadwal Uji Ulang:";
+    value: "Segera hadir";
+  };
+  coachBodyAssessments: PostureAssessmentViewModel[];
+  aiPostures: PostureAssessmentViewModel[];
+  reviewHistory: ReviewHistoryItemViewModel[];
+  legacyNotes: PublishedNoteViewModel[];
+  followUpTasks: FollowUpTaskViewModel[];
+}
+
+// Aliases for backward compatibility
+export type PostureStatus = "sesuai" | "perlu-koreksi";
+export type PostureAssessment = PostureAssessmentViewModel;
+export type RiwayatSlug = TrainingModuleSlug;
+export type HistoryStatus = HistoryReviewBadgeStatus;
+export type RiwayatParam = HistoryParamChipViewModel;
+export type HistoryEntry = HistoryEntryViewModel;
+export type HistorySummary = HistorySummaryViewModel;
 export interface MemberHistory {
-  summary: HistorySummary;
-  entries: HistoryEntry[]; // length 4: kuda-kuda, pukulan, tangkisan, tendangan
+  summary: HistorySummaryViewModel;
+  entries: HistoryEntryViewModel[];
 }
-
-export type SessionDecision = "menunggu" | "remidiasi";
-
+export type SessionDecision = "pending" | "approved" | "needs_revision";
 export interface SessionPillar {
   id: PilarSlug;
   name: string;
@@ -326,27 +413,9 @@ export interface SessionPillar {
   stageLabel: "Lolos" | "Fokus" | "Remidi";
   badge: "success" | "destructive" | "warning";
 }
-
 export interface SessionVideo {
   status: "placeholder";
   cameraLabel: string;
   qualityLabel: string;
 }
-
-export interface SessionDetail {
-  id: string;
-  techniqueName: string;
-  techniqueDesc: string;
-  coach: { initials: string; name: string; role: string };
-  decision: SessionDecision;
-  decisionLabel: string;
-  decidedAtLabel?: string;
-  focusTechnique?: string;
-  scorePct: number;
-  targetPct: number;
-  pillars: SessionPillar[];
-  video: SessionVideo;
-  postures: PostureAssessment[];
-  retestLabel: string;
-  retestValue: string;
-}
+export type SessionDetail = SessionDetailViewModel;

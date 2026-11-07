@@ -8,14 +8,21 @@ import {
 } from "@/components/ui/card";
 import { ScoreRing } from "@/features/member/components/evaluasi-posture-list";
 import { SessionPostureItem } from "@/features/member/components/session-posture-item";
-import type { SessionDetail } from "@/features/member/types";
+import type { SessionDetailViewModel } from "@/features/member/types";
 
-export function SessionPostureList({ session }: { session: SessionDetail }) {
-  const empty = session.postures.length === 0;
-  const sesuai = session.postures.filter(
-    (posture) => posture.status === "sesuai",
-  ).length;
-  const total = empty ? 5 : session.postures.length;
+export function SessionPostureList({
+  session,
+}: {
+  session: SessionDetailViewModel;
+}) {
+  const postures =
+    session.aiPostures.length > 0
+      ? session.aiPostures
+      : session.coachBodyAssessments;
+
+  const empty = postures.length === 0;
+  const sesuai = postures.filter((p) => p.status === "sesuai").length;
+  const total = empty ? 5 : postures.length;
 
   return (
     <section aria-label="Catatan pelatih" className="flex flex-col gap-2">
@@ -33,7 +40,7 @@ export function SessionPostureList({ session }: { session: SessionDetail }) {
               Belum ada catatan dari pelatih
             </p>
           ) : (
-            session.postures.map((posture) => (
+            postures.map((posture) => (
               <SessionPostureItem key={posture.id} posture={posture} />
             ))
           )}

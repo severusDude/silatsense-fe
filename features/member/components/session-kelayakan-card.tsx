@@ -1,4 +1,4 @@
-import { CalendarDays, Check, CircleAlert, ClipboardCheck, TriangleAlert } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -8,99 +8,71 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { SessionDetail } from "@/features/member/types";
+import type { SessionDetailViewModel } from "@/features/member/types";
 
-const pillarStageIcon = {
-  success: Check,
-  warning: TriangleAlert,
-  destructive: CircleAlert,
-} as const;
+export function SessionKelayakanCard({
+  session,
+}: {
+  session: SessionDetailViewModel;
+}) {
+  const scoreValue = session.score.value;
+  const scoreFormatted =
+    scoreValue !== null ? `${Math.round(scoreValue)} poin` : "Belum dinilai";
 
-const pillarStageTone = {
-  success: "bg-success text-success-foreground",
-  warning: "bg-warning text-warning-foreground",
-  destructive: "bg-destructive text-white",
-} as const;
-
-export function SessionKelayakanCard({ session }: { session: SessionDetail }) {
   return (
-    <section aria-label="Status kelayakan tanding" className="flex flex-col gap-2">
+    <section aria-label="Ringkasan evaluasi sesi" className="flex flex-col gap-2">
       <Card>
         <CardHeader>
-          <CardTitle>Status Kelayakan Tanding</CardTitle>
-          <CardDescription>Standar Kualifikasi UKM Silat UNSIL</CardDescription>
+          <CardTitle>Ringkasan Evaluasi Kinematika</CardTitle>
+          <CardDescription>Skor kemiripan berbasis analisis MediaPipe</CardDescription>
           <CardAction>
-            <Badge variant="outline">IPSI CLASS B</Badge>
+            <Badge variant="outline">Telemetri AI</Badge>
           </CardAction>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          <div className="flex items-start gap-2 rounded-xl border-l-4 border-warning bg-warning/10 p-2.5">
-            <TriangleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning-foreground" />
-            <p className="text-[11px] leading-relaxed text-foreground">
-              <span className="font-bold">Perlu remidiasi sebelum uji tanding. </span>
-              Skor akumulatif biomekanika saat ini{" "}
-              <span className="font-bold">{session.scorePct}%</span>. Batas minimum
-              lolos adalah <span className="font-bold">{session.targetPct}%</span>.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            {session.pillars.map((pillar) => {
-              const Icon = pillarStageIcon[pillar.badge];
-              return (
-                <div
-                  key={pillar.id}
-                  className="flex flex-col gap-1 rounded-xl border p-2.5"
-                >
-                  <p className="flex items-center justify-between gap-1.5">
-                    <span className="text-[11px] font-semibold text-foreground">
-                      {pillar.name}
-                    </span>
-                    <span
-                      role="img"
-                      aria-label={pillar.stageLabel}
-                      title={pillar.stageLabel}
-                      className={`flex size-6 shrink-0 items-center justify-center rounded-full ${pillarStageTone[pillar.badge]}`}
-                    >
-                      <Icon aria-hidden="true" className="size-3.5" />
-                    </span>
-                  </p>
-                  <p className="flex items-baseline justify-between gap-1.5">
-                    <span className="text-[10px] text-muted-foreground">{pillar.detail}</span>
-                    <span className="text-base font-bold">{pillar.scorePct}%</span>
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-          <div className="flex flex-col gap-1.5 border-t pt-2.5">
-            <p className="flex items-start gap-1.5 text-[11px] leading-relaxed">
-              <ClipboardCheck aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
-              <span>
-                <span className="font-bold">Syarat Kelulusan:</span>{" "}
-                <span className="text-muted-foreground">
-                  Minimal seluruh 4 pilar dasar mencapai skor ≥ 85% serta
-                  verifikasi langsung pelatih di dojo.
-                </span>
+          {/* Active Score Summary Box */}
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-secondary/50 p-3">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
+                Skor Kemiripan Sesi
               </span>
-            </p>
-            <p className="flex items-start gap-1.5 text-[11px] leading-relaxed">
-              <ClipboardCheck aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
-              <span>
-                <span className="font-bold">Catatan Penguji:</span>{" "}
-                <span className="text-muted-foreground">
-                  Wajib selesaikan paket drill mandiri sebelum mendaftar sesi
-                  tatap muka.
-                </span>
+              <span className="text-xl font-bold text-foreground">
+                {scoreFormatted}
               </span>
+              <span className="text-[10px] text-muted-foreground">
+                Skala 0–100 poin terhadap referensi jurus
+              </span>
+            </div>
+            {session.score.analysisStatusLabel ? (
+              <Badge variant="outline">
+                {session.score.analysisStatusLabel}
+              </Badge>
+            ) : null}
+          </div>
+
+          {/* Status Kelayakan Tanding / IPSI (Unsupported / Inactive Block) */}
+          <div className="flex flex-col gap-2 rounded-xl border p-3 opacity-60 bg-muted/20 border-dashed border-border/80">
+            <div className="flex items-center justify-between gap-1.5">
+              <span className="text-xs font-bold text-muted-foreground">
+                Status Kelayakan Tanding / IPSI
+              </span>
+              <Badge variant="outline">Segera hadir</Badge>
+            </div>
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Ambang batas kelulusan tanding dan klasifikasi IPSI belum terhubung pada modul ini.
             </p>
           </div>
-          <p className="flex items-center justify-between gap-2 rounded-xl bg-secondary/50 px-3 py-2">
-            <span className="text-[11px] text-muted-foreground">{session.retestLabel}</span>
-            <span className="flex items-center gap-1.5 text-xs font-semibold">
-              <CalendarDays aria-hidden="true" className="size-3.5 shrink-0" />
-              {session.retestValue}
+
+          {/* Jadwal Uji Ulang (Unsupported / Inactive Block) */}
+          <div className="flex items-center justify-between gap-2 rounded-xl border px-3 py-2 opacity-60 bg-muted/20 border-dashed border-border/80">
+            <span className="text-[11px] text-muted-foreground">
+              {session.retestSchedule.label}
             </span>
-          </p>
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+              <CalendarDays aria-hidden="true" className="size-3.5 shrink-0" />
+              <Badge variant="outline">Segera hadir</Badge>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </section>

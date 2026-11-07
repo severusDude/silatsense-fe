@@ -15,26 +15,41 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { HistoryEntry, RiwayatSlug } from "@/features/member/types";
+import type {
+  HistoryEntryViewModel,
+  HistoryReviewBadgeStatus,
+  TrainingModuleSlug,
+} from "@/features/member/types";
 
 // TODO: replace with per-gerakan Lucide icon — placeholder set
-const iconBySlug: Record<RiwayatSlug, typeof Hand> = {
+const iconBySlug: Record<TrainingModuleSlug, typeof Hand> = {
   "kuda-kuda": PersonStanding,
   pukulan: Hand,
   tangkisan: Shield,
   tendangan: Footprints,
 };
 
+const badgeVariantByStatus: Record<
+  HistoryReviewBadgeStatus,
+  "success" | "warning" | "secondary" | "outline" | "destructive"
+> = {
+  sesuai: "success",
+  "perlu-koreksi": "warning",
+  menunggu: "secondary",
+  diproses: "outline",
+  gagal: "destructive",
+};
+
 export function RiwayatMovementItem({
   entry,
   children,
 }: {
-  entry: HistoryEntry;
+  entry: HistoryEntryViewModel;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const needsFix = entry.status === "perlu-koreksi";
-  const Icon = iconBySlug[entry.slug];
+  const Icon = iconBySlug[entry.slug] ?? PersonStanding;
+  const badgeVariant = badgeVariantByStatus[entry.status] ?? "secondary";
 
   return (
     <Collapsible
@@ -50,38 +65,34 @@ export function RiwayatMovementItem({
           <span className="truncate text-sm font-bold text-foreground">
             {entry.techniqueName}
           </span>
-          <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span className="text-[11px] text-muted-foreground">
             {entry.dateLabel} • {entry.timeLabel}
           </span>
-          <span className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+          <span className="line-clamp-1 pt-0.5 text-[11px] text-muted-foreground">
             {entry.summary}
           </span>
-          <span className="mt-2 flex items-center justify-between border-t pt-2">
-            <Badge variant={needsFix ? "warning" : "success"}>
-              {entry.statusLabel}
-            </Badge>
-            <span className="flex items-center gap-2">
-              <span className="flex flex-col items-end">
-                <span className="text-sm font-bold text-foreground">
-                  {entry.scorePct}%
-                </span>
-                <span className="text-[9px] text-muted-foreground">
-                  {entry.scoreCaption}
-                </span>
+        </span>
+        <span className="flex shrink-0 flex-col items-end gap-1">
+          <Badge variant={badgeVariant}>{entry.statusLabel}</Badge>
+          <span className="flex items-center gap-1">
+            <span className="flex flex-col items-end">
+              <span className="text-sm font-bold text-foreground">
+                {entry.scoreLabel}
               </span>
-              <span className="flex size-6 items-center justify-center rounded-full border">
-                <ChevronDown
-                  aria-hidden="true"
-                  className={`size-3.5 text-muted-foreground transition-transform motion-reduce:transition-none ${
-                    open ? "rotate-180" : ""
-                  }`}
-                />
+              <span className="text-[9px] text-muted-foreground">
+                {entry.scoreCaption}
               </span>
             </span>
+            <ChevronDown
+              aria-hidden="true"
+              className={`size-4 text-muted-foreground transition-transform duration-200 motion-reduce:transition-none ${
+                open ? "rotate-180" : ""
+              }`}
+            />
           </span>
         </span>
       </CollapsibleTrigger>
-      <CollapsibleContent className="flex flex-col gap-3 bg-muted/70 px-3.5 pb-3.5">
+      <CollapsibleContent className="flex flex-col gap-3 border-t p-3.5 pt-3">
         {children}
       </CollapsibleContent>
     </Collapsible>
