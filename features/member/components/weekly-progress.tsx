@@ -18,17 +18,17 @@ export function WeeklyProgress({ weekly, note }: { weekly: WeeklyData; note: Coa
           </div>
           <div
             role="img"
-            aria-label={`${weekly.title}: ${weekly.days.map((d) => `${d.label} ${d.value === null ? "istirahat" : `${d.value}%`}`).join(", ")}`}
+            aria-label={`${weekly.title}: ${weekly.days.map((d) => `${d.label} ${d.sessionCount > 0 ? `${d.sessionCount} sesi` : "0 sesi"}`).join(", ")}`}
             className="flex items-stretch justify-between gap-1.5 pt-1"
           >
             {weekly.days.map((day) => {
               const filled = day.state === "filled" || day.state === "active";
               return (
-                <div key={day.label} className="flex flex-1 flex-col items-center gap-1">
+                <div key={day.date || day.label} className="flex flex-1 flex-col items-center gap-1">
                   <span
                     className={`text-[10px] ${day.state === "active" ? "font-bold text-primary" : day.state === "rest" ? "text-muted-foreground" : "font-bold text-muted-foreground"}`}
                   >
-                    {day.value === null ? (day.state === "rest" ? "Rest" : "-") : `${day.value}%`}
+                    {day.state === "rest" ? "Rest" : day.valueLabel}
                   </span>
                   {filled && day.value !== null ? (
                     <div className="flex h-16 w-full items-end justify-center overflow-hidden rounded-lg bg-muted">
@@ -53,15 +53,26 @@ export function WeeklyProgress({ weekly, note }: { weekly: WeeklyData; note: Coa
               );
             })}
           </div>
+          <div className="flex items-center justify-between gap-2 rounded-xl border border-dashed border-border/80 bg-muted/20 px-3 py-2 opacity-60">
+            <span className="text-[11px] text-muted-foreground">Target hari latihan mingguan</span>
+            <Badge variant="outline" className="text-[10px] font-semibold text-muted-foreground uppercase">
+              {weekly.targetConfig.label}
+            </Badge>
+          </div>
           <figure className="flex flex-col gap-2 rounded-2xl border bg-muted/60 p-3">
-            <figcaption className="flex items-center gap-2">
-              <span
-                aria-hidden="true"
-                className="flex size-6 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground"
-              >
-                {note.initials}
-              </span>
-              <span className="text-xs font-bold">{note.name}</span>
+            <figcaption className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  className="flex size-6 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground"
+                >
+                  {note.initials}
+                </span>
+                <span className="text-xs font-bold">{note.name}</span>
+              </div>
+              {note.publishedAtLabel ? (
+                <span className="text-[10px] text-muted-foreground">{note.publishedAtLabel}</span>
+              ) : null}
             </figcaption>
             <blockquote className="text-xs leading-relaxed text-muted-foreground italic">
               &ldquo;{note.quote}&rdquo;

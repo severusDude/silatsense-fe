@@ -3,10 +3,11 @@ import { ArrowRight, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatScore } from "@/features/member/data/format";
 import { ImagePlaceholder } from "@/features/member/components/shared/image-placeholder";
-import type { TrainingModule } from "@/features/member/types";
+import type { TrainingModuleViewModel } from "@/features/member/types";
 
-export function ModuleCard({ module }: { module: TrainingModule }) {
+export function ModuleCard({ module }: { module: TrainingModuleViewModel }) {
   return (
     <Card>
       <CardContent className="flex flex-col gap-3 p-4">
@@ -30,7 +31,22 @@ export function ModuleCard({ module }: { module: TrainingModule }) {
             </Badge>
           ) : null}
         </div>
-        <p className="text-xs leading-relaxed text-muted-foreground">{module.description}</p>
+        {module.description ? (
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {module.description}
+          </p>
+        ) : null}
+        {module.similarity ? (
+          <p className="text-[11px] text-muted-foreground">
+            Skor kemiripan {formatScore(module.similarity.averageScore)} poin ·{" "}
+            {module.similarity.sampleCount} sesi
+          </p>
+        ) : null}
+        {module.scoringAvailable ? null : (
+          <Badge variant="outline" className="w-fit text-muted-foreground">
+            Penilaian segera hadir
+          </Badge>
+        )}
         <Link
           href={`/latihan/${module.slug}`}
           className={buttonVariants({ className: "w-full" })}

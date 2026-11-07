@@ -1,4 +1,3 @@
-import { TriangleAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -7,58 +6,76 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { EvaluationSession } from "@/features/member/types";
+import { formatScore, humanizeIdentifier } from "@/features/member/data/format";
+import type {
+  EvaluationScoreViewModel,
+  EvaluationViewModel,
+} from "@/features/member/types";
+
+const STATUS_VARIANTS: Record<
+  EvaluationScoreViewModel["status"],
+  "success" | "warning" | "destructive" | "outline"
+> = {
+  experimental: "warning",
+  reference_not_ready: "outline",
+  insufficient_pose: "destructive",
+  insufficient_features: "destructive",
+};
 
 export function EvaluasiScoreCard({
-  session,
+  evaluation,
 }: {
-  session: EvaluationSession;
+  evaluation: EvaluationViewModel;
 }) {
-  const { score } = session;
-  const widthPct = `${score.value}%`;
-  const targetLeftPct = `${score.targetPct}%`;
+  const { score } = evaluation;
+  const widthPct =
+    score.available && score.value !== null ? `${score.value}%` : "0%";
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
-          Akurasi Kinematika
+          Skor Kemiripan
         </CardTitle>
         <CardAction>
-          <Badge variant="warning" className="uppercase">
-            <TriangleAlert aria-hidden="true" /> {score.alertLabel}
+          <Badge variant={STATUS_VARIANTS[score.status]} className="uppercase">
+            {score.statusLabel}
           </Badge>
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <p className="flex items-baseline gap-1">
-          <span className="text-4xl font-bold">{score.value}</span>
+          <span className="text-4xl font-bold">
+            {score.available && score.value !== null
+              ? formatScore(score.value)
+              : "—"}
+          </span>
           <span className="text-xl font-bold text-muted-foreground">
-            {score.unit}
+            {score.unitLabel}
           </span>
         </p>
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[10px] font-semibold text-muted-foreground">
-              {score.targetLabel}
-            </p>
-            <p className="text-[10px] font-bold text-destructive">
-              {score.deltaLabel}
-            </p>
-          </div>
+
+        <div
+          role="img"
+          aria-label={
+            score.available && score.value !== null
+              ? `Skor kemiripan ${formatScore(score.value)} dari ${score.max} poin`
+              : "Skor kemiripan belum tersedia"
+          }
+          className="flex h-2.5 w-full overflow-hidden rounded-full bg-secondary"
+        >
           <div
-            role="img"
-            aria-label={`${score.value}% dari target ${score.targetPct}%`}
-            className="flex h-2.5 w-full overflow-hidden rounded-full bg-secondary"
-          >
-            <div className="h-full rounded-full bg-warning" style={{ width: widthPct }} />
-            <div
-              aria-hidden="true"
-              className="h-full w-0.5 shrink-0 bg-foreground"
-              style={{ marginLeft: `calc(${targetLeftPct} - ${widthPct} - 1px)` }}
-            />
-          </div>
+            className="h-full rounded-full bg-warning"
+            style={{ width: widthPct }}
+          />
         </div>
+
+        {score.variantLabel ? (
+          <p className="text-[11px] text-muted-foreground">
+            Varian: {humanizeIdentifier(score.variantLabel)}
+          </p>
+        ) : null}
+
         <p className="rounded-xl bg-secondary/50 p-2.5 text-[11px] leading-relaxed">
           {score.summary}
         </p>

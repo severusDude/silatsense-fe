@@ -28,6 +28,7 @@ export function DashboardPage() {
 
 async function HeroSection() {
   const data = await getMemberDashboard();
+  if (!data) return null;
   return (
     <div className="flex flex-col gap-4">
       <HeroGreeting greeting={data.greeting} />
@@ -38,15 +39,18 @@ async function HeroSection() {
 
 async function PillarSection() {
   const data = await getMemberDashboard();
+  if (!data) return null;
   return <PillarGrid pillars={data.pillars} />;
 }
 
 async function FeedbackSection() {
   const data = await getMemberDashboard();
+  if (!data) return null;
   return <SessionFeedback session={data.lastSession} />;
 }
 
 async function WeeklySection() {
   const data = await getMemberDashboard();
+  if (!data) return null;
   return <WeeklyProgress weekly={data.weekly} note={data.coachNote} />;
 }

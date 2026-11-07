@@ -21,7 +21,7 @@ describe("member shell routes", () => {
     expect(page).toContain("@/features/member/pages/");
   });
 
-  it("renders dead nav items with TODOs instead of stub routes", () => {
+  it("renders live nav targets and session-driven avatar initials with User icon fallback", () => {
     // Arrange + Act
     const bottom = read("features/member/components/member-bottom-nav.tsx");
     const top = read("features/member/components/member-top-nav.tsx");
@@ -34,7 +34,14 @@ describe("member shell routes", () => {
     expect(bottom).not.toContain("aria-disabled");
     expect(bottom).not.toContain("TODO: link to /profil");
     expect(bottom).toContain("aria-current");
-    expect(top).toContain("TODO");
+    expect(top).toContain('href="/latihan"');
+    expect(top).toContain('aria-label="Mulai latihan"');
+    expect(top).toContain("getSession");
+    expect(top).toContain("getInitials");
+    expect(top).toContain("<User");
+    expect(top).not.toContain(">\n                AS\n");
+    expect(top).not.toContain("TODO");
+    expect(top).not.toContain("aria-disabled");
   });
 
   it("suspends each data section behind a skeleton fallback", () => {

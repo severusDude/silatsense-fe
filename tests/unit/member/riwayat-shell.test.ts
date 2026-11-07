@@ -14,28 +14,29 @@ const serverFiles = [
 ];
 
 describe("riwayat server components", () => {
-  it("uses shadcn Badge with unified Sesuai/Perlu Koreksi wording", () => {
+  it("uses shadcn Badge with unified status wording", () => {
     // Arrange + Act
-    const src = serverFiles.map(read).join("\n") + read("features/member/components/riwayat-movement-item.tsx");
+    const src =
+      serverFiles.map(read).join("\n") +
+      read("features/member/components/riwayat-movement-item.tsx") +
+      read("features/member/data/history-mapper.ts");
 
     // Assert
     expect(src).toContain("@/components/ui/badge");
     expect(src).toContain("statusLabel");
-    expect(read("features/member/data/riwayat-dummy.ts")).toContain("Perlu Koreksi");
+    expect(src).toContain("Perlu Revisi");
     expect(src).not.toContain("Perlu Perbaikan");
     expect(src).not.toContain("Sesuai Standar");
   });
 
-  it("carries no pilar suffixes, numbering, telemetry, or speed values", () => {
+  it("carries honest UI with Segera hadir badges", () => {
     // Arrange + Act
-    const src = serverFiles.map(read).join("\n");
+    const grid = read("features/member/components/riwayat-stat-grid.tsx");
 
     // Assert
-    expect(src).not.toContain("PILAR");
-    expect(src).not.toContain("pilar");
-    expect(src).not.toContain("15 Reps");
-    expect(src).not.toContain("4.18");
-    expect(src).not.toContain("MediaPipe");
+    expect(grid).toContain("Segera hadir");
+    expect(grid).toContain("Rata-rata Akurasi");
+    expect(grid).not.toContain("85%");
   });
 
   it("keeps all riwayat server UI flex-only", () => {
@@ -45,7 +46,7 @@ describe("riwayat server components", () => {
     }
   });
 
-  it("links Latihan Ulang to rekam and keeps Detail Evaluasi dead with a TODO", () => {
+  it("links Latihan Ulang to rekam and live links Detail Evaluasi to session id", () => {
     // Arrange + Act
     const src = read("features/member/components/riwayat-card-actions.tsx");
 
@@ -53,14 +54,14 @@ describe("riwayat server components", () => {
     expect(src).toContain("Latihan Ulang");
     expect(src).toContain("/latihan/${slug}/rekam");
     expect(src).toContain("Detail Evaluasi");
-    expect(src).toContain("GET /member/history/:id");
-    expect(src).toContain("TODO");
+    expect(src).toContain("/riwayat/${sessionId}");
+    expect(src).not.toContain("TODO");
   });
 });
 
 describe("riwayat movement island", () => {
-  it("renders collapsed by default with independent toggles and icon TODOs", () => {
-    // Arrange + Act (no DOM env in repo — interaction covered via source contract)
+  it("renders collapsed by default with independent toggles and icon placeholder", () => {
+    // Arrange + Act
     const src = read("features/member/components/riwayat-movement-item.tsx");
 
     // Assert
@@ -99,7 +100,7 @@ describe("riwayat route and nav", () => {
 
     // Assert
     expect(route).not.toContain('"use client"');
-    expect(route).toContain("<RiwayatPage />");
+    expect(route).toContain("<RiwayatPage searchParams={searchParams} />");
     expect(route).not.toContain("generateStaticParams");
     expect(layout).toContain('activeTab="riwayat"');
     expect(layout).toContain("Riwayat Latihan");
@@ -107,6 +108,22 @@ describe("riwayat route and nav", () => {
     expect(page).toContain("Riwayat Latihan");
     expect(page).toContain("MediaPipe 33-point");
     expect(page).toContain("Suspense");
+    expect(page).toContain("RiwayatSectionSkeleton");
+  });
+
+  it("provides transition and suspense fallback for history filter with skeleton and spinner", () => {
+    // Arrange + Act
+    const filterBar = read("features/member/components/riwayat-filter-bar.tsx");
+    const skeleton = read("features/member/components/riwayat-movement-skeleton.tsx");
+
+    // Assert
+    expect(filterBar).toContain("useTransition");
+    expect(filterBar).toContain("startTransition");
+    expect(filterBar).toContain("Loader2");
+    expect(filterBar).toContain("animate-spin");
+    expect(filterBar).toContain("RiwayatMovementSkeleton");
+    expect(skeleton).toContain("@/components/ui/skeleton");
+    expect(skeleton).not.toContain("absolute");
   });
 
   it("makes Riwayat a real bottom-nav tab", () => {

@@ -1,6 +1,16 @@
 import { MapPin } from "lucide-react";
 
-export function RiwayatCoachNote({ note }: { note: string }) {
+export function RiwayatCoachNote({ note }: { note: string | null }) {
+  if (!note) {
+    return (
+      <div className="flex items-start gap-2 rounded-xl border border-dashed bg-muted/20 p-3">
+        <p className="text-[11px] text-muted-foreground">
+          Belum ada catatan pelatih pada sesi ini.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-start gap-2 rounded-xl border bg-card p-3">
       <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-destructive/10">

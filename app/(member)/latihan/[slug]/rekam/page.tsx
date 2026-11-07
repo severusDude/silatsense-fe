@@ -1,15 +1,11 @@
-import { rekamSlugs } from "@/features/member/data/get-rekam";
 import { RekamPage } from "@/features/member/pages/rekam-page";
 
-export function generateStaticParams() {
-  return rekamSlugs.map((slug) => ({ slug }));
-}
-
-export default async function Page({
+export default function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { slug } = await params;
-  return <RekamPage slug={slug} />;
+  return <RekamPage params={params} searchParams={searchParams} />;
 }

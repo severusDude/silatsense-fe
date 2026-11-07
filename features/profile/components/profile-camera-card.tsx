@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useFormContext } from "react-hook-form";
+import { useSyncExternalStore } from "react";
 import { Camera } from "lucide-react";
 import {
   Card,
@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import {
   Select,
   SelectContent,
@@ -19,10 +19,48 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { CameraDevice } from "@/features/member/types";
-import type { UpdateProfileInput } from "@/features/profile/schemas";
+
+const STORAGE_KEY = "silatsense_preferred_camera";
+
+function subscribe(callback: () => void) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+function getSnapshot(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function getServerSnapshot(): string | null {
+  return null;
+}
 
 export function ProfileCameraCard({ cameras }: { cameras: CameraDevice[] }) {
-  const { control } = useFormContext<UpdateProfileInput>();
+  const savedCamera = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
+
+  const selectedCamera =
+    (savedCamera && cameras.some((c) => c.id === savedCamera)
+      ? savedCamera
+      : undefined) ??
+    cameras[0]?.id ??
+    "";
+
+  const handleCameraChange = (cameraId: string) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, cameraId);
+      window.dispatchEvent(new Event("storage"));
+    } catch {
+      // Ignore write errors
+    }
+  };
 
   return (
     <Card>
@@ -33,36 +71,39 @@ export function ProfileCameraCard({ cameras }: { cameras: CameraDevice[] }) {
         <CardDescription>Konfigurasi Input kamera</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <Controller
-          name="cameraDeviceId"
-          control={control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="profil-camera">Perangkat Kamera</FieldLabel>
-              <Select
-                items={cameras.map((camera) => ({ label: camera.label, value: camera.id }))}
-                value={field.value}
-                onValueChange={(next) => {
-                  if (typeof next === "string") field.onChange(next);
-                }}
-              >
-                <SelectTrigger id="profil-camera" className="w-full" aria-label="Perangkat kamera">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {cameras.map((camera) => (
-                      <SelectItem key={camera.id} value={camera.id}>
-                        {camera.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+        <Field>
+          <FieldLabel htmlFor="profil-camera">Perangkat Kamera</FieldLabel>
+          <Select
+            items={cameras.map((camera) => ({
+              label: camera.label,
+              value: camera.id,
+            }))}
+            value={selectedCamera}
+            onValueChange={(next) => {
+              if (typeof next === "string") handleCameraChange(next);
+            }}
+          >
+            <SelectTrigger
+              id="profil-camera"
+              className="w-full"
+              aria-label="Perangkat kamera"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {cameras.map((camera) => (
+                  <SelectItem key={camera.id} value={camera.id}>
+                    {camera.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <FieldDescription>
+            Preferensi kamera disimpan secara lokal pada peramban ini.
+          </FieldDescription>
+        </Field>
       </CardContent>
     </Card>
   );

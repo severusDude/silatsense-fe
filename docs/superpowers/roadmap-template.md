@@ -4,24 +4,34 @@ Mirror of the Linear Doc `[Roadmap] SilatSense FE — Member closeout + Coach`.
 The Linear Doc is source of truth; this file keeps agents productive offline.
 Sync both when phases change. Parent issue: PSR-69.
 
+Phase 13 was the first backend-connected phase. Its spec and the reusable integration
+conventions live in `docs/integration/`; later modules start from that guide.
+
 ## 0. Operating rules (linear-tracking, non-negotiable)
 
 - Milestones are shippable phases (`[Phase N] Outcome`), 3–10 issues, 1–4 cycles. Max 2 open. Create just-in-time at phase start — never pre-create the roadmap.
 - One parent (1–3 days, shippable) + subs (each <4h), max 1 level. Title `[area] Verb outcome`, ≤60 chars.
 - Exactly one label (`feature|bug|chore|docs|spike`); `feature`/`bug` carry exactly one milestone. Assignee `me`.
 - Description = 4-field header only (Goal / Scope+Out / Acceptance boxes / Links), ≤15 lines. Longer specs → Linear Doc linked under `Links:`.
-- Close `[Phase 7] Rekam dan ulas sesi` before opening Phase 8. Phase 7 shipped with 19 issues — do not repeat; split oversized phases.
+- Close `[Phase 14] Profile integration` before opening Phase 15. Phase 7 shipped with 19 issues — do not repeat; split oversized phases.
 - Backend-not-yet-built: dummy in `data/*-dummy.ts` (pure, no `server-only`), TODO names exact endpoint (`TODO (GET /path)`), DTOs in `types` + copied into spec, characterization test pins shape.
+- Backend-connected (Phase 13+): generated `src/api` client is the only wire layer; specs live in `docs/integration/`; never hand-write a duplicate DTO.
 
 ## 1. Now / Next / Later
 
 | Slot | Phase | Outcome |
 |---|---|---|
-| Now | Close 7 | Rekam/sesi/evaluasi `Done`, overflow + gates green |
-| Next | 8 | `[Phase 8] Riwayat history` — demoable `/riwayat` + `/riwayat/[id]` before/after |
-| Next | 9 | `[Phase 9] Member profile` — demoable `/profil` biodata + kamera + keamanan |
-| Later | 10 | `[Phase 10] Coach foundation` — `/coach` dashboard + `/coach/members` list + coach shell |
-| Later | 11 | `[Phase 11] Coach detail` — `/coach/members/[id]` + feedback mutation + riwayat log |
+| Done | 7 | Rekam/sesi/evaluasi shipped; phase closed |
+| Done | 8 | `[Phase 8] Riwayat history` — shipped `/riwayat` + `/riwayat/[id]` before/after |
+| Done | 9 | `[Phase 9] Member profile` — shipped `/profil` biodata + kamera + keamanan |
+| Done | 10 | `[Phase 10] Coach foundation` — shipped `/coach` dashboard + `/coach/members` list + coach shell |
+| Done | 11 | `[Phase 11] Coach detail` — shipped `/coach/members/[id]` + feedback mutation + riwayat log |
+| Done | 12 | `[Phase 12] Coach member history` — shipped `/coach/members/[id]/riwayat` |
+| Done | 13 | `[Phase 13] Auth integration` — real BE auth: generated client seam, session cookies, proxy refresh, role guards, sign-in/up, sign-out |
+| Done | 14 | `[Phase 14] Profile integration` — real profile read/update, ViewModel mapper, honest stats, camera decoupling |
+| Done | 15 | `[Phase 15] Training integration` — `/latihan` catalog, prep, record, session review, evaluation against the real BE; upload transport spike; 3-step BFF upload to B2. Shipped (PR #33) |
+| Done | 16 | `[Phase 16] Member history integration` — shipped `/riwayat` + `/riwayat/[id]` against real BE; cursor pagination, review/movement filters, honest UI, video playback, follow-up actions (PSR-121, PR #34) |
+| Review | 17 | `[Phase 17] Member dashboard integration` — shipped `/dashboard` against real BE (`GET /api/v1/member/dashboard`); Honest UI, multi-group similarity rules, 7-day activity normalization, live session avatar initials fallback (PSR-122) |
 
 ## 2. Phase table
 
@@ -31,6 +41,12 @@ Sync both when phases change. Parent issue: PSR-69.
 | 9 | Profile renders athlete card (avatar + sabuk + akurasi + 2 mini stats + logout), biodata form (3 fields, RHF+Zod), kamera select, keamanan card, Batal/Simpan with `toast.promise` stubs | 94:41585 | `docs/superpowers/specs/2026-*-member-profile-design.md` | 1 parent + 2–3 subs |
 | 10 | Coach dashboard renders 4 stats + 5 athlete cards + 4 pillars + posture grid; members list renders 4 stats + search + 5 cards; coach shell (top + bottom nav, `laporan` tab) | 94:37791, 94:40178 | `docs/superpowers/specs/2026-*-coach-foundation-design.md` | 1 parent + 4–5 subs |
 | 11 | Member detail renders profile + belt/attendance + aggregate score + 4 pillars + evaluasi terbaru (score + 4 tiles + skeletal placeholder + pills + 5 params) + feedback textarea + dual CTA + riwayat log 4 cards; feedback `useMutation` stub `(POST /coach/feedback)` | 94:40427 | `docs/superpowers/specs/2026-*-coach-detail-design.md` | 1 parent + 4–5 subs |
+| 12 | Member history renders reused profile + Daftar Riwayat Sesi (count badge, 10 cards/page, tone dot + bare badge, range text, ?page= clamp); no overflow 390px | 94:40907 | docs/superpowers/specs/2026-10-19-coach-member-history-design.md | 1 parent + 3 subs |
+| 13 | Real auth end-to-end: runtime client seam, HttpOnly session cookies, proxy refresh + role guards, NPM/email sign-in, email-only sign-up, sign-out; no tokens in JS storage; auth pages clean at 390px | — (existing auth shell) | docs/integration/authentication.md + docs/integration/README.md | 1 parent + 7 subs |
+| 14 | Real profile read/update against the BE: ViewModel mapper, honest stats, server actions, camera decoupling | 94:41585 | `docs/integration/user-profile.md` | 1 parent + 4 subs |
+| 15 | `/latihan` reads TrainingCatalog; prep + record-config from BE; a recording uploads and lands on `/latihan/[slug]/sesi/[sessionId]`; session/evaluation render real status, video, measurements; no fabricated metrics; 390px clean | — (Phase 5–7 frames) | `docs/integration/Training.md` | 1 parent + 8 subs |
+| 16 | Real member history: cursor-paginated session list, movement and review status filters, video stream playback, coach review and body assessments, follow-up task mutation, honest UI; 390px clean | 94:39587, 94:38951, 94:39232 | `docs/integration/sessions-history.md` | 1 parent + 5 subs (PSR-121) |
+| 17 | Real member dashboard: `GET /api/v1/member/dashboard` wired to greeting, hero metric, 4 pillars, last session feedback, 7-day consistency activity, coach note; Honest UI; top-nav session initials; 390px clean | — (existing dashboard shell) | `docs/integration/member-dashboard.md` | 1 parent (PSR-122) |
 
 ## 3. Figma index (skim, 2026-10-11 — structure only, no pixel audit)
 
@@ -43,8 +59,13 @@ Sync both when phases change. Parent issue: PSR-69.
 | 5 | Coach dashboard | 94:37791 `Dashboard - Coach` | `/coach` | Eyebrow + heading + desc + CTA; 4 stats (5 Atlet / 84.6% / 2 Sesi antrean / Elevasi Siku +8cm); 5 athlete cards (avatar initials, name, pilar note, score, Lihat Detail); 4 pillars progress; posture 2×2 + alert banner; coach shell (KF avatar, `Dashboard` crumb, Dasbor/Member/Laporan nav) | `CoachOverview { totalAthletes: 5, teamAccuracy: 84.6, reviewQueue[2], topIssue, athletes[5], pillars[4] }` — `TODO (GET /coach/overview)` |
 | 6 | Coach member list | 94:40178 `Member List - Coach` | `/coach/members` | Breadcrumb + count badge; 4 stats (5 Atlet 3 Siap/2 Remidiasi / 84.6% / 60% / 24 sesi); search input; 5 cards (avatar, name, stage pill, score + stage, movement note + status pill, Lihat Detail) | `TeamMember[]` (length 5: id, initials, name, stage `siap\|remidiasi\|lolos`, score, movementNote) — `TODO (GET /coach/members)` + client search filter (no backend) |
 | 7 | Coach member detail | 94:40427 `Member detail - Coach` | `/coach/members/[id]` | Athlete header (badges, belt/attendance ×3, aggregate + 3 mini metrics); 4 pillars (pukulan = fokus); evaluasi terbaru (score + 4 tiles + skeletal placeholder + 4 pills + 5 params); feedback textarea + dual CTA; riwayat log 4 cards (#24 amber … #21 red) + more link | `CoachMemberDetail { athlete, pillars[4], latestEval, feedbackDraft, history[4] }` — `TODO (GET /coach/members/:id)` + `TODO (POST /coach/feedback)` |
+| 8 | Coach member history | 94:40907 Daftar Riwayat sesi - Coach | /coach/members/[id]/riwayat | Reused athlete profile; header + 10/24 count badge + description; 24 static session cards (sesi #, date, Skor AI, tone dot, title, subtitle, repetisi + badge footer); range text + prev/pages/next pagination | MemberHistory { memberId, totalSessions: 24, pageSize: 10, sessions[24] HistoryPageSession { id, sesiLabel, dateLabel, title, subtitle, repetisiLabel, scorePct, badgeKey } } — TODO (GET /coach/members/[id]/history?page=N) |
 
-Resolved 2026-10-11: the 8th link duplicated node 94:40427 — the intended pair is session detail without feedback (94:38951) vs with feedback (94:39232), both already indexed above. 7 unique nodes cover all scope; no 8th screen. Coach §6 log cards deep-link into member `/riwayat/[id]`.
+Resolved 2026-10-11: the duplicate 8th link pointed at node 94:40427 — the intended pair is session detail without feedback (94:38951) vs with feedback (94:39232), both indexed above. Superseded 2026-10-19: Phase 12 added a genuine screen #8 — `94:40907` (coach member history, indexed above), so the "no 8th screen" note applies only to the 2026-10-11 skim. Coach §6 log cards deep-link into member `/riwayat/[id]`.
+
+Training (Phase 15) reuses the Phase 5–7 frames already shipped; no new node in this index.
+
+Phase 15 is in review (PR #33). Live verification on 2026-11-06 confirmed the real catalog (4 modules), prep, record config, camera capture, preview, and `/latihan/kuda-kuda/sesi/[sessionId]` live session read at 390px (`scrollWidth <= innerWidth`). `GET /health/ready` now reports `storage: ok` + `workerConfiguration: ok` (with intermittent `503 database: unavailable_or_unmigrated` under concurrent requests; `get-rekam.ts` and `get-evaluation.ts` now fetch sequentially to reduce DB spikes), and `POST /api/member/sessions` now executes the new 3-step `POST /api/v1/member/uploads` → Backblaze B2 `PUT` → `POST /api/v1/member/uploads/{upload_id}/complete` contract server-side (bypassing B2's `403 CORS is not enabled for this bucket` on browser preflights; uploaded sessions remain `queued` awaiting the BE worker).
 
 ## 4. Issue scaffolds (create JIT, titles ≤60 chars)
 
@@ -52,11 +73,14 @@ Resolved 2026-10-11: the 8th link duplicated node 94:40427 — the intended pair
 - Ph9 parent `[profile] Ship profile screen` + subs `[profile] Add profile DTOs+tests`, `[profile] Build profile cards+form`, `[profile] Wire profil route+nav`.
 - Ph10 parent `[coach] Ship coach foundation` + subs `[coach] Add coach DTOs+tests`, `[coach] Build coach dashboard UI`, `[coach] Build members list UI`, `[coach] Wire coach shell+routes`.
 - Ph11 parent `[coach] Ship member detail` + subs `[coach] Add member-detail DTOs`, `[coach] Build detail eval UI`, `[coach] Build feedback form`, `[coach] Wire detail route+history`.
+- Ph13 parent `[auth] Ship auth integration` (PSR-103) + subs `[auth] Add generated client runtime seam` (PSR-108), `[auth] Build session cookies + auth gate` (PSR-105), `[auth] Add proxy refresh + route gate` (PSR-110), `[auth] Add sign-in + sign-up actions` (PSR-106), `[auth] Wire auth forms to actions` (PSR-107), `[auth] Wire sign-out from profile` (PSR-109), `[auth] Verify auth integration` (PSR-104).
+- Ph15 parent `[latihan] Ship training integration` + subs `[latihan] Spike upload transport rewrite`, `[latihan] Add catalog and prep reads`, `[latihan] Add session and evaluation reads`, `[latihan] Add BFF upload and video routes`, `[latihan] Build recorder capture flow`, `[latihan] Switch routes to session IDs`, `[latihan] Add session actions`, `[latihan] Verify training integration`.
 
 ## 5. Not-list (explicitly out — fights midnight scope creep)
 
-- Real video playback / binding blob URLs (placeholder shells only, decision carried from evaluasi).
-- Backend connect (all phases ship on dummies + endpoint TODOs).
+- Real video playback in `/riwayat` (training video ships in Phase 15).
+- Backend connect outside auth/profile/training (remaining phases stay on dummies + endpoint TODOs).
+- Password recovery and email verification/link UI (design pending, Phase 14).
 - Interactive charts (progress bars/rings are divs/SVG, no chart dep).
 - Push notifications, native app, social features.
 - Coach session-detail as separate route until distinct Figma node arrives (reuse member detail).
@@ -67,6 +91,13 @@ Resolved 2026-10-11: the 8th link duplicated node 94:40427 — the intended pair
 - Coach scope confirmed ≈ member-sized (7 frames skimmed); session-detail duplicate id is the only unknown.
 - `Perlu Perbaikan` (riwayat) vs `Perlu Koreksi` (evaluasi) wording — unify to `Perlu Koreksi` at Phase 8 spec time, log as decision comment.
 - Amber/green failure tone (no red) except coach log #21 red card — confirm with coach at Phase 11.
+- Figma card badges carry descriptive text ("Sesuai Skor Kualitas (80.0%)", "Sayap Siku Kanan (+8cm)") — user override: cards ship bare Sesuai/Remediasi/Tidak Sesuai badges only; isolated-node screenshots render component defaults, only the full frame (94:40907) is authoritative.
+- Auth: BE refresh rotation grace is assumed, not verified — proxy single-flight limits the race, and a `401` fails safe to `/sign-in`.
+- Auth: email-only sign-up is the current A1 workaround; ask the BE for an explicit `email` field before reopening NPM registration.
+- Auth: BE error shapes are inconsistent — normalize once in `lib/api-client.ts`; no per-feature parsing.
+- Training: upload transport is solved by same-origin BFF routes (D4) with a 4.5 MB request cap, idempotency keys, and `Range` forwarding; pre-signed production upload remains an open BE request.
+- Training: `EvaluationOut.score` is 0–100 similarity points, not accuracy; no 85% target until product confirms the scale.
+- Training: generated Zod is wrong for the multipart video body and the video response, and its request validators cannot read required headers — bypass with the low-level client (D17).
 
 ## 7. Audit script
 

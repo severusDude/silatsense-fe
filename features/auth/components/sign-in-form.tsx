@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Controller, useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -11,31 +12,49 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { PasswordField } from "@/features/auth/components/password-field";
 import { signInSchema, type SignInInput } from "@/features/auth/schemas";
-import type { SignInResponse } from "@/features/auth/types";
+import { signInAction } from "@/features/auth/actions/sign-in";
+import type { AuthSuccessResult } from "@/features/auth/types";
 
 export function SignInForm() {
-  const { control, handleSubmit } = useForm<SignInInput>({
-    // Adapter: signInSchema uses `.default(false)`, so under zod v4 its
-    // input type (`rememberMe?`) differs from its output type
-    // (`SignInInput.rememberMe`). The form always supplies `rememberMe`
-    // via defaultValues, making this cast sound at runtime.
+  const router = useRouter();
+
+  const { control, handleSubmit, setError } = useForm<SignInInput>({
     resolver: zodResolver(signInSchema) as Resolver<SignInInput>,
     mode: "onChange",
     criteriaMode: "firstError",
     defaultValues: { identifier: "", password: "", rememberMe: false },
   });
 
-  const mutation = useMutation<SignInResponse, Error, SignInInput>({
-    mutationFn: async () => {
-      // TODO: connect backend via lib/api-client.ts (POST /auth/sign-in)
-      throw new Error("Backend belum tersambung");
+  const mutation = useMutation<AuthSuccessResult, Error, SignInInput>({
+    mutationFn: async (values) => {
+      const next =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("next") ?? undefined
+          : undefined;
+
+      const res = await signInAction({ ...values, next });
+      if (!res.ok) {
+        if (res.error.fieldErrors) {
+          for (const [field, msg] of Object.entries(res.error.fieldErrors)) {
+            if (field === "identifier" || field === "password") {
+              setError(field, { message: msg });
+            }
+          }
+        }
+        throw new Error(res.error.message);
+      }
+      return res.data;
+    },
+    onSuccess: (data) => {
+      router.replace(data.redirectTo);
+      router.refresh();
     },
   });
 
   const onSubmit = (values: SignInInput) =>
     toast.promise(mutation.mutateAsync(values), {
       loading: "Memproses masuk…",
-      success: "Berhasil — backend belum tersambung (stub)",
+      success: "Berhasil masuk",
       error: (e) => (e instanceof Error ? e.message : "Gagal masuk"),
     });
 
@@ -51,7 +70,7 @@ export function SignInForm() {
               <InputGroupInput
                 {...field}
                 id="sign-in-identifier"
-                placeholder="227006104"
+                placeholder="227006104 atau nama@student.unsil.ac.id"
                 autoComplete="username"
                 aria-invalid={fieldState.invalid}
               />
@@ -68,11 +87,10 @@ export function SignInForm() {
         name="password"
         id="sign-in-password"
         label="Kata sandi"
-        placeholder="secretpassword"
+        placeholder="Minimal 8 karakter"
         autoComplete="current-password"
       />
       <div className="flex justify-end">
-        {/* TODO: password-reset flow via lib/api-client.ts (POST /auth/password-reset) */}
         <button type="button" className="text-xs font-medium text-primary hover:underline">
           Lupa sandi?
         </button>

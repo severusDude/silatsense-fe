@@ -45,15 +45,16 @@ describe("persiapan components", () => {
     }
   });
 
-  it("renders camera, coach, and calibration copy verbatim", () => {
+  it("renders camera, guide, and calibration copy from backend fields", () => {
     // Arrange + Act
     const source = read("features/member/components/camera-source-card.tsx");
-    const coach = read("features/member/components/coach-instruction-card.tsx");
+    const guide = read("features/member/components/coach-instruction-card.tsx");
     const calibration = read("features/member/components/calibration-card.tsx");
 
     // Assert
     expect(source).toContain("PILIH SUMBER KAMERA");
     expect(source).toContain("Pindai Ulang");
+    expect(source).toContain("Pindai Kamera");
     expect(source).toContain("use client");
     expect(source).toContain("items={");
     expect(source).toContain("onValueChange");
@@ -61,10 +62,12 @@ describe("persiapan components", () => {
     expect(source).toContain("FPS");
     expect(source).toContain("LATENSI");
     expect(source).not.toContain("Terhubung (1080p @ 60 FPS)");
-    expect(coach).toContain("INSTRUKSI PELATIH SILAT");
-    expect(coach).toContain("Wajib");
-    expect(calibration).toContain("KESIAPAN SENSOR & AI");
-    expect(calibration).toContain("readinessLabel");
+    expect(guide).toContain("PANDUAN GERAKAN");
+    expect(guide).not.toContain("INSTRUKSI PELATIH SILAT");
+    expect(guide).not.toContain("Wajib");
+    expect(calibration).toContain("CHECKLIST PERSIAPAN");
+    expect(calibration).toContain("Penilaian segera hadir");
+    expect(calibration).not.toContain("readinessLabel");
     expect(calibration).toContain("PANDUAN POSTUR KUNCI");
   });
 
@@ -83,7 +86,7 @@ describe("persiapan components", () => {
 });
 
 describe("persiapan route", () => {
-  it("keeps the [slug] route thin with static params and no client boundary", () => {
+  it("keeps the [slug] route thin without static params or a client boundary", () => {
     // Arrange + Act
     const layout = read("app/(member)/latihan/[slug]/(persiapan)/layout.tsx");
     const page = read("app/(member)/latihan/[slug]/(persiapan)/page.tsx");
@@ -91,13 +94,15 @@ describe("persiapan route", () => {
     // Assert
     expect(layout).not.toContain("use client");
     expect(page).not.toContain("use client");
-    expect(page).toContain("generateStaticParams");
-    expect(page).toContain("persiapanSlugs");
+    expect(page).not.toContain("generateStaticParams");
+    expect(page).not.toContain("persiapanSlugs");
     expect(page).toContain("@/features/member/pages/persiapan-page");
     expect(page).toContain("PersiapanPage");
+    expect(page).toContain("params={params}");
+    expect(page).not.toContain("await params");
   });
 
-  it("suspends camera, coach, calibration, and CTA behind skeleton fallbacks", () => {
+  it("reads the prep once and passes VM sections to the client camera island", () => {
     // Arrange + Act
     const src = read("features/member/pages/persiapan-page.tsx");
     const experience = read(
@@ -109,15 +114,23 @@ describe("persiapan route", () => {
     expect(src).toContain("Skeleton");
     expect(src).toContain("notFound");
     expect(src).toContain("getPersiapan");
-    expect(src).toContain("getCameras");
+    expect(src.match(/getPersiapan\(/g)).toHaveLength(1);
+    expect(src).not.toContain("getCameras");
+    expect(src).not.toContain("defaultCameraId");
     expect(src).toContain("CameraExperience");
-    expect(src).toContain("CoachInstructionCard");
+    expect(src).toContain("MovementGuideCard");
     expect(src).toContain("CalibrationCard");
     expect(src).toContain("PersiapanCta");
     expect(experience).toContain("PersiapanViewport");
     expect(experience).toContain("CameraSourceCard");
-    expect(experience).toContain("getUserMedia");
-    expect(experience).toContain("getTracks");
+    expect(experience).toContain("useCamera");
+    expect(experience).not.toContain("getUserMedia");
+    expect(experience).not.toContain("getTracks");
+    expect(experience).not.toContain("cameras: CameraDevice[]");
+    expect(read("features/member/hooks/use-camera.ts")).toContain(
+      "getUserMedia",
+    );
+    expect(read("features/member/hooks/use-camera.ts")).toContain("getTracks");
   });
 
   it("syncs the viewport badge to the live stream without a Ganti badge", () => {
