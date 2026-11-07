@@ -1,7 +1,21 @@
+import { Suspense } from "react";
 import Link from "next/link";
-import { CloudCheck, Play } from "lucide-react";
+import { CloudCheck, Play, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { getSession } from "@/features/auth/data/session";
+import { getInitials } from "@/features/member/data/history-mapper";
+
+async function MemberAvatarInitials() {
+  const user = await getSession().catch(() => null);
+  const initials = getInitials(user?.fullName);
+
+  if (!user?.fullName || initials === "—") {
+    return <User className="size-4" aria-hidden="true" />;
+  }
+
+  return <>{initials}</>;
+}
 
 export function MemberTopNav({ trail = ["Dashboard"] }: { trail?: string[] }) {
   return (
@@ -25,7 +39,9 @@ export function MemberTopNav({ trail = ["Dashboard"] }: { trail?: string[] }) {
             </Link>
             <span className="flex items-center gap-1.5 border-l pl-2">
               <span className="flex size-8 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-foreground ring-1 ring-border ring-inset">
-                AS
+                <Suspense fallback={<User className="size-4" aria-hidden="true" />}>
+                  <MemberAvatarInitials />
+                </Suspense>
               </span>
               <span aria-hidden="true" className="size-2 rounded-full bg-success" />
             </span>

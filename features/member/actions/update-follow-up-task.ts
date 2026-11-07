@@ -55,6 +55,7 @@ export async function updateFollowUpTaskAction(
 
   const validated = zTaskApiV1MemberFollowUpTasksTaskIdPatchResponse.parse(data);
 
+  revalidatePath("/dashboard");
   revalidatePath("/riwayat");
   revalidatePath(`/riwayat/${parsed.data.sessionId}`);
 
