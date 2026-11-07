@@ -1,61 +1,55 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getEvaluasi } from "@/features/member/data/get-evaluasi";
+import { getEvaluation } from "@/features/member/data/get-evaluation";
+import { isTrainingModuleSlug } from "@/features/member/data/training-mapper";
+import { EvaluasiActions } from "@/features/member/components/evaluasi-actions";
 import { EvaluasiHeader } from "@/features/member/components/evaluasi-header";
-import { EvaluasiScoreCard } from "@/features/member/components/evaluasi-score-card";
 import { EvaluasiPlayback } from "@/features/member/components/evaluasi-playback";
 import { EvaluasiPostureList } from "@/features/member/components/evaluasi-posture-list";
-import { EvaluasiActions } from "@/features/member/components/evaluasi-actions";
+import { EvaluasiScoreCard } from "@/features/member/components/evaluasi-score-card";
 
-export function EvaluasiPage({ slug }: { slug: string }) {
+export function EvaluasiPage({
+  params,
+}: {
+  params: Promise<{ slug: string; sessionId: string }>;
+}) {
   return (
     <div className="flex flex-col gap-3.5">
-      <Suspense fallback={<Skeleton className="h-24 w-full rounded-2xl" />}>
-        <HeaderSection slug={slug} />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="aspect-[4/3] w-full rounded-2xl" />}>
-        <VisualSection slug={slug} />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-2xl" />}>
-        <PostureSection slug={slug} />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-12 w-full rounded-full" />}>
-        <ActionsSection slug={slug} />
+      <Suspense
+        fallback={
+          <div className="flex flex-col gap-3.5">
+            <Skeleton className="h-24 w-full rounded-2xl" />
+            <Skeleton className="aspect-[4/3] w-full rounded-2xl" />
+            <Skeleton className="h-96 w-full rounded-2xl" />
+            <Skeleton className="h-12 w-full rounded-full" />
+          </div>
+        }
+      >
+        <EvaluasiContent params={params} />
       </Suspense>
     </div>
   );
 }
 
-async function HeaderSection({ slug }: { slug: string }) {
-  const session = await getEvaluasi(slug);
-  if (!session) notFound();
+async function EvaluasiContent({
+  params,
+}: {
+  params: Promise<{ slug: string; sessionId: string }>;
+}) {
+  const { slug, sessionId } = await params;
+  if (!isTrainingModuleSlug(slug)) notFound();
+
+  const evaluation = await getEvaluation(sessionId);
+  if (!evaluation || evaluation.slug !== slug) notFound();
+
   return (
     <>
-      <EvaluasiHeader session={session} />
-      <EvaluasiScoreCard session={session} />
+      <EvaluasiHeader evaluation={evaluation} />
+      <EvaluasiScoreCard evaluation={evaluation} />
+      <EvaluasiPlayback evaluation={evaluation} />
+      <EvaluasiPostureList evaluation={evaluation} />
+      <EvaluasiActions evaluation={evaluation} />
     </>
   );
-}
-
-async function VisualSection({ slug }: { slug: string }) {
-  const session = await getEvaluasi(slug);
-  if (!session) notFound();
-  return (
-    <>
-      <EvaluasiPlayback session={session} />
-    </>
-  );
-}
-
-async function PostureSection({ slug }: { slug: string }) {
-  const session = await getEvaluasi(slug);
-  if (!session) notFound();
-  return <EvaluasiPostureList session={session} />;
-}
-
-async function ActionsSection({ slug }: { slug: string }) {
-  const session = await getEvaluasi(slug);
-  if (!session) notFound();
-  return <EvaluasiActions session={session} />;
 }

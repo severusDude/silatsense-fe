@@ -1,40 +1,46 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getCameras } from "@/features/member/data/get-persiapan";
 import { getRekam } from "@/features/member/data/get-rekam";
-import { defaultCameraId } from "@/features/member/data/persiapan-dummy";
-import { RekamViewport } from "@/features/member/components/rekam-viewport";
-import { RekamSelesaiCta } from "@/features/member/components/rekam-selesai-cta";
+import { isTrainingModuleSlug } from "@/features/member/data/training-mapper";
+import { RekamRecorder } from "@/features/member/components/rekam-recorder";
+import { readRetryOf } from "@/features/member/recorder";
 
-export function RekamPage({ slug }: { slug: string }) {
+export function RekamPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   return (
     <div className="flex flex-col gap-3.5">
-      <Suspense fallback={<Skeleton className="aspect-[3/4] w-full rounded-2xl" />}>
-        <ViewportSection slug={slug} />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-12 w-full rounded-full" />}>
-        <CtaSection slug={slug} />
+      <Suspense
+        fallback={
+          <div className="flex flex-col gap-3.5">
+            <Skeleton className="aspect-[3/4] w-full rounded-2xl" />
+            <Skeleton className="h-12 w-full rounded-full" />
+          </div>
+        }
+      >
+        <RekamContent params={params} searchParams={searchParams} />
       </Suspense>
     </div>
   );
 }
 
-async function ViewportSection({ slug }: { slug: string }) {
-  const detail = await getRekam(slug);
-  if (!detail) notFound();
-  const cameras = await getCameras();
-  return (
-    <RekamViewport
-      label={detail.trainingName}
-      cameras={cameras}
-      defaultCameraId={defaultCameraId}
-    />
-  );
-}
+async function RekamContent({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  if (!isTrainingModuleSlug(slug)) notFound();
 
-async function CtaSection({ slug }: { slug: string }) {
   const detail = await getRekam(slug);
   if (!detail) notFound();
-  return <RekamSelesaiCta slug={slug} />;
+
+  return <RekamRecorder detail={detail} retryOf={readRetryOf(query.retryOf)} />;
 }

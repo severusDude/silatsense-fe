@@ -1,4 +1,9 @@
 import type { PilarSlug, PostureParamId } from "@/components/shared/silat-reference";
+import type { NormalizedApiError } from "@/lib/api-client";
+
+export type ActionResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; error: NormalizedApiError };
 
 export type PillarStatus = "stabil" | "optimal" | "perlu-koreksi";
 export type DayState = "filled" | "rest" | "empty" | "active";
@@ -71,54 +76,161 @@ export interface MemberDashboard {
   coachNote: CoachNoteData;
 }
 
-export interface TrainingModule {
-  slug: PilarSlug;
+export type TrainingModuleSlug =
+  | "kuda-kuda"
+  | "pukulan"
+  | "tangkisan"
+  | "tendangan";
+
+export interface TrainingModuleViewModel {
+  slug: TrainingModuleSlug;
   order: number;
   orderLabel: string;
   name: string;
   levelLabel: string;
   description: string;
   estimateLabel?: string;
+  scoringAvailable: boolean;
+  scoringReason: "reference_not_ready" | null;
+  similarity: { averageScore: number; sampleCount: number } | null;
 }
 
-export interface TrainingHero {
-  badges: string[];
-  title: string;
-  subtitle: string;
-  sessionsLabel: string;
-  accuracyLabel: string;
+export interface TrainingCatalogViewModel {
+  hero: {
+    badges: string[];
+    title: string;
+    subtitle: string;
+    completedSessionsLabel: string;
+    scoredSessionsLabel: string;
+    accuracy: { available: false; label: "Segera hadir" };
+  };
+  modules: TrainingModuleViewModel[];
 }
 
-export interface MemberTraining {
-  hero: TrainingHero;
-  modules: TrainingModule[];
+export interface GuideItemViewModel {
+  id: string;
+  text: string;
+  source: string;
 }
 
-export type PersiapanSlug = PilarSlug;
-
-export interface CalibrationCheck {
-  title: string;
-  detail: string;
-  stateLabel: string;
-}
-
-export interface PostureGuide {
-  term: string;
-  detail: string;
-}
-
-export interface PersiapanDetail {
-  slug: PersiapanSlug;
+export interface PersiapanViewModel {
+  slug: TrainingModuleSlug;
   eyebrow: string;
-  accuracyLabel: string;
-  accuracyValue: string;
   title: string;
   description: string;
-  coachQuote: string;
-  readinessLabel: string;
-  checks: CalibrationCheck[];
-  guides: PostureGuide[];
+  levelLabel: string;
+  estimatedDurationLabel?: string;
+  capability: {
+    scoringAvailable: boolean;
+    reason: "reference_not_ready" | null;
+    method: "static-reference-pose";
+    referenceVersions: string[];
+  };
+  checklist: GuideItemViewModel[];
+  guides: GuideItemViewModel[];
 }
+
+export interface RekamViewModel {
+  slug: TrainingModuleSlug;
+  trainingName: string;
+  eyebrow: string;
+  countdownSec: number;
+  targetDurationSec: number;
+  maxDurationSec: number;
+  maxBytes: number;
+  acceptedMimeTypes: string[];
+  retentionSeconds: number;
+  scoringAvailable: boolean;
+}
+
+export type SessionMediaStatus =
+  | "available"
+  | "expired"
+  | "deleted"
+  | "unavailable";
+
+export interface SessionViewModel {
+  id: string;
+  slug: TrainingModuleSlug;
+  trainingName: string;
+  eyebrow: string;
+  processingStatus: "queued" | "processing" | "completed" | "failed";
+  processingLabel: string;
+  analysisStatus: string | null;
+  analysisStatusLabel: string | null;
+  evaluationId: string | null;
+  canViewEvaluation: boolean;
+  canRetryAnalysis: boolean;
+  startedAtLabel: string;
+  uploadedAtLabel: string;
+  completedAtLabel: string;
+  durationSec: number | null;
+  durationLabel: string;
+  byteSize: number | null;
+  fileSizeLabel: string;
+  resolutionLabel: string;
+  formatLabel: string;
+  mediaStatus: SessionMediaStatus;
+  mediaStatusLabel: string;
+  mediaExpiresAtLabel: string;
+  error: { code: string; detail: string } | null;
+  acknowledged: boolean;
+  acknowledgedAtLabel: string;
+  retryOf: string | null;
+}
+
+export type PostureStatusViewModel = "sesuai" | "perlu-koreksi" | "tidak-dinilai";
+
+export interface PostureAssessmentViewModel {
+  id: string;
+  name: string;
+  status: PostureStatusViewModel;
+  statusLabel: string;
+  reading: string;
+  detail: string;
+  correctionCue: string;
+  thumbnailLabel: string;
+  thumbnailSrc: null;
+}
+
+export interface EvaluationScoreViewModel {
+  available: boolean;
+  value: number | null;
+  unitLabel: "poin";
+  max: 100;
+  status:
+    | "experimental"
+    | "reference_not_ready"
+    | "insufficient_pose"
+    | "insufficient_features";
+  statusLabel: string;
+  reason: string | null;
+  variantLabel: string | null;
+  summary: string;
+}
+
+export interface EvaluationViewModel {
+  id: string;
+  sessionId: string;
+  slug: TrainingModuleSlug;
+  techniqueName: string;
+  evaluatedAtLabel: string;
+  framesProcessed: number;
+  validPoseFrames: number;
+  featuresCompared: number | null;
+  poseStatus: "detected" | "not_detected";
+  postureQualityLabel: string;
+  repetitionCountingAvailable: false;
+  score: EvaluationScoreViewModel;
+  postures: PostureAssessmentViewModel[];
+  unavailableReasons: string[];
+  mediaStatus: SessionMediaStatus;
+  mediaMetaLabel: string;
+  acknowledged: boolean;
+  acknowledgedAtLabel: string;
+}
+
+export type PersiapanSlug = TrainingModuleSlug;
 
 export interface CameraDevice {
   id: string;
@@ -128,30 +240,25 @@ export interface CameraDevice {
   latencyMs: number | null;
 }
 
-export interface RekamSession {
-  slug: PersiapanSlug;
-  trainingName: string;
-  eyebrow: string;
-  countdownSec: number;
-  targetDurationSec: number;
-  camera: CameraDevice;
-}
+export type CameraStatus = "idle" | "scanning" | "live" | "error";
 
-export type SesiUploadState = "idle" | "uploading" | "failed" | "success";
+export type RecorderPhase =
+  | "idle"
+  | "countdown"
+  | "recording"
+  | "recorded"
+  | "uploading"
+  | "failed";
 
-export interface TrainingSession {
-  slug: PersiapanSlug;
-  trainingName: string;
-  eyebrow: string;
+/** Client-only recording result; never crosses the RSC boundary. */
+export interface RecordedClip {
+  blob: Blob;
+  previewUrl: string;
   durationSec: number;
-  durationLabel: string;
-  recordedAtLabel: string;
-  fileSizeLabel: string;
-  camera: CameraDevice;
-  videoStatus: "recorded";
+  byteSize: number;
+  mimeType: string;
+  fileName: string;
 }
-
-export type EvaluasiSlug = PersiapanSlug;
 
 export type PostureStatus = "sesuai" | "perlu-koreksi";
 
@@ -165,28 +272,6 @@ export interface PostureAssessment {
   correctionCue: string; // e.g. "Tarik siku ~8 cm ke dalam." — empty on sesuai
   thumbnailLabel: string; // e.g. "Siku kanan"
   thumbnailSrc: null; // literal until the pose-render move binds a real asset
-}
-
-export interface KinematicScore {
-  value: number;
-  unit: "%";
-  targetPct: number;
-  targetLabel: string;
-  deltaLabel: string;
-  alertLabel: string;
-  summary: string;
-}
-
-export interface EvaluationSession {
-  slug: EvaluasiSlug;
-  techniqueName: string;
-  evaluatedAtLabel: string;
-  validReps: number;
-  deviatedReps: number;
-  qualityLabel: string;
-  score: KinematicScore;
-  postures: PostureAssessment[];
-  videoStatus: "placeholder";
 }
 
 export type RiwayatSlug = PersiapanSlug;

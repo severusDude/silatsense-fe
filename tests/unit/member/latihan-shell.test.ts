@@ -68,12 +68,28 @@ describe("latihan route", () => {
     // Assert
     expect(src).toContain("Suspense");
     expect(src).toContain("Skeleton");
-    expect(src).toContain("getTrainingModules");
+    expect(src).toContain("getTrainingCatalog");
+    expect(src.match(/getTrainingCatalog\(\)/g)).toHaveLength(1);
+    expect(src).toContain("notFound");
     expect(src).toContain("LatihanHero");
     expect(src).toContain("ModuleCardList");
   });
 
-  it("marks Latihan active with real links and keeps dead TODOs for the rest", () => {
+  it("renders active session counts with an inactive accuracy slot", () => {
+    // Arrange + Act
+    const hero = read("features/member/components/latihan-hero.tsx");
+    const card = read("features/member/components/module-card.tsx");
+
+    // Assert
+    expect(hero).toContain("completedSessionsLabel");
+    expect(hero).toContain("scoredSessionsLabel");
+    expect(hero).toContain("hero.accuracy.label");
+    expect(hero).not.toContain("84.0%");
+    expect(card).toContain("Penilaian segera hadir");
+    expect(card).toContain("formatScore");
+  });
+
+  it("marks Latihan active with real links", () => {
     // Arrange + Act
     const bottom = read("features/member/components/member-bottom-nav.tsx");
 

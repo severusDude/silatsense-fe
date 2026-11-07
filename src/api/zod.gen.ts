@@ -675,6 +675,40 @@ export const zUploadConfig = z.object({
 });
 
 /**
+ * UploadRequest
+ */
+export const zUploadRequest = z.object({
+    movementSlug: z.enum([
+        'kuda-kuda',
+        'pukulan',
+        'tangkisan',
+        'tendangan'
+    ]),
+    filename: z.string().min(1).max(255),
+    mimeType: z.enum([
+        'video/mp4',
+        'video/quicktime',
+        'video/webm'
+    ]),
+    byteSize: z.int().gt(0),
+    sha256: z.string().regex(/^[0-9a-f]{64}$/),
+    retryOf: z.string().nullish()
+});
+
+/**
+ * UploadTicket
+ */
+export const zUploadTicket = z.object({
+    uploadId: z.string(),
+    uploadUrl: z.string().nullable(),
+    method: z.literal('PUT').optional().default('PUT'),
+    headers: z.record(z.string(), z.string()),
+    expiresAt: z.iso.datetime(),
+    completePath: z.string(),
+    acceptedSession: zAcceptedSession.nullish()
+});
+
+/**
  * ValidationError
  */
 export const zValidationError = z.object({
@@ -868,6 +902,26 @@ export const zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostPath 
  * Successful Response
  */
 export const zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse = zAcknowledgedOut;
+
+export const zInitiateApiV1MemberUploadsPostBody = zUploadRequest;
+
+export const zInitiateApiV1MemberUploadsPostHeaders = z.object({
+    'Idempotency-Key': z.string().min(1).max(128)
+});
+
+/**
+ * Successful Response
+ */
+export const zInitiateApiV1MemberUploadsPostResponse = zUploadTicket;
+
+export const zCompleteApiV1MemberUploadsUploadIdCompletePostPath = z.object({
+    upload_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zCompleteApiV1MemberUploadsUploadIdCompletePostResponse = zAcceptedSession;
 
 export const zHistoryApiV1MemberHistoryGetQuery = z.object({
     limit: z.int().gte(1).lte(100).optional().default(20),

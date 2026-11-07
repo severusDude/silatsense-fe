@@ -6,27 +6,23 @@ const root = process.cwd();
 const read = (path: string) => readFileSync(join(root, path), "utf8");
 
 describe("sesi components", () => {
-  it("plays the recording in a portrait video shell with no remnant", () => {
+  it("streams the real recording through the authenticated BFF route", () => {
     // Arrange + Act
     const src = read("features/member/components/sesi-playback.tsx");
 
     // Assert
     expect(src).not.toContain("absolute");
-    expect(src).not.toContain("ImagePlaceholder");
+    expect(src).toContain('session.mediaStatus === "available"');
+    expect(src).toContain("/api/member/sessions/${session.id}/video");
     expect(src).toContain("aspect-[3/4]");
     expect(src).toContain("<video");
     expect(src).toContain("controls");
-    expect(src).not.toContain("ULASAN SESI");
-    expect(src).not.toContain("00:47");
-    expect(src).not.toContain("Hasil rekaman");
-    expect(src).not.toContain("durationLabel");
+    expect(src).toContain("MediaUnavailable");
     expect(src).not.toContain("placeholder");
-    expect(src).not.toContain("Ganti");
-    expect(src).not.toContain("Pesilat Terdeteksi");
-    expect(src).not.toContain("COG 50:50");
+    expect(src).not.toContain("durationLabel");
   });
 
-  it("renders the 7-row recording info card without absolute", () => {
+  it("renders BE-only recording rows without camera or FPS", () => {
     // Arrange + Act
     const src = read("features/member/components/sesi-info-card.tsx");
 
@@ -34,87 +30,56 @@ describe("sesi components", () => {
     expect(src).not.toContain("absolute");
     expect(src).toContain("Latihan");
     expect(src).toContain("Durasi");
-    expect(src).toContain("Direkam");
+    expect(src).toContain("Mulai");
+    expect(src).toContain("Diunggah");
     expect(src).toContain("Ukuran berkas");
-    expect(src).toContain("Kamera");
     expect(src).toContain("Resolusi");
-    expect(src).toContain("FPS");
+    expect(src).toContain("Format");
+    expect(src).not.toContain("Kamera");
+    expect(src).not.toContain("FPS");
+    expect(src).toContain("processingLabel");
+    expect(src).toContain("analysisStatusLabel");
+    expect(src).toContain("error.detail");
     expect(src).toContain("eyebrow");
   });
 
-  it("renders the upload as an attachment card with bottom progress", () => {
+  it("wires review, retry, and delete actions to the real session endpoints", () => {
     // Arrange + Act
-    const src = read("features/member/components/sesi-actions.tsx");
+    const src = read("features/member/components/session-actions.tsx");
 
     // Assert
     expect(src).toContain("use client");
-    expect(src).toContain("Attachment");
-    expect(src).toContain("AttachmentMedia");
-    expect(src).toContain("AttachmentContent");
-    expect(src).toContain("AttachmentTitle");
-    expect(src).toContain("AttachmentDescription");
-    expect(src).toContain("FileVideo");
-    expect(src).toContain('"uploading"');
-    expect(src).toContain('"error"');
-    expect(src).toContain('"done"');
-    expect(src).toContain('role="progressbar"');
-    expect(src).toContain("aria-valuenow");
-    expect(src).toContain("basis-full");
-    expect(src).not.toContain("absolute");
-  });
-
-  it("drives a fail-once-at-72 upload machine with retry", () => {
-    // Arrange + Act
-    const src = read("features/member/components/sesi-actions.tsx");
-
-    // Assert
-    expect(src).toContain("Unggah Rekaman");
-    expect(src).toContain("%");
-    expect(src).toContain("72");
-    expect(src).toContain("Coba lagi");
-    expect(src).toContain("Terunggah");
-    expect(src).toContain("toast");
-    expect(src).toContain("clearInterval");
-  });
-
-  it("keeps Coba lagi and Lihat Evaluasi primary above the retake", () => {
-    // Arrange + Act
-    const src = read("features/member/components/sesi-actions.tsx");
-
-    // Assert
     expect(src).toContain("Lihat Evaluasi");
-    expect(src).toContain(
-      'buttonVariants({ size: "lg", className: "w-full rounded-full" })',
-    );
-    const evaluasiIndex = src.indexOf("Lihat Evaluasi");
-    const retakeIndex = src.indexOf("/latihan/${session.slug}/rekam");
-    expect(evaluasiIndex).toBeGreaterThan(-1);
-    expect(retakeIndex).toBeGreaterThan(evaluasiIndex);
-  });
-
-  it("pins the XHR upload contract and dead evaluasi affordance", () => {
-    // Arrange + Act
-    const src = read("features/member/components/sesi-actions.tsx");
-
-    // Assert
-    expect(src).toContain("XHR");
-    expect(src).toContain("lib/api-client.ts");
-    expect(src).toContain("POST /member/sessions");
-    expect(src).toContain("Lihat Evaluasi");
-    expect(src).toContain("/evaluasi");
-    expect(src).toContain("TODO");
-    expect(src).toContain("lucide-react");
-  });
-
-  it("guards the retake link while uploading", () => {
-    // Arrange + Act
-    const src = read("features/member/components/sesi-actions.tsx");
-
-    // Assert
+    expect(src).toContain("/latihan/${session.slug}/evaluasi/${session.id}");
+    expect(src).toContain("retrySessionAction");
+    expect(src).toContain("retryRecordingHref");
+    expect(src).toContain("Rekam Ulang");
     expect(src).toContain("/latihan/${session.slug}/rekam");
-    expect(src).toContain("Hapus & Latihan Ulang");
-    expect(src).toContain("aria-disabled");
-    expect(src).toContain("preventDefault");
+    expect(src).toContain("Latihan Ulang");
+    expect(src).toContain("deleteSessionAction");
+    expect(src).toContain("Hapus Sesi");
+    expect(src).toContain("<Dialog");
+    expect(src).toContain("router.replace");
+    expect(src).toContain("router.push");
+    expect(src).toContain("processingStatus");
+    expect(src).toContain("session.acknowledged");
+    expect(src).not.toContain("setInterval");
+    expect(src).not.toContain("Attachment");
+    expect(src).not.toContain("Upload");
+  });
+
+  it("polls processing status with a capped refresh loop and manual reload", () => {
+    // Arrange + Act
+    const src = read("features/member/components/session-status-poller.tsx");
+
+    // Assert
+    expect(src).toContain("use client");
+    expect(src).toContain("router.refresh()");
+    expect(src).toContain("MAX_POLLS");
+    expect(src).toContain("clearInterval");
+    expect(src).toContain("Muat ulang");
+    expect(src).toContain("role=\"status\"");
+    expect(src).toContain("motion-reduce:animate-none");
   });
 
   it("keeps all sesi UI flex-only with lucide icons", () => {
@@ -122,35 +87,44 @@ describe("sesi components", () => {
     const files = [
       "features/member/components/sesi-playback.tsx",
       "features/member/components/sesi-info-card.tsx",
-      "features/member/components/sesi-actions.tsx",
+      "features/member/components/session-actions.tsx",
+      "features/member/components/session-status-poller.tsx",
+      "features/member/components/media-unavailable.tsx",
     ];
 
     // Assert
     for (const file of files) {
       expect(read(file)).not.toContain("absolute");
     }
-    expect(read("features/member/components/sesi-actions.tsx")).toContain(
+    expect(read("features/member/components/session-actions.tsx")).toContain(
+      "lucide-react",
+    );
+    expect(read("features/member/components/media-unavailable.tsx")).toContain(
       "lucide-react",
     );
   });
 });
 
 describe("sesi route", () => {
-  it("keeps the sesi route thin with static params and no client boundary", () => {
+  it("keeps the session route thin and keyed by sessionId", () => {
     // Arrange + Act
-    const layout = read("app/(member)/latihan/[slug]/sesi/layout.tsx");
-    const page = read("app/(member)/latihan/[slug]/sesi/page.tsx");
+    const layout = read(
+      "app/(member)/latihan/[slug]/sesi/[sessionId]/layout.tsx",
+    );
+    const page = read("app/(member)/latihan/[slug]/sesi/[sessionId]/page.tsx");
 
     // Assert
     expect(layout).not.toContain("use client");
     expect(page).not.toContain("use client");
-    expect(page).toContain("generateStaticParams");
-    expect(page).toContain("sesiSlugs");
+    expect(page).not.toContain("generateStaticParams");
+    expect(page).toContain("sessionId");
     expect(page).toContain("@/features/member/pages/sesi-page");
     expect(page).toContain("SesiPage");
+    expect(page).toContain("params={params}");
+    expect(page).not.toContain("await params");
   });
 
-  it("suspends playback, info, and actions behind skeleton fallbacks", () => {
+  it("reads the session once and rejects a mismatched movement slug", () => {
     // Arrange + Act
     const src = read("features/member/pages/sesi-page.tsx");
 
@@ -158,17 +132,22 @@ describe("sesi route", () => {
     expect(src).toContain("Suspense");
     expect(src).toContain("Skeleton");
     expect(src).toContain("notFound");
-    expect(src).toContain("getSesi");
+    expect(src).toContain("getSession");
+    expect(src.match(/getSession\(/g)).toHaveLength(1);
+    expect(src).toContain("isTrainingModuleSlug");
+    expect(src).toContain("session.slug !== slug");
+    expect(src).toContain("SessionStatusPoller");
     expect(src).toContain("SesiPlayback");
     expect(src).toContain("SesiInfoCard");
-    expect(src).toContain("SesiActions session");
-    expect(src.match(/Suspense/g)?.length).toBeGreaterThanOrEqual(3);
+    expect(src).toContain("SessionActions session");
   });
 
   it("owns one member shell per leaf without double chrome", () => {
     // Arrange + Act
     const slug = read("app/(member)/latihan/[slug]/layout.tsx");
-    const detail = read("app/(member)/latihan/[slug]/sesi/layout.tsx");
+    const detail = read(
+      "app/(member)/latihan/[slug]/sesi/[sessionId]/layout.tsx",
+    );
 
     // Assert
     expect(slug).not.toContain("MemberLayout");
@@ -177,15 +156,18 @@ describe("sesi route", () => {
     expect(detail).toContain("Ulasan Sesi");
   });
 
-  it("links the rekam Selesai CTA live to the sesi route", () => {
+  it("removes the old slug-only routes and dummy readers", () => {
     // Arrange + Act
-    const src = read("features/member/components/rekam-selesai-cta.tsx");
+    const oldFiles = [
+      "app/(member)/latihan/[slug]/sesi/page.tsx",
+      "app/(member)/latihan/[slug]/sesi/layout.tsx",
+      "features/member/data/get-sesi.ts",
+      "features/member/data/sesi-dummy.ts",
+    ];
 
     // Assert
-    expect(src).toContain("Selesai");
-    expect(src).toContain("/latihan/${slug}/sesi");
-    expect(src).toContain("Link");
-    expect(src).not.toContain("aria-disabled");
-    expect(src).not.toContain("TODO");
+    for (const file of oldFiles) {
+      expect(() => read(file)).toThrow();
+    }
   });
 });

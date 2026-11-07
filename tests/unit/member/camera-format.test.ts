@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { formatFps, qualityLabel } from "@/features/member/camera-format";
+import {
+  describeCameraError,
+  formatFps,
+  qualityLabel,
+} from "@/features/member/camera-format";
 
 describe("formatFps", () => {
   it("rounds fractional sensor rates to whole frames", () => {
@@ -21,5 +25,33 @@ describe("qualityLabel", () => {
     // Arrange + Act + Assert
     expect(qualityLabel(undefined, undefined, undefined)).toBeNull();
     expect(qualityLabel(1920, 1080, undefined)).toBeNull();
+  });
+});
+
+describe("describeCameraError", () => {
+  it("tells the member how to recover from a denied permission", () => {
+    // Arrange + Act
+    const message = describeCameraError({ name: "NotAllowedError" });
+
+    // Assert
+    expect(message).toContain("Izinkan akses kamera");
+  });
+
+  it("distinguishes a missing device from a busy device", () => {
+    // Arrange + Act + Assert
+    expect(describeCameraError({ name: "NotFoundError" })).toContain(
+      "tidak ditemukan",
+    );
+    expect(describeCameraError({ name: "NotReadableError" })).toContain(
+      "dipakai aplikasi lain",
+    );
+  });
+
+  it("explains the secure-context requirement and keeps a generic fallback", () => {
+    // Arrange + Act + Assert
+    expect(describeCameraError({ name: "TypeError" })).toContain("HTTPS");
+    expect(describeCameraError(new Error("boom"))).toContain(
+      "Periksa izin browser",
+    );
   });
 });
