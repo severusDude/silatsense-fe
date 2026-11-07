@@ -1,6 +1,6 @@
 # Coach Dashboard (`/coach`) — FE ↔ BE Integration Spec
 
-- **Status:** Approved — Phase 1 assessment + Phase 2 spec approved 2026-11-07. Implementation not started.
+- **Status:** In Review — Phase 18 implementation complete and verified 2026-11-07.
 - **Date:** 2026-11-07
 - **Linear:** PSR-123 (parent, Phase 18); PSR-124 audit Done; PSR-125 data, PSR-127 UI, PSR-126 verification.
 - **Scope:** Coach Dashboard only (`/coach`, `features/coach/pages/coach-dashboard-page.tsx`, `features/coach/components/coach-header.tsx`, `coach-top-nav.tsx`, `coach-stat-grid.tsx`, `coach-athlete-list.tsx`, `coach-pillar-monitor.tsx`, `coach-posture-grid.tsx`, `features/coach/data/get-coach-overview.ts`, `coach-overview-dummy.ts`).
@@ -738,5 +738,5 @@ No open product questions remain for this dashboard move.
 - [x] Q1–Q7 resolved (approved 2026-11-07; see §11).
 - [x] Decision approved: overview + roster (`limit=5`) as the only dashboard reads.
 - [x] Decision approved: Honest UI for team accuracy, stage breakdown, completion ratio, review names, pillar thresholds, posture scores, and report export.
-- [ ] Implementation approved to start.
-- [ ] Gates after implementation: `pnpm build`, `pnpm exec tsc --noEmit`, `pnpm lint`, `pnpm test`, and browser `scrollWidth <= innerWidth` at 390px.
+- [x] Implementation approved to start.
+- [x] Gates after implementation: `pnpm build`, `pnpm exec tsc --noEmit`, `pnpm lint`, `pnpm test`, and browser `scrollWidth <= innerWidth` at 390px.
