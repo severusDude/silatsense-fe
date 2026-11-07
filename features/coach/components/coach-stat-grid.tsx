@@ -1,7 +1,14 @@
 import { Clock, Target, Users, Wrench } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import type { CoachStat } from "@/features/coach/types";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import type { CoachDashboardStat } from "@/features/coach/types";
 
 const statIcons = {
   "total-atlet": Users,
@@ -10,11 +17,13 @@ const statIcons = {
   fokus: Wrench,
 } as const;
 
-export function CoachStatGrid({ stats }: { stats: CoachStat[] }) {
+export function CoachStatGrid({ stats }: { stats: CoachDashboardStat[] }) {
   return (
     <section aria-label="Statistik tim" className="grid grid-cols-2 gap-2.5">
       {stats.map((stat) => {
         const Icon = statIcons[stat.id] ?? Users;
+        const isUnsupportedValue = !stat.valueAvailable;
+
         return (
           <Card key={stat.id} size="sm" className="gap-0">
             <CardHeader>
@@ -26,16 +35,53 @@ export function CoachStatGrid({ stats }: { stats: CoachStat[] }) {
               </CardAction>
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-1.5">
-              <p className="text-lg font-bold tabular-nums">{stat.value}</p>
+              <p
+                className={`text-lg font-bold tabular-nums ${
+                  isUnsupportedValue ? "text-muted-foreground opacity-60" : ""
+                }`}
+              >
+                {stat.value}
+              </p>
               {stat.badge ? (
-                <Badge variant={stat.id === "akurasi-tim" ? "outline" : "secondary"}>{stat.badge}</Badge>
+                <Badge
+                  variant={
+                    stat.badgeAvailable === false
+                      ? "outline"
+                      : stat.id === "akurasi-tim"
+                        ? "outline"
+                        : "secondary"
+                  }
+                  className={stat.badgeAvailable === false ? "opacity-60" : undefined}
+                >
+                  {stat.badge}
+                </Badge>
               ) : null}
-              {stat.note ? <p className="text-[11px] text-muted-foreground">{stat.note}</p> : null}
+              {stat.note ? (
+                <p
+                  className={`text-[11px] ${
+                    stat.noteAvailable === false
+                      ? "text-muted-foreground opacity-60"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {stat.note}
+                </p>
+              ) : null}
             </CardContent>
             {stat.footerLeft && stat.footerRight ? (
               <CardFooter className="flex-row items-center justify-between gap-2">
-                <span className="truncate text-[11px] text-muted-foreground">{stat.footerLeft}</span>
-                <span className="shrink-0 text-[11px] font-bold tabular-nums">{stat.footerRight}</span>
+                <span className="truncate text-[11px] text-muted-foreground">
+                  {stat.footerLeft}
+                </span>
+                <span
+                  className={`shrink-0 text-[11px] font-bold tabular-nums ${
+                    stat.footerRightAvailable === false
+                      ? "font-normal text-muted-foreground opacity-60"
+                      : ""
+                  }`}
+                >
+                  {stat.footerRight}
+                </span>
               </CardFooter>
             ) : null}
           </Card>

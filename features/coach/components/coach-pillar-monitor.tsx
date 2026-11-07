@@ -1,12 +1,12 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import type { CoachPillar } from "@/features/coach/types";
-
-function pillarBadgeVariant(status: CoachPillar["status"]): "success" | "secondary" | "warning" {
-  if (status === "stabil") return "success";
-  if (status === "optimal") return "secondary";
-  return "warning";
-}
 
 export function CoachPillarMonitor({ pillars }: { pillars: CoachPillar[] }) {
   return (
@@ -14,7 +14,9 @@ export function CoachPillarMonitor({ pillars }: { pillars: CoachPillar[] }) {
       <CardHeader>
         <CardTitle>Monitoring 4 Pilar Gerakan</CardTitle>
         <CardAction>
-          <Badge variant="outline">Target ≥ 85%</Badge>
+          <Badge variant="outline" className="opacity-60">
+            Ambang target: Segera hadir
+          </Badge>
         </CardAction>
       </CardHeader>
       <CardContent>
@@ -22,14 +24,30 @@ export function CoachPillarMonitor({ pillars }: { pillars: CoachPillar[] }) {
           {pillars.map((pillar) => (
             <li key={pillar.slug} className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-bold">{pillar.name}</span>
-                <span className="flex items-center gap-1.5">
-                  <span className="text-xs font-bold tabular-nums">{pillar.avgPct.toFixed(1)}%</span>
-                  <Badge variant={pillarBadgeVariant(pillar.status)}>{pillar.statusLabel}</Badge>
-                </span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs font-bold">{pillar.name}</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {pillar.sampleLabel}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold tabular-nums">
+                    {pillar.scoreLabel}
+                  </span>
+                  <Badge variant={pillar.statusVariant}>
+                    {pillar.statusLabel}
+                  </Badge>
+                </div>
               </div>
-              <div role="img" aria-label={`${pillar.name} ${pillar.avgPct.toFixed(1)} persen`} className="h-2 overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-primary" style={{ width: `${pillar.avgPct}%` }} />
+              <div
+                role="img"
+                aria-label={`${pillar.name} ${pillar.scoreLabel}`}
+                className="h-2 overflow-hidden rounded-full bg-muted"
+              >
+                <div
+                  className="h-full rounded-full bg-primary"
+                  style={{ width: `${pillar.barPercent}%` }}
+                />
               </div>
             </li>
           ))}
