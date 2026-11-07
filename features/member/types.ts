@@ -5,32 +5,55 @@ export type ActionResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: NormalizedApiError };
 
-export type PillarStatus = "stabil" | "optimal" | "perlu-koreksi";
+export type TrainingModuleSlug =
+  | "kuda-kuda"
+  | "pukulan"
+  | "tangkisan"
+  | "tendangan";
+
+export type PillarStatus =
+  | "stabil"
+  | "optimal"
+  | "perlu-koreksi"
+  | "terdata"
+  | "belum-dinilai";
 export type DayState = "filled" | "rest" | "empty" | "active";
 export type ObservationTone = "good" | "warning" | "neutral";
 
 export interface GreetingData {
   name: string;
-  lastSessionDaysAgo: number;
+  lastSessionDaysAgo: number | null;
+  lastSessionRecencyLabel: string;
+  focusSlug: TrainingModuleSlug;
   focusTechnique: string;
+  hasRecordedSession: boolean;
 }
 
 export interface HeroMetricData {
-  accuracyPct: number;
-  elbowToleranceDeg: number;
-  targetDeg: number;
-  cameraDistanceM: number;
-  cameraReady: boolean;
+  statusLabel: string;
+  statusVariant: "success" | "secondary" | "outline";
+  scoreAvailable: boolean;
+  scoreValue: number | null;
+  scoreLabel: string;
+  scoreSubtitle: string;
+  completedSessionsLabel: string;
+  totalDurationLabel: string;
+  compositeAccuracy: { available: false; label: "Segera hadir" };
+  sensorTelemetry: { available: false; label: "Segera hadir" };
 }
 
 export interface PillarStat {
-  slug: PilarSlug;
+  slug: TrainingModuleSlug;
   name: string;
   status: PillarStatus;
   statusLabel: string;
   detail: string;
-  avgPct: number;
+  scoreAvailable: boolean;
+  avgScore: number | null;
+  avgLabel: string;
+  sampleCount: number;
   active?: boolean;
+  href: string;
 }
 
 export interface SessionObservation {
@@ -40,47 +63,58 @@ export interface SessionObservation {
 }
 
 export interface LastSessionData {
+  id: string;
+  slug: TrainingModuleSlug;
   technique: string;
   time: string;
-  reps: number;
-  scorePct: number;
-  scoreLabel: string;
+  durationLabel: string;
+  reps: { available: false; label: "Segera hadir" };
+  scoreAvailable: boolean;
+  scoreValue: number | null;
+  badgeLabel: string;
+  badgeVariant: "success" | "warning" | "secondary" | "outline" | "destructive";
   observations: SessionObservation[];
+  retryHref: string;
+  detailHref: string;
 }
 
 export interface WeekDay {
+  date: string;
   label: string;
+  sessionCount: number;
+  durationSeconds: number;
   value: number | null;
+  valueLabel: string;
   state: DayState;
 }
 
 export interface WeeklyData {
   title: string;
   targetLabel: string;
+  targetConfig: { available: false; label: "Segera hadir" };
   weekLabel: string;
   days: WeekDay[];
 }
 
 export interface CoachNoteData {
+  available: boolean;
   initials: string;
   name: string;
+  roleLabel?: string;
+  publishedAtLabel?: string;
   quote: string;
 }
 
-export interface MemberDashboard {
+export interface MemberDashboardViewModel {
   greeting: GreetingData;
   heroMetric: HeroMetricData;
   pillars: PillarStat[];
-  lastSession: LastSessionData;
+  lastSession: LastSessionData | null;
   weekly: WeeklyData;
   coachNote: CoachNoteData;
 }
 
-export type TrainingModuleSlug =
-  | "kuda-kuda"
-  | "pukulan"
-  | "tangkisan"
-  | "tendangan";
+export type MemberDashboard = MemberDashboardViewModel;
 
 export interface TrainingModuleViewModel {
   slug: TrainingModuleSlug;
@@ -264,11 +298,11 @@ export interface RecordedClip {
 }
 
 export type HistoryReviewBadgeStatus =
-  | "sesuai"        // reviewStatus === "approved"
+  | "sesuai" // reviewStatus === "approved"
   | "perlu-koreksi" // reviewStatus === "needs_revision"
-  | "menunggu"      // reviewStatus === "pending" && processingStatus === "completed"
-  | "diproses"      // processingStatus === "queued" | "processing"
-  | "gagal";        // processingStatus === "failed"
+  | "menunggu" // reviewStatus === "pending" && processingStatus === "completed"
+  | "diproses" // processingStatus === "queued" | "processing"
+  | "gagal"; // processingStatus === "failed"
 
 export interface HistoryParamChipViewModel {
   id: string;
@@ -298,17 +332,17 @@ export interface HistoryEntryViewModel {
 }
 
 export interface HistorySummaryViewModel {
-  totalSessionsLabel: string;     // e.g. "24 Sesi"
-  sessionsDeltaLabel: string;     // e.g. "3 sesi minggu ini"
+  totalSessionsLabel: string; // e.g. "24 Sesi"
+  sessionsDeltaLabel: string; // e.g. "3 sesi minggu ini"
   accuracy: {
     available: false;
     label: "Segera hadir";
-    note: string;                 // "Analisis gabungan belum tersedia"
+    note: string; // "Analisis gabungan belum tersedia"
   };
-  dominantFocusLabel: string;     // e.g. "Kuda-kuda" or "Belum ada"
-  dominantSessionsLabel: string;  // e.g. "12 sesi dinilai"
-  durationHoursLabel: string;     // e.g. "08j 45m"
-  durationNoteLabel: string;      // e.g. "24 sampel durasi"
+  dominantFocusLabel: string; // e.g. "Kuda-kuda" or "Belum ada"
+  dominantSessionsLabel: string; // e.g. "12 sesi dinilai"
+  durationHoursLabel: string; // e.g. "08j 45m"
+  durationNoteLabel: string; // e.g. "24 sampel durasi"
 }
 
 export interface HistoryFiltersViewModel {

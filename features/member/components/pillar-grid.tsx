@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ChevronRight, Footprints, Hand, Shield, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -46,22 +47,37 @@ export function PillarGrid({ pillars }: { pillars: PillarStat[] }) {
                     </p>
                   </div>
                   <div className="mt-auto flex items-end justify-between border-t pt-2">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">
-                        Rata-rata
-                      </span>
-                      <span className={`text-sm font-bold ${pillar.active ? "text-primary" : ""}`}>
-                        {pillar.avgPct.toFixed(1)}%
-                      </span>
-                    </div>
-                    {pillar.active ? (
-                      /* TODO: wire to /latihan pukulan flow when the route lands */
-                      <span aria-disabled="true" className="flex items-center gap-0.5 text-xs font-bold text-primary">
-                        Lanjut <ChevronRight className="size-3.5" />
-                      </span>
+                    {pillar.scoreAvailable ? (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">
+                          Rata-rata Skor
+                        </span>
+                        <span className={`text-sm font-bold ${pillar.active ? "text-primary" : ""}`}>
+                          {pillar.avgLabel}
+                        </span>
+                      </div>
                     ) : (
-                      <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
+                      <div className="flex flex-col gap-0.5 opacity-60">
+                        <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">
+                          Rata-rata Skor
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className="w-fit text-[9px] font-semibold text-muted-foreground uppercase"
+                        >
+                          {pillar.avgLabel}
+                        </Badge>
+                      </div>
                     )}
+                    <Link
+                      href={pillar.href}
+                      aria-label={`Latihan ${pillar.name}`}
+                      className={`flex items-center gap-0.5 text-xs font-bold ${
+                        pillar.active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {pillar.active ? "Lanjut" : "Mulai"} <ChevronRight className="size-3.5" />
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
