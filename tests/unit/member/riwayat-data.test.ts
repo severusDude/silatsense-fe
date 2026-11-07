@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Dashboard, HistoryItem, HistoryPage } from "@/api";
 import {
+  formatScoreReason,
   toHistoryEntryViewModel,
   toHistoryPageViewModel,
   toHistorySummaryViewModel,
@@ -179,6 +180,54 @@ describe("history mapper - session list items", () => {
     expect(entry.params).toEqual([]);
     expect(entry.coachNote).toBeNull();
     expect(entry.hasPublishedReview).toBe(false);
+  });
+
+  it("properly translates evaluation_pending and similar reason codes to natural Indonesian format", () => {
+    expect(formatScoreReason("evaluation_pending")).toBe("Menunggu evaluasi");
+    expect(formatScoreReason("pending_evaluation")).toBe("Menunggu evaluasi");
+    expect(formatScoreReason("reference_not_ready")).toBe("Referensi gerakan belum siap");
+    expect(formatScoreReason("insufficient_pose")).toBe("Pose tubuh tidak terdeteksi");
+    expect(formatScoreReason("insufficient_features")).toBe("Fitur gerakan tidak cukup");
+    expect(formatScoreReason("scoring_unavailable")).toBe("Penilaian belum tersedia");
+    expect(formatScoreReason("custom_system_error")).toBe("Custom system error");
+    expect(formatScoreReason("Sudut siku sesuai referensi.")).toBe("Sudut siku sesuai referensi.");
+    expect(formatScoreReason(null)).toBeNull();
+
+    const mockPendingItem: HistoryItem = {
+      session: {
+        id: "sess-pending",
+        movementSlug: "kuda-kuda",
+        processingStatus: "queued",
+        reviewStatus: "pending",
+        startedAt: "2026-11-06T14:04:32Z",
+        uploadedAt: "2026-11-06T14:04:26Z",
+        completedAt: null,
+        createdAt: "2026-11-06T14:04:32Z",
+        analysisStatus: "queued",
+        evaluationId: null,
+        media: {
+          status: "unavailable",
+          mimeType: "video/webm",
+          width: 1280,
+          height: 720,
+          durationSeconds: 15,
+          byteSize: 1000000,
+          playbackPath: "/api/member/sessions/sess-pending/video",
+          expiresAt: "2026-11-07T14:04:32Z",
+        },
+        error: null,
+        acknowledgedAt: null,
+        retryOf: null,
+      },
+      movementName: "Kuda-kuda",
+      score: null,
+      scoreReason: "evaluation_pending",
+      review: null,
+    };
+
+    const entry = toHistoryEntryViewModel(mockPendingItem);
+    expect(entry.summary).toBe("Menunggu evaluasi");
+    expect(entry.scoreCaption).toBe("Belum dinilai");
   });
 
   it("maps HistoryPage pagination cursor", () => {

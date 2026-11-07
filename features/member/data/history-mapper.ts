@@ -44,6 +44,67 @@ const timeFormatter = new Intl.DateTimeFormat("id-ID", {
   timeZone: JAKARTA_TZ,
 });
 
+export const SCORE_REASON_TRANSLATIONS: Record<string, string> = {
+  // Pending / processing states
+  evaluation_pending: "Menunggu evaluasi",
+  pending_evaluation: "Menunggu evaluasi",
+  pending: "Menunggu evaluasi",
+  score_pending: "Menunggu penilaian",
+  scoring_pending: "Menunggu penilaian",
+  processing_pending: "Menunggu pemrosesan",
+  processing: "Sedang dianalisis",
+  queued: "Dalam antrean analisis",
+  in_progress: "Sedang dianalisis",
+
+  // Pose / Feature detection states
+  reference_not_ready: "Referensi gerakan belum siap",
+  insufficient_pose: "Pose tubuh tidak terdeteksi",
+  insufficient_features: "Fitur gerakan tidak cukup",
+  pose_not_detected: "Pose tidak terdeteksi",
+  not_detected: "Pose tidak terdeteksi",
+  no_pose_detected: "Pose tubuh tidak terdeteksi",
+  no_movement_detected: "Gerakan tidak terdeteksi",
+  low_confidence: "Tingkat keyakinan deteksi rendah",
+
+  // Analysis / Model states
+  experimental: "Analisis eksperimental",
+  scoring_unavailable: "Penilaian belum tersedia",
+  unavailable: "Penilaian tidak tersedia",
+
+  // Error / Media states
+  failed: "Evaluasi gagal diproses",
+  internal_error: "Kendala sistem pemrosesan",
+  video_corrupt: "Berkas rekaman video rusak",
+  media_unavailable: "Media rekaman tidak tersedia",
+  duration_too_short: "Durasi rekaman terlalu singkat",
+  duration_too_long: "Durasi rekaman melebihi batas",
+};
+
+export function formatScoreReason(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+
+  const normalized = trimmed.toLowerCase();
+  if (SCORE_REASON_TRANSLATIONS[normalized]) {
+    return SCORE_REASON_TRANSLATIONS[normalized];
+  }
+
+  // If it's a technical code with underscores/dashes (e.g. "custom_error_code")
+  if (/^[a-z0-9]+([_-][a-z0-9]+)+$/i.test(trimmed)) {
+    const words = trimmed.split(/[_-]+/);
+    return words
+      .map((word, idx) =>
+        idx === 0
+          ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          : word.toLowerCase(),
+      )
+      .join(" ");
+  }
+
+  return trimmed;
+}
+
 export function formatDateId(iso: string | null | undefined): string {
   if (!iso) return "—";
   const date = new Date(iso);
@@ -161,10 +222,13 @@ export function toHistoryEntryViewModel(item: HistoryItem): HistoryEntryViewMode
     session.processingStatus,
   );
 
+  const formattedReason = formatScoreReason(item.scoreReason);
+  const formattedError = formatScoreReason(session.error?.detail);
+
   const fallbackSummary =
     item.review?.note ??
-    item.scoreReason ??
-    session.error?.detail ??
+    formattedReason ??
+    formattedError ??
     (session.processingStatus === "completed"
       ? "Sesi selesai dianalisis"
       : "Menunggu pemrosesan");
@@ -244,6 +308,14 @@ export function toReviewHistoryItemViewModel(review: PublishedReview): ReviewHis
 export function toSessionDetailViewModel(detail: SessionDetail): SessionDetailViewModel {
   const sessionVm = toSessionViewModel(detail.session);
   const evaluationVm = detail.evaluation ? toEvaluationViewModel(detail.evaluation, sessionVm) : null;
+  if (evaluationVm?.score) {
+    if (evaluationVm.score.reason) {
+      evaluationVm.score.reason = formatScoreReason(evaluationVm.score.reason);
+    }
+    if (evaluationVm.score.summary) {
+      evaluationVm.score.summary = formatScoreReason(evaluationVm.score.summary) ?? evaluationVm.score.summary;
+    }
+  }
   const slug = detail.session.movementSlug as TrainingModuleSlug;
   const baseName = PILAR_NAMES[slug] ?? slug;
   const techniqueName = detail.evaluation?.matchedVariant
