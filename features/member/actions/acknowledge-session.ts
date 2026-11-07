@@ -2,6 +2,7 @@
 
 import "server-only";
 
+import { revalidatePath } from "next/cache";
 import { acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePost } from "@/api";
 import type { AcknowledgedOut } from "@/api";
 import { getAccessToken } from "@/features/auth/data/session";
@@ -41,6 +42,9 @@ export async function acknowledgeSessionAction(
   if (error || !data) {
     return { ok: false, error: toSessionActionError(error, response) };
   }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/riwayat");
 
   return { ok: true, data };
 }

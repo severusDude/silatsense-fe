@@ -29,7 +29,9 @@ conventions live in `docs/integration/`; later modules start from that guide.
 | Done | 12 | `[Phase 12] Coach member history` — shipped `/coach/members/[id]/riwayat` |
 | Done | 13 | `[Phase 13] Auth integration` — real BE auth: generated client seam, session cookies, proxy refresh, role guards, sign-in/up, sign-out |
 | Done | 14 | `[Phase 14] Profile integration` — real profile read/update, ViewModel mapper, honest stats, camera decoupling |
-| Review | 15 | `[Phase 15] Training integration` — `/latihan` catalog, prep, record, session review, evaluation against the real BE; upload transport spike first. PR #33; BE storage is now `ok` and `POST /member/sessions` returns `503 direct_upload_required` in favor of `POST /member/uploads` + B2 `PUT` + `complete` (B2 bucket lacks browser CORS; queued sessions wait on BE worker) |
+| Done | 15 | `[Phase 15] Training integration` — `/latihan` catalog, prep, record, session review, evaluation against the real BE; upload transport spike; 3-step BFF upload to B2. Shipped (PR #33) |
+| Done | 16 | `[Phase 16] Member history integration` — shipped `/riwayat` + `/riwayat/[id]` against real BE; cursor pagination, review/movement filters, honest UI, video playback, follow-up actions (PSR-121, PR #34) |
+| Review | 17 | `[Phase 17] Member dashboard integration` — shipped `/dashboard` against real BE (`GET /api/v1/member/dashboard`); Honest UI, multi-group similarity rules, 7-day activity normalization, live session avatar initials fallback (PSR-122) |
 
 ## 2. Phase table
 
@@ -43,6 +45,8 @@ conventions live in `docs/integration/`; later modules start from that guide.
 | 13 | Real auth end-to-end: runtime client seam, HttpOnly session cookies, proxy refresh + role guards, NPM/email sign-in, email-only sign-up, sign-out; no tokens in JS storage; auth pages clean at 390px | — (existing auth shell) | docs/integration/authentication.md + docs/integration/README.md | 1 parent + 7 subs |
 | 14 | Real profile read/update against the BE: ViewModel mapper, honest stats, server actions, camera decoupling | 94:41585 | `docs/integration/user-profile.md` | 1 parent + 4 subs |
 | 15 | `/latihan` reads TrainingCatalog; prep + record-config from BE; a recording uploads and lands on `/latihan/[slug]/sesi/[sessionId]`; session/evaluation render real status, video, measurements; no fabricated metrics; 390px clean | — (Phase 5–7 frames) | `docs/integration/Training.md` | 1 parent + 8 subs |
+| 16 | Real member history: cursor-paginated session list, movement and review status filters, video stream playback, coach review and body assessments, follow-up task mutation, honest UI; 390px clean | 94:39587, 94:38951, 94:39232 | `docs/integration/sessions-history.md` | 1 parent + 5 subs (PSR-121) |
+| 17 | Real member dashboard: `GET /api/v1/member/dashboard` wired to greeting, hero metric, 4 pillars, last session feedback, 7-day consistency activity, coach note; Honest UI; top-nav session initials; 390px clean | — (existing dashboard shell) | `docs/integration/member-dashboard.md` | 1 parent (PSR-122) |
 
 ## 3. Figma index (skim, 2026-10-11 — structure only, no pixel audit)
 

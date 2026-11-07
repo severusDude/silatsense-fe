@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { revalidatePath } from "next/cache";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePost,
@@ -16,6 +17,10 @@ import {
   toSessionActionError,
 } from "@/features/member/session-action-errors";
 import { sessionIdInputSchema } from "@/features/member/schemas/recording";
+
+vi.mock("next/cache", () => ({
+  revalidatePath: vi.fn(),
+}));
 
 vi.mock("@/api", () => ({
   acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePost: vi.fn(),
@@ -162,7 +167,7 @@ describe("acknowledgeSessionAction", () => {
     ).not.toHaveBeenCalled();
   });
 
-  it("posts the acknowledge request and returns the timestamp", async () => {
+  it("posts the acknowledge request, revalidates /dashboard, and returns the timestamp", async () => {
     // Arrange
     vi.mocked(getAccessToken).mockResolvedValue("mock-jwt-token");
     vi.mocked(
@@ -184,6 +189,7 @@ describe("acknowledgeSessionAction", () => {
       headers: { Authorization: "Bearer mock-jwt-token" },
       throwOnError: false,
     });
+    expect(revalidatePath).toHaveBeenCalledWith("/dashboard");
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.data.acknowledgedAt).toBe("2026-11-04T03:15:00.000Z");
@@ -245,7 +251,7 @@ describe("deleteSessionAction", () => {
     expect(removeSessionApiV1MemberSessionsSessionIdDelete).not.toHaveBeenCalled();
   });
 
-  it("treats a 204 response as success because the body is empty", async () => {
+  it("treats a 204 response as success and revalidates /dashboard", async () => {
     // Arrange
     vi.mocked(getAccessToken).mockResolvedValue("mock-jwt-token");
     vi.mocked(removeSessionApiV1MemberSessionsSessionIdDelete).mockResolvedValue({
@@ -263,6 +269,7 @@ describe("deleteSessionAction", () => {
       headers: { Authorization: "Bearer mock-jwt-token" },
       throwOnError: false,
     });
+    expect(revalidatePath).toHaveBeenCalledWith("/dashboard");
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.data).toEqual({ sessionId: "ses-1" });
@@ -331,7 +338,7 @@ describe("retrySessionAction", () => {
     ).not.toHaveBeenCalled();
   });
 
-  it("posts the retry intent with the idempotency key and returns the follow-up", async () => {
+  it("posts the retry intent with the idempotency key, revalidates /dashboard, and returns the follow-up", async () => {
     // Arrange
     vi.mocked(getAccessToken).mockResolvedValue("mock-jwt-token");
     vi.mocked(
@@ -365,6 +372,7 @@ describe("retrySessionAction", () => {
       requestValidator: undefined,
       throwOnError: false,
     });
+    expect(revalidatePath).toHaveBeenCalledWith("/dashboard");
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.data.sourceSessionId).toBe("ses-1");
@@ -416,6 +424,7 @@ describe("session action contracts", () => {
     expect(src).toContain("safeParse");
     expect(src).toContain("getAccessToken");
     expect(src).toContain("throwOnError: false");
+    expect(src).toContain('revalidatePath("/dashboard")');
     expect(src).not.toContain("fetch(");
   });
 });

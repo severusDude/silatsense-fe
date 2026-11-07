@@ -16,12 +16,13 @@ describe("weekly-progress", () => {
     expect(src).toContain("border-dashed");
   });
 
-  it("renders the week label and coach note from props", () => {
+  it("renders the week label, inactive target badge, and coach note from props", () => {
     // Arrange + Act
     const src = read("features/member/components/weekly-progress.tsx");
 
     // Assert
     expect(src).toContain("weekLabel");
+    expect(src).toContain("weekly.targetConfig.label");
     expect(src).toContain("blockquote");
     expect(src).toContain("note.quote");
   });

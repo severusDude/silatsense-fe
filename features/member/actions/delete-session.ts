@@ -2,6 +2,7 @@
 
 import "server-only";
 
+import { revalidatePath } from "next/cache";
 import { removeSessionApiV1MemberSessionsSessionIdDelete } from "@/api";
 import { getAccessToken } from "@/features/auth/data/session";
 import { sessionIdInputSchema } from "@/features/member/schemas/recording";
@@ -41,6 +42,9 @@ export async function deleteSessionAction(
   if (error || !response?.ok) {
     return { ok: false, error: toSessionActionError(error, response) };
   }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/riwayat");
 
   return { ok: true, data: { sessionId: parsed.data.sessionId } };
 }

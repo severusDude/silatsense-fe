@@ -2,6 +2,7 @@
 
 import "server-only";
 
+import { revalidatePath } from "next/cache";
 import { retryApiV1MemberSessionsSessionIdFollowUpsPost } from "@/api";
 import type { RetryOut } from "@/api";
 import { getAccessToken } from "@/features/auth/data/session";
@@ -50,6 +51,9 @@ export async function retrySessionAction(
   if (error || !data) {
     return { ok: false, error: toSessionActionError(error, response) };
   }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/riwayat");
 
   return { ok: true, data };
 }
