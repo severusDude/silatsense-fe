@@ -2,6 +2,7 @@
 
 - **Status:** Approved — Phase 1 assessment + Phase 2 spec approved 2026-11-07. Implementation not started.
 - **Date:** 2026-11-07
+- **Linear:** PSR-123 (parent, Phase 18); PSR-124 audit Done; PSR-125 data, PSR-127 UI, PSR-126 verification.
 - **Scope:** Coach Dashboard only (`/coach`, `features/coach/pages/coach-dashboard-page.tsx`, `features/coach/components/coach-header.tsx`, `coach-top-nav.tsx`, `coach-stat-grid.tsx`, `coach-athlete-list.tsx`, `coach-pillar-monitor.tsx`, `coach-posture-grid.tsx`, `features/coach/data/get-coach-overview.ts`, `coach-overview-dummy.ts`).
 - **Out of scope:** Coach members list (`/coach/members`), coach member detail (`/coach/members/[id]`), coach member history (`/coach/members/[id]/riwayat`), coach reports (`/coach/laporan`), shared profile (`/profil`), all member routes, backend changes, PDF export implementation, chart libraries.
 - **BE source of truth:** `https://silatsense-be.vercel.app/openapi.json` (v0.7.0, fetched 2026-11-07). Generated client in `src/api/` is in sync with this contract for the coach endpoints.
