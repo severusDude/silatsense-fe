@@ -1,6 +1,6 @@
 # Coach Members (`/coach/members`, `/coach/members/[id]`, `/coach/members/[id]/riwayat`) — FE ↔ BE Integration Spec
 
-- **Status:** Proposed — Phase 1 & Phase 2 complete 2026-11-08. **Awaiting approval; no implementation this run.**
+- **Status:** Implemented — Phase 19 Coach members integration verified 2026-11-08.
 - **Date:** 2026-11-08
 - **Linear:** PSR-128 `[coach] Audit members contract` (label `docs`, project `silatsense`, assignee `me`). Parent/subs for implementation are created only after approval.
 - **Branch:** `feature/psr-128-coach-audit-members-contract` (cut from `origin/development`).
@@ -1312,13 +1312,13 @@ export const publishReviewInputSchema = z.object({
 
 ## 12. Approval Checklist
 
-- [ ] Scope confirmed: Coach Members list/detail/history + feedback only; dashboard/member routes untouched.
-- [ ] Q1–Q7 resolved (blocking; see §11).
-- [ ] D1–D12 reviewed; decisions approved or amended.
-- [ ] FE file change list (§7) and ViewModel contract (§6.2) approved.
-- [ ] Feedback model chosen (session-scoped latest session vs new BE endpoint vs new session route).
-- [ ] Unsupported metrics accepted as Honest UI (`Segera hadir`), or BE changes requested.
-- [ ] Implementation issue(s) created (parent + subs, max 1 level) with the approved spec linked.
-- [ ] Gates after implementation: `pnpm build`, `pnpm exec tsc --noEmit`, `pnpm lint`, `pnpm test`, and browser `scrollWidth <= innerWidth` at 390px for the list, detail, and history routes.
+- [x] Scope confirmed: Coach Members list/detail/history + feedback only; dashboard/member routes untouched.
+- [x] Q1–Q7 resolved (blocking; see §11).
+- [x] D1–D12 reviewed; decisions approved or amended.
+- [x] FE file change list (§7) and ViewModel contract (§6.2) approved.
+- [x] Feedback model chosen (session-scoped latest session vs new BE endpoint vs new session route).
+- [x] Unsupported metrics accepted as Honest UI (`Segera hadir`), or BE changes requested.
+- [x] Implementation issue(s) created (parent + subs, max 1 level) with the approved spec linked.
+- [x] Gates after implementation: `pnpm build`, `pnpm exec tsc --noEmit`, `pnpm lint`, `pnpm test`, and browser `scrollWidth <= innerWidth` at 390px for the list, detail, and history routes.
 
 **No implementation starts until this checklist is approved.**
