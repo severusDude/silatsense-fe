@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  coachPasswordApiV1CoachPasswordPatch,
   memberPasswordApiV1MemberPasswordPatch,
+  updateCoachProfileApiV1CoachProfilePatch,
   updateMemberProfileApiV1MemberProfilePatch,
 } from "@/api";
 import { getAccessToken } from "@/features/auth/data/session";
@@ -9,7 +11,11 @@ import { updateProfileAction } from "@/features/profile/actions/update-profile";
 
 vi.mock("@/api", () => ({
   updateMemberProfileApiV1MemberProfilePatch: vi.fn(),
+  updateCoachProfileApiV1CoachProfilePatch: vi.fn(),
   memberPasswordApiV1MemberPasswordPatch: vi.fn(),
+  coachPasswordApiV1CoachPasswordPatch: vi.fn(),
+  memberProfileApiV1MemberProfileGetQueryKey: vi.fn(() => ["memberProfileApiV1MemberProfileGet"]),
+  coachProfileApiV1CoachProfileGetQueryKey: vi.fn(() => ["coachProfileApiV1CoachProfileGet"]),
 }));
 
 vi.mock("@/features/auth/data/session", () => ({
@@ -30,6 +36,7 @@ describe("updateProfileAction", () => {
       expect(result.error.fieldErrors?.name).toBeDefined();
     }
     expect(updateMemberProfileApiV1MemberProfilePatch).not.toHaveBeenCalled();
+    expect(updateCoachProfileApiV1CoachProfilePatch).not.toHaveBeenCalled();
   });
 
   it("returns UNAUTHORIZED when session token is missing", async () => {
@@ -42,9 +49,10 @@ describe("updateProfileAction", () => {
       expect(result.error.code).toBe("UNAUTHORIZED");
     }
     expect(updateMemberProfileApiV1MemberProfilePatch).not.toHaveBeenCalled();
+    expect(updateCoachProfileApiV1CoachProfilePatch).not.toHaveBeenCalled();
   });
 
-  it("calls SDK patch with Bearer token and returns updated profile", async () => {
+  it("calls member SDK patch with Bearer token and returns updated profile", async () => {
     vi.mocked(getAccessToken).mockResolvedValue("mock-jwt-token");
     const mockProfileOut = {
       id: "usr-1",
@@ -80,10 +88,62 @@ describe("updateProfileAction", () => {
       },
       throwOnError: false,
     });
+    expect(updateCoachProfileApiV1CoachProfilePatch).not.toHaveBeenCalled();
 
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.data.fullName).toBe("Aced Suryana Updated");
+    }
+  });
+
+  it("calls coach SDK patch with Bearer token, title, and division when role is coach", async () => {
+    vi.mocked(getAccessToken).mockResolvedValue("mock-coach-jwt");
+    const mockCoachOut = {
+      id: "usr-coach-1",
+      role: "coach" as const,
+      fullName: "Kang Fauzan M.Pd",
+      npm: null,
+      email: "fauzan@unsil.ac.id",
+      emailVerifiedAt: null,
+      division: "Perguruan Silat Siliwangi",
+      title: "Pelatih Kepala",
+      belt: null,
+      beltTarget: null,
+      passwordChangedAt: null,
+      coach: null,
+      createdAt: "2024-01-01T00:00:00Z",
+      statistics: null,
+    };
+
+    vi.mocked(updateCoachProfileApiV1CoachProfilePatch).mockResolvedValue({
+      data: mockCoachOut,
+      error: undefined,
+      response: new Response(JSON.stringify(mockCoachOut), { status: 200 }),
+    });
+
+    const result = await updateProfileAction({
+      role: "coach",
+      name: "Kang Fauzan M.Pd",
+      title: "Pelatih Kepala",
+      division: "Perguruan Silat Siliwangi",
+    });
+
+    expect(updateCoachProfileApiV1CoachProfilePatch).toHaveBeenCalledWith({
+      headers: {
+        Authorization: "Bearer mock-coach-jwt",
+      },
+      body: {
+        fullName: "Kang Fauzan M.Pd",
+        division: "Perguruan Silat Siliwangi",
+        title: "Pelatih Kepala",
+      },
+      throwOnError: false,
+    });
+    expect(updateMemberProfileApiV1MemberProfilePatch).not.toHaveBeenCalled();
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.title).toBe("Pelatih Kepala");
     }
   });
 
@@ -122,6 +182,7 @@ describe("changePasswordAction", () => {
       expect(result.error.fieldErrors?.newPassword).toContain("harus berbeda");
     }
     expect(memberPasswordApiV1MemberPasswordPatch).not.toHaveBeenCalled();
+    expect(coachPasswordApiV1CoachPasswordPatch).not.toHaveBeenCalled();
   });
 
   it("fails if confirm password does not match new password", async () => {
@@ -137,6 +198,7 @@ describe("changePasswordAction", () => {
       expect(result.error.fieldErrors?.confirmPassword).toContain("tidak cocok");
     }
     expect(memberPasswordApiV1MemberPasswordPatch).not.toHaveBeenCalled();
+    expect(coachPasswordApiV1CoachPasswordPatch).not.toHaveBeenCalled();
   });
 
   it("returns UNAUTHORIZED if session token is missing", async () => {
@@ -154,7 +216,7 @@ describe("changePasswordAction", () => {
     }
   });
 
-  it("calls member password patch endpoint and returns success", async () => {
+  it("calls member password patch endpoint when role is member (default)", async () => {
     vi.mocked(getAccessToken).mockResolvedValue("mock-jwt-token");
     vi.mocked(memberPasswordApiV1MemberPasswordPatch).mockResolvedValue({
       data: undefined,
@@ -178,6 +240,42 @@ describe("changePasswordAction", () => {
       },
       throwOnError: false,
     });
+    expect(coachPasswordApiV1CoachPasswordPatch).not.toHaveBeenCalled();
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.success).toBe(true);
+    }
+  });
+
+  it("calls coach password patch endpoint when role is coach", async () => {
+    vi.mocked(getAccessToken).mockResolvedValue("mock-coach-jwt");
+    vi.mocked(coachPasswordApiV1CoachPasswordPatch).mockResolvedValue({
+      data: undefined,
+      error: undefined,
+      response: new Response(null, { status: 204 }),
+    });
+
+    const result = await changePasswordAction(
+      {
+        currentPassword: "CoachOldPass123!",
+        newPassword: "CoachNewPass123!",
+        confirmPassword: "CoachNewPass123!",
+      },
+      "coach"
+    );
+
+    expect(coachPasswordApiV1CoachPasswordPatch).toHaveBeenCalledWith({
+      headers: {
+        Authorization: "Bearer mock-coach-jwt",
+      },
+      body: {
+        currentPassword: "CoachOldPass123!",
+        newPassword: "CoachNewPass123!",
+      },
+      throwOnError: false,
+    });
+    expect(memberPasswordApiV1MemberPasswordPatch).not.toHaveBeenCalled();
 
     expect(result.ok).toBe(true);
     if (result.ok) {

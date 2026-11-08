@@ -58,7 +58,7 @@ export async function DashboardPage() {
 
 ## 3. Server / client boundaries
 
-- `app/**` (except `app/api/` route handlers and `app/providers.tsx`) are React Server Components. Never add `"use client"` under `app/`. Route files contain no business logic, fetch, or validation — they call `features/*/pages/*`.
+- `app/**` (except `app/api/` route handlers, `app/providers.tsx`, and thin `app/**/error.tsx` re-exports) are React Server Components. Never add `"use client"` under `app/` outside those exceptions. Route files contain no business logic, fetch, or validation — they call `features/*/pages/*` (or re-export a feature error boundary in `error.tsx`).
 - `features/*/actions/` and `features/*/data/` are server-only: first line `import "server-only"`. Never import them from a client component. Pass serializable props across the boundary.
 - Client interactivity lives in `features/*/components/`. Cross-feature UI lives in `components/ui/` (shadcn/Base UI). App-wide singletons live in `lib/`.
 - `app/api/` is allowlisted for external clients only (companion extension, downloads). Page data flows use `data/` reads + `actions/` mutations, not `app/api/`.

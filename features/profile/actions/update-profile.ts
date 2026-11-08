@@ -2,7 +2,10 @@
 
 import "server-only";
 
-import { updateMemberProfileApiV1MemberProfilePatch } from "@/api";
+import {
+  updateCoachProfileApiV1CoachProfilePatch,
+  updateMemberProfileApiV1MemberProfilePatch,
+} from "@/api";
 import type { ProfileOut } from "@/api";
 import { getAccessToken } from "@/features/auth/data/session";
 import { updateProfileSchema } from "@/features/profile/schemas";
@@ -43,20 +46,38 @@ export async function updateProfileAction(
   }
 
   const resolvedName = (parsed.data.name ?? parsed.data.fullName)?.trim();
+  const division = parsed.data.division;
+  const title = parsed.data.title;
 
-  const { data, error, response } =
-    await updateMemberProfileApiV1MemberProfilePatch({
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: {
-        fullName: resolvedName ?? null,
-        ...(parsed.data.division !== undefined
-          ? { division: parsed.data.division }
-          : {}),
-      },
-      throwOnError: false,
-    });
+  const result =
+    parsed.data.role === "coach"
+      ? await updateCoachProfileApiV1CoachProfilePatch({
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            fullName: resolvedName ?? null,
+            ...(division !== undefined
+              ? { division: division?.trim() || null }
+              : {}),
+            ...(title !== undefined
+              ? { title: title?.trim() || null }
+              : {}),
+          },
+          throwOnError: false,
+        })
+      : await updateMemberProfileApiV1MemberProfilePatch({
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: {
+            fullName: resolvedName ?? null,
+            ...(division !== undefined ? { division } : {}),
+          },
+          throwOnError: false,
+        });
+
+  const { data, error, response } = result;
 
   if (error || !data) {
     return {

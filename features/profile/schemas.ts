@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const updateProfileSchema = z
   .object({
+    role: z.enum(["member", "coach"]).optional(),
     name: z
       .string()
       .trim()
@@ -14,15 +15,28 @@ export const updateProfileSchema = z
       .min(2, "Nama minimal 2 karakter")
       .max(120, "Nama maksimal 120 karakter")
       .optional(),
-    division: z.string().max(120).optional().nullable(),
+    title: z
+      .string()
+      .trim()
+      .max(120, "Jabatan maksimal 120 karakter")
+      .optional()
+      .nullable(),
+    division: z
+      .string()
+      .trim()
+      .max(120, "Divisi maksimal 120 karakter")
+      .optional()
+      .nullable(),
     nim: z.string().optional(),
     email: z.string().optional(),
     cameraDeviceId: z.string().optional(),
   })
   .refine(
     (data) =>
-      Boolean((data.name && data.name.trim().length >= 2) ||
-      (data.fullName && data.fullName.trim().length >= 2)),
+      Boolean(
+        (data.name && data.name.trim().length >= 2) ||
+          (data.fullName && data.fullName.trim().length >= 2)
+      ),
     {
       message: "Nama lengkap minimal 2 karakter",
       path: ["name"],

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getCoachOverview } from "@/features/coach/data/get-coach-overview";
+import { getCoachDashboard } from "@/features/coach/data/get-coach-overview";
 import { CoachHeader } from "@/features/coach/components/coach-header";
 import { CoachStatGrid } from "@/features/coach/components/coach-stat-grid";
 import { CoachAthleteList } from "@/features/coach/components/coach-athlete-list";
@@ -28,21 +28,30 @@ export function CoachDashboardPage() {
 }
 
 async function StatSection() {
-  const data = await getCoachOverview();
+  const data = await getCoachDashboard();
+  if (!data) return null;
   return <CoachStatGrid stats={data.stats} />;
 }
 
 async function AthleteSection() {
-  const data = await getCoachOverview();
-  return <CoachAthleteList athletes={data.athletes} />;
+  const data = await getCoachDashboard();
+  if (!data) return null;
+  return (
+    <CoachAthleteList
+      athletes={data.athletes}
+      athleteCountLabel={data.athleteCountLabel}
+    />
+  );
 }
 
 async function PillarSection() {
-  const data = await getCoachOverview();
+  const data = await getCoachDashboard();
+  if (!data) return null;
   return <CoachPillarMonitor pillars={data.pillars} />;
 }
 
 async function PostureSection() {
-  const data = await getCoachOverview();
+  const data = await getCoachDashboard();
+  if (!data) return null;
   return <CoachPostureGrid posture={data.posture} />;
 }

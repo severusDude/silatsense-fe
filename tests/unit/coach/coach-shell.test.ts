@@ -7,29 +7,29 @@ const header = readFileSync("features/coach/components/coach-header.tsx", "utf8"
 
 describe("coach shell", () => {
   it("exposes four tabs with Profil linking to the shared /profil route", () => {
-    // Arrange + Act + Assert
-    // NOTE (Task 3): brief asserted href="/coach" (equals form), but the
-    // data-driven tabs array holds href values as `href: "/coach"` with
-    // `<Link href={href}>`, so the equals-form literal never appears.
-    // Assert on the route-value substrings instead — same intent.
     expect(bottomNav).toContain('"/coach"');
     expect(bottomNav).toContain('"/coach/members"');
     expect(bottomNav).toContain("Laporan");
     expect(bottomNav).toContain('"/profil"');
   });
 
-  it("shows the KF coach avatar with Cloud Sinkron (no Portal badge in shell)", () => {
-    // Arrange + Act + Assert
-    expect(topNav).toContain("KF");
+  it("shows the session initials coach avatar with Cloud Sinkron (no hardcoded KF)", () => {
+    expect(topNav).toContain("getSession");
+    expect(topNav).toContain("getInitials");
     expect(topNav).toContain("Cloud Sinkron");
+    expect(topNav).not.toContain("KF");
     expect(topNav).not.toContain("Portal");
   });
 
-  it("shows the coach header copy with a dead report CTA (no Portal badge)", () => {
-    // Arrange + Act + Assert
+  it("shows the coach header copy with neutral athlete copy and inactive report CTA", () => {
     expect(header).toContain("Dashboard Pelatih");
+    expect(header).toContain(
+      "Ringkasan performa latihan mandiri dan monitoring kinematika atlet binaan UKM UNSIL.",
+    );
     expect(header).toContain("Unduh Rapor Tim (PDF)");
+    expect(header).toContain("Segera hadir");
     expect(header).toContain("GET /coach/report");
+    expect(header).not.toContain("5 atlet");
     expect(header).not.toContain("Portal");
   });
 });

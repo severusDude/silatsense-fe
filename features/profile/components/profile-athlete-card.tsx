@@ -100,17 +100,28 @@ export function ProfileAthleteCard({ profile }: { profile: ProfileViewModel }) {
         </div>
 
         <div className="mt-2 grid w-full grid-cols-2 gap-2">
-          {/* Active Card Tile: Total Sesi Latihan */}
-          <div className="flex flex-col rounded-xl border bg-muted/40 p-3">
-            <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
-              {isMember ? "Total Sesi Latihan" : "Sesi Ulasan"}
-            </span>
-            <span className="text-base font-bold text-foreground">
-              {profile.totalSessionsLabel}
-            </span>
-          </div>
+          {/* Left Mini-Stat Tile: Total Sesi Latihan (Member) vs Sesi Ulasan (Coach) */}
+          {profile.sessionStat.isAvailable ? (
+            <div className="flex flex-col rounded-xl border bg-muted/40 p-3">
+              <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                {profile.sessionStat.label}
+              </span>
+              <span className="text-base font-bold text-foreground">
+                {profile.sessionStat.value ?? profile.totalSessionsLabel}
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-col rounded-xl border border-dashed border-border/80 bg-muted/20 p-3 opacity-60">
+              <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
+                {profile.sessionStat.label}
+              </span>
+              <span className="mt-1 text-xs font-semibold text-muted-foreground italic">
+                {profile.sessionStat.badge ?? "Coming soon"}
+              </span>
+            </div>
+          )}
 
-          {/* Honest UI: Inactive Card Tile: Pencatatan Sudut */}
+          {/* Honest UI: Inactive Card Tile: Pencatatan Sudut / Perangkat */}
           <div className="flex flex-col rounded-xl border border-dashed border-border/80 bg-muted/20 p-3 opacity-60">
             <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
               {profile.postureStat.label}

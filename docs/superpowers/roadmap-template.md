@@ -31,7 +31,10 @@ conventions live in `docs/integration/`; later modules start from that guide.
 | Done | 14 | `[Phase 14] Profile integration` — real profile read/update, ViewModel mapper, honest stats, camera decoupling |
 | Done | 15 | `[Phase 15] Training integration` — `/latihan` catalog, prep, record, session review, evaluation against the real BE; upload transport spike; 3-step BFF upload to B2. Shipped (PR #33) |
 | Done | 16 | `[Phase 16] Member history integration` — shipped `/riwayat` + `/riwayat/[id]` against real BE; cursor pagination, review/movement filters, honest UI, video playback, follow-up actions (PSR-121, PR #34) |
-| Review | 17 | `[Phase 17] Member dashboard integration` — shipped `/dashboard` against real BE (`GET /api/v1/member/dashboard`); Honest UI, multi-group similarity rules, 7-day activity normalization, live session avatar initials fallback (PSR-122) |
+| Done | 17 | `[Phase 17] Member dashboard integration` — shipped `/dashboard` against real BE (`GET /api/v1/member/dashboard`); Honest UI, multi-group similarity rules, 7-day activity normalization, live session avatar initials fallback (PSR-122, PR #35) |
+| Done | 18 | `[Phase 18] Coach dashboard integration` — wire `/coach` to `GET /api/v1/coach/overview` + `GET /api/v1/coach/roster?limit=5`; Honest UI, dynamic top issues, 5-athlete roster, live detail links (PSR-123) |
+| Done | 19 | `[Phase 19] Coach members integration` — connect `/coach/members`, `/coach/members/[id]`, and `/coach/members/[id]/riwayat` to the live BE (PSR-129) |
+| Done | 20 | `[Phase 20] Coach profile integration` — shipped shared `/profil` role layout, coach biodata (name, title, division), Honest UI Sesi Ulasan, role-aware server actions, and camera gating (PSR-136) |
 
 ## 2. Phase table
 
@@ -47,6 +50,9 @@ conventions live in `docs/integration/`; later modules start from that guide.
 | 15 | `/latihan` reads TrainingCatalog; prep + record-config from BE; a recording uploads and lands on `/latihan/[slug]/sesi/[sessionId]`; session/evaluation render real status, video, measurements; no fabricated metrics; 390px clean | — (Phase 5–7 frames) | `docs/integration/Training.md` | 1 parent + 8 subs |
 | 16 | Real member history: cursor-paginated session list, movement and review status filters, video stream playback, coach review and body assessments, follow-up task mutation, honest UI; 390px clean | 94:39587, 94:38951, 94:39232 | `docs/integration/sessions-history.md` | 1 parent + 5 subs (PSR-121) |
 | 17 | Real member dashboard: `GET /api/v1/member/dashboard` wired to greeting, hero metric, 4 pillars, last session feedback, 7-day consistency activity, coach note; Honest UI; top-nav session initials; 390px clean | — (existing dashboard shell) | `docs/integration/member-dashboard.md` | 1 parent (PSR-122) |
+| 18 | Real coach dashboard: `GET /api/v1/coach/overview` + `GET /api/v1/coach/roster?limit=5` wired to stats, pillars, recent sessions, dynamic top issues, 5-athlete roster; Honest UI for unsupported metrics; live detail links; 390px clean | — (existing coach shell) | `docs/integration/coach-dashboard.md` | 1 parent + 4 subs (PSR-123) |
+| 19 | Real coach members: connect `/coach/members`, `/coach/members/[id]`, and `/coach/members/[id]/riwayat` to live BE; members list, detail, history, feedback draft and publish actions; 390px clean | 94:40178, 94:40427, 94:40907 | `docs/integration/coach-members.md` | 1 parent + 4 subs (PSR-129) |
+| 20 | Real coach profile integration: shared `/profil` role layout, coach biodata (name, title, division), Honest UI Sesi Ulasan, role-aware server actions, and camera gating; 390px clean | 94:41585 | `docs/integration/user-profile.md` | 1 parent + 5 subs (PSR-136) |
 
 ## 3. Figma index (skim, 2026-10-11 — structure only, no pixel audit)
 
