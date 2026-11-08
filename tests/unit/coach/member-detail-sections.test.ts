@@ -20,18 +20,19 @@ describe("member detail sections", () => {
     expect(history).toContain("Riwayat Sesi Terkini");
   });
 
-  it("builds pilar as a section with per-pilar tile Cards (no outer Card chrome)", () => {
+  it("builds pilar as a section with per-pilar tile Cards and honest UI links", () => {
     // Arrange + Act + Assert
     expect(pilar).toContain("<section");
     expect(pilar).toContain("Performa 4 Pilar Dasar");
     expect(pilar).toContain("4 Pilar");
     expect(pilar).toContain('size="sm"');
     expect(pilar).toContain("Lihat semua");
+    expect(pilar).toContain("Segera hadir");
     expect(pilar).not.toContain("<CardFooter");
     expect(pilar).not.toContain("<CardAction");
   });
 
-  it("builds feedback as a full Card with a footer", () => {
+  it("builds feedback as a full Card with a form footer", () => {
     // Arrange + Act + Assert
     expect(feedbackCard).toContain("<CardHeader");
     expect(feedbackCard).toContain("<CardTitle");
@@ -50,10 +51,9 @@ describe("member detail sections", () => {
     expect(posture).toContain("<li>");
   });
 
-  it("restricts Badges to the allowlist with bare performance labels", () => {
+  it("does not contain retired dummy strings or arbitrary badges", () => {
     // Arrange + Act + Assert
-    expect(all).toContain("performanceBadgeLabel");
-    expect(all).toContain("Standar IPSI");
+    expect(all).not.toContain("Standar IPSI");
     expect(all).not.toContain("Perlu Poles");
     expect(all).not.toContain("Perlu Perbaikan");
     expect(all).not.toContain("Tahap Remediasi");
@@ -69,7 +69,7 @@ describe("member detail sections", () => {
     expect(profile).toContain("getInitials");
     expect(profile).toContain('role="img"');
     expect(evaluasi).toContain("ImagePlaceholder");
-    expect(evaluasi).toContain("Visual tracking Pukulan Lurus Depan");
+    expect(evaluasi).toContain("Visual tracking");
     expect(pilar).toContain("PersonStanding");
     expect(pilar).toContain("Footprints");
     expect(all).toContain("lucide-react");
@@ -78,11 +78,14 @@ describe("member detail sections", () => {
     expect(all).not.toContain("next/image");
   });
 
-  it("stubs feedback against POST /coach/feedback with read-your-own-write", () => {
+  it("wires feedback against live server actions with error and conflict handling", () => {
     // Arrange + Act + Assert
     expect(feedbackForm).toContain('"use client"');
-    expect(feedbackForm).toContain("POST /coach/feedback");
-    expect(feedbackForm).toContain('["member-detail", memberId]');
-    expect(feedbackForm).toContain("toast.promise");
+    expect(feedbackForm).toContain("saveFeedbackDraftAction");
+    expect(feedbackForm).toContain("publishReviewAction");
+    expect(feedbackForm).toContain("CONFLICT");
+    expect(feedbackForm).toContain("toast.error");
+    expect(feedbackForm).toContain("toast.success");
+    expect(feedbackForm).not.toContain("POST /coach/feedback");
   });
 });

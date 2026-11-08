@@ -7,7 +7,7 @@ const pagination = readFileSync("features/coach/components/history-pagination.ts
 const all = [section, card, pagination].join("\n");
 
 describe("member history sections", () => {
-  it("builds the log as a section with the Figma header, count badge, and description", () => {
+  it("builds the log as a section with the header, count badge, and description", () => {
     // Arrange + Act + Assert
     expect(section).toContain("<section");
     expect(section).toContain("Daftar Riwayat Sesi");
@@ -19,41 +19,29 @@ describe("member history sections", () => {
     expect(section).toContain("HistoryPagination");
   });
 
-  it("renders static session cards with tone dot, Skor AI caption, and one helper badge", () => {
+  it("renders session cards with date badge, time, scoreLabel, and review status badge", () => {
     // Arrange + Act + Assert
     expect(card).toContain('<Card size="sm">');
-    expect(card).toContain("session.sesiLabel");
     expect(card).toContain("session.dateLabel");
-    expect(card).toContain("toFixed(1)");
+    expect(card).toContain("session.scoreLabel");
     expect(card).toContain("Skor AI");
-    expect(card).toContain("size-1.5");
-    expect(card).toContain("performanceBadgeLabel");
-    expect(card).toContain("performanceBadgeVariant");
-    expect(card).toContain("text-success-foreground");
-    expect(card).toContain("bg-warning-foreground");
+    expect(card).toContain("session.statusVariant");
+    expect(card).toContain("session.statusLabel");
     expect(card).toContain("<CardFooter");
     expect(card).not.toContain("href=");
   });
 
-  it("paginates functionally via ?page= links with aria-current and disabled edges", () => {
+  it("paginates via cursor links with Muat Lebih Banyak and Kembali ke Awal", () => {
     // Arrange + Act + Assert
-    expect(pagination).toContain("Menampilkan");
-    expect(pagination).toContain("total sesi biomekanika");
-    expect(pagination).toContain("Sebelumnya");
-    expect(pagination).toContain("Selanjutnya");
-    expect(pagination).toContain("aria-current");
-    expect(pagination).toContain("`/coach/members/${memberId}/riwayat?page=${page - 1}`");
-    expect(pagination).toContain("`/coach/members/${memberId}/riwayat?page=${page + 1}`");
-    expect(pagination).toContain("disabled");
-    expect(pagination).toContain("aria-label=");
+    expect(pagination).toContain("Navigasi halaman riwayat sesi");
+    expect(pagination).toContain("Muat Lebih Banyak");
+    expect(pagination).toContain("Kembali ke Awal");
+    expect(pagination).toContain("cursor=");
+    expect(pagination).not.toContain("aria-current");
   });
 
-  it("keeps the user badge rule: bare labels, no Figma strings, lucide only", () => {
+  it("keeps the user badge rule: bare labels, no dummy literals, no client boundary", () => {
     // Arrange + Act + Assert
-    expect(all).toContain("performanceBadgeLabel");
-    expect(all).toContain("ChevronLeft");
-    expect(all).toContain("ChevronRight");
-    expect(all).toContain("lucide-react");
     expect(all).not.toContain("Sesuai Skor Kualitas");
     expect(all).not.toContain("Standar IPSI");
     expect(all).not.toContain("Optimal (");
@@ -61,7 +49,6 @@ describe("member history sections", () => {
     expect(all).not.toContain("Perlu Poles");
     expect(all).not.toContain("(-6.5");
     expect(all).not.toContain("(+8cm)");
-    expect(all).not.toContain("evaluasi");
     expect(all).not.toContain('"use client"');
     expect(all).not.toContain("<svg");
     expect(all).not.toContain("absolute");

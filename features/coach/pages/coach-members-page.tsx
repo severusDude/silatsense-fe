@@ -1,37 +1,79 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTeamMembers, getTeamMemberStats } from "@/features/coach/data/get-team-members";
+import { getCoachMembersPage } from "@/features/coach/data/get-team-members";
 import { MemberHeader } from "@/features/coach/components/member-header";
 import { MemberStatGrid } from "@/features/coach/components/member-stat-grid";
 import { MemberSearch } from "@/features/coach/components/member-search";
+import { MemberCardList } from "@/features/coach/components/member-card-list";
+import { coachMemberListQuerySchema } from "@/features/coach/schemas";
 
-export function CoachMembersPage() {
+export function CoachMembersPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   return (
     <div className="flex flex-col gap-5">
       <Suspense fallback={<Skeleton className="h-14 w-full rounded-3xl" />}>
-        <HeaderSection />
+        <HeaderSection searchParams={searchParams} />
       </Suspense>
       <Suspense fallback={<Skeleton className="h-44 w-full rounded-3xl" />}>
-        <StatSection />
+        <StatSection searchParams={searchParams} />
       </Suspense>
       <Suspense fallback={<Skeleton className="h-80 w-full rounded-3xl" />}>
-        <ListSection />
+        <ListSection searchParams={searchParams} />
       </Suspense>
     </div>
   );
 }
 
-async function HeaderSection() {
-  const data = await getTeamMembers();
-  return <MemberHeader totalAktif={data.totalAktif} />;
+async function resolveQuery(
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>,
+) {
+  const raw = searchParams ? await searchParams : {};
+  return coachMemberListQuerySchema.parse(raw);
 }
 
-async function StatSection() {
-  const stats = await getTeamMemberStats();
-  return <MemberStatGrid stats={stats} />;
+async function HeaderSection({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const query = await resolveQuery(searchParams);
+  const data = await getCoachMembersPage(query);
+  if (!data) return null;
+  return <MemberHeader countLabel={data.countLabel} />;
 }
 
-async function ListSection() {
-  const data = await getTeamMembers();
-  return <MemberSearch members={data.members} totalAktif={data.totalAktif} />;
+async function StatSection({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const query = await resolveQuery(searchParams);
+  const data = await getCoachMembersPage(query);
+  if (!data) return null;
+  return <MemberStatGrid stats={data.stats} />;
+}
+
+async function ListSection({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const query = await resolveQuery(searchParams);
+  const data = await getCoachMembersPage(query);
+  if (!data) return null;
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      <MemberSearch initialQuery={query.q} />
+      <MemberCardList
+        members={data.members}
+        countLabel={data.countLabel}
+        nextCursor={data.nextCursor}
+        q={data.q}
+      />
+    </div>
+  );
 }

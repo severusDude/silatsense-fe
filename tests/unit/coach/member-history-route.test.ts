@@ -9,13 +9,12 @@ const historyPage = readFileSync("features/coach/pages/member-history-page.tsx",
 const sessionLog = readFileSync("features/coach/components/session-history-log.tsx", "utf8");
 
 describe("member history route", () => {
-  it("wires the thin RSC riwayat route with static params and forwarded searchParams", () => {
+  it("wires the thin RSC riwayat route with forwarded params/searchParams and no static params", () => {
     // Arrange + Act + Assert
     expect(page).toContain("MemberHistoryPage");
-    expect(page).toContain("generateStaticParams");
-    expect(page).toContain("memberHistoryIds");
+    expect(page).not.toContain("generateStaticParams");
+    expect(page).not.toContain("memberHistoryIds");
     expect(page).toContain("searchParams");
-    expect(page).not.toMatch(/await\s+searchParams/);
     expect(page).not.toContain('"use client"');
     expect(page).not.toContain("getMemberHistory");
   });
@@ -27,10 +26,10 @@ describe("member history route", () => {
     expect(layout).toContain("Daftar Riwayat Sesi Member");
   });
 
-  it("keeps the detail group shell after the move", () => {
+  it("keeps the detail group shell after the move without static params", () => {
     // Arrange + Act + Assert
     expect(detailPage).toContain("MemberDetailPage");
-    expect(detailPage).toContain("generateStaticParams");
+    expect(detailPage).not.toContain("generateStaticParams");
     expect(detailLayout).toContain("CoachLayout");
     expect(detailLayout).toContain('activeTab="members"');
     expect(detailLayout).toContain("Detail");
@@ -42,9 +41,10 @@ describe("member history route", () => {
     expect(historyPage).toContain("MemberHistorySection");
     expect(historyPage).toContain("<Suspense");
     expect(historyPage).toContain("notFound");
-    expect(historyPage).toContain("parseHistoryPage");
-    expect(historyPage).toContain("paginateHistory");
-    expect(historyPage).toContain("getMemberHistory");
+    expect(historyPage).toContain("coachMemberHistoryQuerySchema");
+    expect(historyPage).toContain("getCoachMemberDetail");
+    expect(historyPage).toContain("getCoachMemberHistory");
+    expect(historyPage).not.toContain("paginateHistory");
     expect(historyPage).not.toContain('"use client"');
   });
 

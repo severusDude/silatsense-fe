@@ -1,6 +1,5 @@
-import type { PerformanceBadgeKey, PilarSlug, PostureParamId } from "@/components/shared/silat-reference";
-
-export type AthleteStage = "siap" | "remediasi" | "lolos";
+import type { PilarSlug } from "@/components/shared/silat-reference";
+import type { SessionViewModel } from "@/features/member/types";
 
 export type CoachAthleteStatus =
   | "belum-ada"
@@ -19,7 +18,7 @@ export type CoachBadgeVariant =
   | "warning";
 
 export interface CoachDashboardStat {
-  id: "total-atlet" | "akurasi-tim" | "sidang-uji" | "fokus"; // internal ids; labels are Ulasan Tertunda / Isu Teratas
+  id: "total-atlet" | "akurasi-tim" | "sidang-uji" | "fokus";
   label: string;
   value: string;
   valueAvailable: boolean;
@@ -40,7 +39,7 @@ export interface CoachAthlete {
   statusLabel: string;
   statusVariant: CoachBadgeVariant;
   score: number | null;
-  scoreLabel: string; // "80 poin" | "Belum dinilai"
+  scoreLabel: string;
   lastGerakan: string;
   detailHref: string;
 }
@@ -49,20 +48,20 @@ export interface CoachPillar {
   slug: PilarSlug;
   name: string;
   score: number | null;
-  scoreLabel: string; // "94,8 poin" | "Belum dinilai"
+  scoreLabel: string;
   sampleCount: number;
-  sampleLabel: string; // "12 sesi dinilai" | "Belum ada sesi" | "Multi-versi"
+  sampleLabel: string;
   status: "terdata" | "belum-dinilai";
-  statusLabel: string; // "Terdata" | "Belum Dinilai"
+  statusLabel: string;
   statusVariant: CoachBadgeVariant;
-  barPercent: number; // 0..100
+  barPercent: number;
 }
 
 export interface PostureIssue {
-  id: string; // topIssues[].feature
-  name: string; // humanizeIdentifier(feature)
+  id: string;
+  name: string;
   sessionCount: number;
-  sessionLabel: string; // "12 sesi"
+  sessionLabel: string;
   statusLabel: "Terindikasi";
   statusVariant: "warning";
 }
@@ -70,7 +69,7 @@ export interface PostureIssue {
 export interface CoachDashboardViewModel {
   stats: CoachDashboardStat[];
   athletes: CoachAthlete[];
-  athleteCountLabel: string; // "5 Atlet" | "5 dari 24 Atlet"
+  athleteCountLabel: string;
   pillars: CoachPillar[];
   posture: PostureIssue[];
   memberCount: number;
@@ -79,106 +78,135 @@ export interface CoachDashboardViewModel {
   scoredSessionCount: number;
 }
 
-export interface CoachStat {
+/** List + detail state badge, derived from session review status. */
+export type CoachMemberStatus =
+  | "belum-ada"
+  | "diproses"
+  | "menunggu"
+  | "disetujui"
+  | "perlu-revisi"
+  | "gagal";
+
+export interface CoachMemberStat {
   id: "total-atlet" | "akurasi-tim" | "sidang-uji" | "fokus";
   label: string;
   value: string;
-  badge?: string; // content pill (stats 1-2)
-  note?: string; // content third line (stat 3: queue names)
-  footerLeft?: string; // footer pair, justify-between (absent on fokus)
-  footerRight?: string;
+  valueAvailable: boolean;
+  badge?: string;
+  badgeAvailable?: boolean;
+  note?: string;
+  noteAvailable?: boolean;
 }
 
-export interface TeamMember {
+export interface CoachMemberListItem {
   id: string;
   initials: string;
   name: string;
-  nim: string;
-  stage: AthleteStage;
-  stageLabel: string;
-  scorePct: number;
+  nim: string; // "—" when profile.npm is null
+  status: CoachMemberStatus;
+  statusLabel: string;
+  statusVariant: CoachBadgeVariant;
+  score: number | null;
+  scoreLabel: string; // "80 poin" | "Belum dinilai"
   lastGerakan: string;
+  detailHref: string;
 }
 
-export interface TeamMembers {
-  members: TeamMember[];
-  totalAktif: number;
+export interface CoachMembersPageViewModel {
+  stats: CoachMemberStat[];
+  members: CoachMemberListItem[];
+  memberCount: number;
+  countLabel: string; // "5 Atlet" | "20 dari 24 Atlet"
+  nextCursor: string | null;
+  q: string;
 }
 
-export interface PilarPerformance {
+export interface CoachMemberProfileViewModel {
+  id: string;
+  name: string;
+  nim: string;
+  status: CoachMemberStatus;
+  statusLabel: string;
+  statusVariant: CoachBadgeVariant;
+  beltLabel: string;
+  beltTargetLabel: string | null;
+  attendance: { available: false; label: "Segera hadir" };
+  aggregate: { available: false; label: "Segera hadir" };
+  scoredSessionCount: number;
+}
+
+export interface CoachMemberPillarViewModel {
   slug: PilarSlug;
   name: string;
-  scorePct: number;
-  badgeKey: PerformanceBadgeKey;
+  score: number | null;
+  scoreLabel: string; // "82 poin" | "Belum dinilai"
+  sampleCount: number;
+  sampleLabel: string; // "4 sesi dinilai" | "Multi-versi" | "Belum ada sesi"
+  status: "terdata" | "belum-dinilai";
+  statusLabel: "Terdata" | "Belum Dinilai";
+  statusVariant: CoachBadgeVariant;
+  barPercent: number;
 }
 
-export interface PostureParam {
-  id: PostureParamId;
-  name: string;
-  badgeKey: PerformanceBadgeKey;
-  note: string;
-}
-
-export interface LatestEvaluation {
-  technique: string;
+export interface CoachMemberEvaluationViewModel {
+  available: boolean;
+  techniqueName: string;
   metaLabel: string;
-  bigScorePct: number;
-  targetValue: string;
-  deltaValue: string;
-  metrics: { label: string; value: string; sub: string }[];
-  quickStats: { label: string; value: string; sub: string }[];
-  postures: PostureParam[];
+  score: {
+    available: boolean;
+    value: number | null;
+    label: string; // "80 poin" | "Belum dinilai"
+    unitLabel: "poin";
+    analysisStatusLabel: string | null;
+    target: { available: false; label: "Segera hadir" };
+    delta: { available: false; label: "Segera hadir" };
+  };
+  analysisMetrics: Array<{ label: string; value: string; sub: string }>;
+  measurements: Array<{ id: string; label: string; value: string; sub: string }>;
+  postures: Array<{
+    id: string;
+    name: string;
+    status: "sesuai" | "perlu-koreksi" | "tidak-dinilai";
+    statusLabel: string;
+    reading: string;
+    note: string | null;
+  }>;
+  session: SessionViewModel | null;
 }
 
-export interface HistorySession {
+export interface CoachMemberHistoryItem {
   id: string;
-  sesiLabel: string;
   dateLabel: string;
+  timeLabel: string;
   title: string;
-  repetisiLabel: string;
-  scorePct: number;
-  badgeKey: PerformanceBadgeKey;
+  subtitle: string | null;
+  score: number | null;
+  scoreLabel: string; // "82 poin" | "Belum dinilai"
+  status: CoachMemberStatus;
+  statusLabel: string;
+  statusVariant: CoachBadgeVariant;
 }
 
-export interface HistoryPageSession {
-  id: string;
-  sesiLabel: string;
-  dateLabel: string;
-  title: string;
-  subtitle: string;
-  repetisiLabel: string;
-  scorePct: number;
-  badgeKey: PerformanceBadgeKey;
-}
-
-export interface MemberHistory {
+export interface CoachMemberHistoryPageViewModel {
   memberId: string;
-  totalSessions: number;
-  pageSize: number;
-  sessions: HistoryPageSession[];
+  items: CoachMemberHistoryItem[];
+  nextCursor: string | null;
+  limit: number;
 }
 
-export interface MemberDetail {
-  id: string;
-  name: string;
-  nim: string;
-  stateKey: PerformanceBadgeKey;
-  beltLabel: string;
-  attendanceLabel: string;
-  aggregatePct: number;
-  aggregateKey: PerformanceBadgeKey;
-  pilares: PilarPerformance[];
-  evaluation: LatestEvaluation;
-  history: HistorySession[];
+export interface CoachMemberDetailViewModel {
+  profile: CoachMemberProfileViewModel;
+  pillars: CoachMemberPillarViewModel[];
+  evaluation: CoachMemberEvaluationViewModel;
+  history: CoachMemberHistoryItem[]; // 4 most recent
+  feedback: {
+    sessionId: string | null;
+    sessionLabel: string | null;
+    draftVersion: number;
+    reviewRevision: number;
+    decision: "approved" | "needs_revision" | null;
+    note: string;
+  };
 }
 
-export interface FeedbackInput {
-  memberId: string;
-  message: string;
-}
-
-export interface FeedbackResult {
-  memberId: string;
-  status: "draft" | "sent";
-  echo: string;
-}
+export type AthleteStage = "remediasi" | "siap-tanding";
