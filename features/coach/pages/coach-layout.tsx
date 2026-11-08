@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { CoachBottomNav, type CoachTab } from "@/features/coach/components/coach-bottom-nav";
+import { CoachMainErrorBoundary } from "@/features/coach/components/coach-error-boundary";
 import { CoachTopNav } from "@/features/coach/components/coach-top-nav";
 
 export function CoachLayout({
@@ -15,7 +16,7 @@ export function CoachLayout({
     <div className="flex min-h-screen flex-col bg-background">
       <CoachTopNav trail={trail} />
       <main className="mx-auto flex w-full max-w-[448px] flex-1 flex-col gap-5 px-4 pt-4 pb-8">
-        {children}
+        <CoachMainErrorBoundary>{children}</CoachMainErrorBoundary>
       </main>
       <CoachBottomNav activeTab={activeTab} />
     </div>
