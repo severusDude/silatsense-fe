@@ -1,9 +1,9 @@
 # User & Coach Profile (`/profil`) — FE ↔ BE Integration Spec
 
-- **Status:** Draft — Phase 14 (Member Profile) shipped; Phase 20 (Coach Profile) audited & awaiting approval (2026-11-08).
+- **Status:** Implemented — Phase 20 (Coach Profile integration) verified (2026-11-08).
 - **Date:** 2026-11-08
-- **Linear:** PSR-111 (Phase 14 Member Profile, Done); PSR-135 `[profile] Audit coach profile contract` (label `docs`, project `silatsense`, assignee `me`). Implementation parent/sub-issues created after spec approval.
-- **Branch:** `feature/psr-135-profile-audit-coach-profile-contract` (cut from `origin/development`).
+- **Linear:** PSR-111 (Phase 14 Member Profile, Done); PSR-135 `[profile] Audit coach profile contract` (Done); PSR-136 `[profile] Ship coach profile integration` (In Review / Done).
+- **Branch:** `feature/psr-136-profile-ship-coach-profile-integration` (cut from `origin/development`).
 - **Scope:** Shared profile module (`features/profile/**`) and `/profil` route (`app/profil/**`, migrated from `app/(member)/profil/**`) for **Coach Profile** (`role="coach"`) alongside **Member Profile** (`role="member"`):
   - `GET /api/v1/coach/profile` & `GET /api/v1/member/profile`
   - `PATCH /api/v1/coach/profile` & `PATCH /api/v1/member/profile`
@@ -678,7 +678,7 @@ None blocking.
 
 ## 12. Verification & Approval Checklist
 
-### Automated Gates (Post-Approval Implementation):
+### Automated Gates (Verified 2026-11-08):
 ```bash
 pnpm exec tsc --noEmit
 pnpm lint
@@ -686,11 +686,14 @@ pnpm test
 pnpm build
 ```
 
-### Browser Checks at 390px & 1280px (Post-Approval Implementation):
+### Browser Checks at 390px & 1280px (Verified 2026-11-08):
+- 390px geometry check: `scrollWidth = 375`, `innerWidth = 390` (`isOverflowing = false`).
+- 1280px geometry check: `scrollWidth = 1265`, `innerWidth = 1280` (`isOverflowing = false`).
+- Verified Coach profile live: CoachLayout (CoachTopNav + CoachBottomNav with Profil tab active), coach initials, Jabatan, Divisi, and Honest UI "Coming soon" on Sesi Ulasan, Akurasi Tim, and Perangkat. NPM and camera card hidden.
 1. **Coach Profile (`/profil` as Coach):** Renders inside `CoachLayout` (`CoachTopNav` + `CoachBottomNav` with `Profil` active), displays coach name, initials, email, handle, `Jabatan`, `Divisi`, inactive `"Coming soon"` badges on `Akurasi Tim`, `Sesi Ulasan`, and `Perangkat`, hides `Tingkatan Sabuk`, `NPM`, and `ProfileCameraCard`.
 2. **Coach Biodata Mutation:** Edit `Nama Lengkap`, `Jabatan Pelatih`, and `Divisi / Perguruan` → click `Simpan Perubahan` → `PATCH /api/v1/coach/profile` succeeds → toast shown → `ProfileAthleteCard` immediately reflects updated name, initials, jabatan, and division (`read-your-own-write`).
 3. **Coach Password Mutation:** Open `Ubah Kata Sandi` dialog → submit valid `currentPassword` + `newPassword` → `PATCH /api/v1/coach/password` returns `204` → toast shown, dialog closes, `passwordUpdatedLabel` updates.
 4. **Member Regression (`/profil` as Member):** Renders inside `MemberLayout`, keeps `Total Sesi Latihan` active, `NPM` + `Email` read-only, `ProfileCameraCard` visible, and `PATCH /api/v1/member/profile` + `PATCH /api/v1/member/password` working.
 5. **Layout Overflow:** `document.documentElement.scrollWidth <= window.innerWidth` at 390px and 1280px for both roles.
 
-**PHASE 3 STOP:** Spec updated in `docs/integration/user-profile.md`. Waiting for approval before implementation.
+**PHASE 20 STATUS: SHIPPED & VERIFIED.**
