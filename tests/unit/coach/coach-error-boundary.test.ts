@@ -1,4 +1,4 @@
-import { createElement } from "react";
+import { createElement, type ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -65,7 +65,7 @@ describe("coach error boundary", () => {
     expect(boundary.state).toEqual({ error: null });
 
     const initialRender = boundary.render();
-    const initialHtml = renderToStaticMarkup(initialRender as any);
+    const initialHtml = renderToStaticMarkup(initialRender as ReactElement);
     expect(initialHtml).toContain("Safe Child Content");
 
     // When state.error is set -> renders CoachErrorCard
@@ -76,7 +76,10 @@ describe("coach error boundary", () => {
       boundary.state = { ...boundary.state, ...nextState };
     });
 
-    const errorRender = boundary.render() as any;
+    const errorRender = boundary.render() as ReactElement<{
+      error: Error;
+      reset: () => void;
+    }>;
     expect(errorRender).not.toBeNull();
     expect(errorRender.type).toBe(CoachErrorCard);
     expect(errorRender.props.error).toBe(err);
