@@ -1,5 +1,39 @@
 export { client } from "@/api/client.gen";
 
+export const RETRYABLE_STATUS_CODES = new Set([500, 502, 503, 504]);
+export const MAX_RETRIES = 2;
+export const BASE_DELAY_MS = 500;
+
+export async function fetchWithTransientRetry(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): Promise<Response> {
+  const rawMethod = init?.method ?? (input instanceof Request ? input.method : "GET");
+  const method = (rawMethod || "GET").toUpperCase();
+  const isIdempotent = method === "GET" || method === "HEAD";
+  const maxAttempts = isIdempotent ? MAX_RETRIES : 0;
+
+  for (let attempt = 0; attempt <= maxAttempts; attempt++) {
+    try {
+      const target = input instanceof Request ? input.clone() : input;
+      const response = await fetch(target, init);
+
+      if (!isIdempotent || !RETRYABLE_STATUS_CODES.has(response.status) || attempt === maxAttempts) {
+        return response;
+      }
+    } catch (err) {
+      if (!isIdempotent || attempt === maxAttempts) {
+        throw err;
+      }
+    }
+
+    const delay = BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * 100;
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  throw new Error("Unexpected end of fetch retry loop");
+}
+
 export type NormalizedApiError = {
   message: string;
   code?: string;
