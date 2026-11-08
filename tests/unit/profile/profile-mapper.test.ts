@@ -80,14 +80,18 @@ describe("toProfileViewModel", () => {
     expect(vm.handle).toBe("@aced_suryana");
     expect(vm.npm).toBe("2307051");
     expect(vm.email).toBe("aced.suryana@student.unsil.ac.id");
+    expect(vm.title).toBe("");
     expect(vm.roleLabel).toBe("Pesilat Binaan (Anggota Pemula)");
     expect(vm.division).toBe("UKM Pencak Silat Universitas Siliwangi");
     expect(vm.beltLabel).toBe("Sabuk Kuning (Ragam 2)");
     expect(vm.beltTargetLabel).toBe("Target: Sabuk Hijau (Q3 2025)");
     expect(vm.passwordUpdatedLabel).toContain("bulan yang lalu");
 
-    // Honest stats: active completedSessionCount
+    // Honest stats: active completedSessionCount & sessionStat
     expect(vm.totalSessionsLabel).toBe("48 Sesi");
+    expect(vm.sessionStat.isAvailable).toBe(true);
+    expect(vm.sessionStat.label).toBe("Total Sesi Latihan");
+    expect(vm.sessionStat.value).toBe("48 Sesi");
 
     // Unsupported stats: flagged as unavailable with Coming soon
     expect(vm.avgAccuracyPct).toBeNull();
@@ -119,14 +123,17 @@ describe("toProfileViewModel", () => {
 
     expect(vm.npm).toBe("-");
     expect(vm.email).toBe("Email belum ditautkan");
+    expect(vm.title).toBe("");
     expect(vm.division).toBe("UKM Pencak Silat Universitas Siliwangi");
     expect(vm.beltLabel).toBe("Belum ditentukan");
     expect(vm.beltTargetLabel).toBe("Belum ditentukan");
     expect(vm.passwordUpdatedLabel).toBe("Belum pernah diperbarui");
     expect(vm.totalSessionsLabel).toBe("0 Sesi");
+    expect(vm.sessionStat.isAvailable).toBe(true);
+    expect(vm.sessionStat.value).toBe("0 Sesi");
   });
 
-  it("maps coach ProfileOut properly", () => {
+  it("maps coach ProfileOut properly with honest inactive sessionStat", () => {
     const coachDto: ProfileOut = {
       id: "usr-coach-789",
       role: "coach",
@@ -147,8 +154,12 @@ describe("toProfileViewModel", () => {
     const vm = toProfileViewModel(coachDto);
 
     expect(vm.role).toBe("coach");
+    expect(vm.title).toBe("Pelatih Kepala UKM");
     expect(vm.roleLabel).toBe("Pelatih Kepala UKM");
     expect(vm.initials).toBe("KF");
+    expect(vm.sessionStat.isAvailable).toBe(false);
+    expect(vm.sessionStat.label).toBe("Sesi Ulasan");
+    expect(vm.sessionStat.badge).toBe("Coming soon");
     expect(vm.accuracyStat.label).toBe("Akurasi Tim");
     expect(vm.accuracyStat.badge).toBe("Coming soon");
     expect(vm.postureStat.label).toBe("Perangkat");

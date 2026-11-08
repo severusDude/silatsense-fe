@@ -2,14 +2,18 @@
 
 import "server-only";
 
-import { memberPasswordApiV1MemberPasswordPatch } from "@/api";
+import {
+  coachPasswordApiV1CoachPasswordPatch,
+  memberPasswordApiV1MemberPasswordPatch,
+} from "@/api";
 import { getAccessToken } from "@/features/auth/data/session";
 import { passwordChangeFormSchema } from "@/features/profile/schemas";
-import type { ActionResult } from "@/features/profile/types";
+import type { ActionResult, ProfileRole } from "@/features/profile/types";
 import { normalizeApiError } from "@/lib/api-client";
 
 export async function changePasswordAction(
-  input: unknown
+  input: unknown,
+  role: ProfileRole = "member"
 ): Promise<ActionResult<{ success: true }>> {
   const parsed = passwordChangeFormSchema.safeParse(input);
   if (!parsed.success) {
@@ -41,7 +45,12 @@ export async function changePasswordAction(
     };
   }
 
-  const { error, response } = await memberPasswordApiV1MemberPasswordPatch({
+  const patchFn =
+    role === "coach"
+      ? coachPasswordApiV1CoachPasswordPatch
+      : memberPasswordApiV1MemberPasswordPatch;
+
+  const { error, response } = await patchFn({
     headers: {
       Authorization: `Bearer ${token}`,
     },

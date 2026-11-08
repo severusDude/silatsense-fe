@@ -15,8 +15,9 @@ export function ProfilePage({ role }: { role: ProfileRole }) {
           Profil & Pengaturan Akun
         </h1>
         <p className="text-xs leading-relaxed text-muted-foreground">
-          Kelola data biomekanika personal, telemetry stream perangkat kamera, dan
-          preferensi akun atlet Anda.
+          {role === "coach"
+            ? "Kelola identitas kepelatihan, afiliasi perguruan, dan pengaturan keamanan akun pelatih Anda."
+            : "Kelola data biomekanika personal, telemetry stream perangkat kamera, dan preferensi akun atlet Anda."}
         </p>
       </div>
       <Suspense fallback={<Skeleton className="h-96 w-full rounded-2xl" />}>
@@ -40,7 +41,10 @@ async function EditorSection({ role }: { role: ProfileRole }) {
   if (!profile) return null;
   return (
     <ProfileEditor profile={profile} cameras={dummyProfileCameras}>
-      <ProfileSecurityCard passwordUpdatedLabel={profile.passwordUpdatedLabel} />
+      <ProfileSecurityCard
+        role={role}
+        passwordUpdatedLabel={profile.passwordUpdatedLabel}
+      />
     </ProfileEditor>
   );
 }

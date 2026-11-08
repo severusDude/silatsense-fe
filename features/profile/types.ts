@@ -28,6 +28,7 @@ export interface ProfileViewModel {
   handle: string;
   npm: string;
   email: string;
+  title: string;
   roleLabel: string;
   division: string;
   beltLabel: string;
@@ -39,6 +40,7 @@ export interface ProfileViewModel {
   totalPosturesLabel: string | null;
   teamAccuracyPct: number | null;
   coachedSessionsLabel: string | null;
+  sessionStat: StatItemViewModel;
   accuracyStat: StatItemViewModel;
   postureStat: StatItemViewModel;
   raw: ProfileOut;

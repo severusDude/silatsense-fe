@@ -84,6 +84,7 @@ export function toProfileViewModel(
     handle: deriveHandle(dto.fullName),
     npm: dto.npm ?? "-",
     email: dto.email ?? "Email belum ditautkan",
+    title: dto.title ?? "",
     roleLabel: isMember
       ? "Pesilat Binaan (Anggota Pemula)"
       : dto.title ?? "Pelatih Kepala UKM",
@@ -102,6 +103,17 @@ export function toProfileViewModel(
     totalPosturesLabel: null,
     teamAccuracyPct: null,
     coachedSessionsLabel: null,
+    sessionStat: isMember
+      ? {
+          isAvailable: true,
+          label: "Total Sesi Latihan",
+          value: `${completedSessions} Sesi`,
+        }
+      : {
+          isAvailable: false,
+          label: "Sesi Ulasan",
+          badge: "Coming soon",
+        },
     accuracyStat: {
       isAvailable: false,
       label: isMember ? "Akurasi Rata-Rata Biomekanika" : "Akurasi Tim",

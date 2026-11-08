@@ -25,6 +25,17 @@ describe("profile server cards", () => {
     expect(src).not.toContain("Batal");
   });
 
+  it("renders sessionStat tile dynamically based on availability", () => {
+    // Arrange + Act
+    const src = athleteSrc();
+
+    // Assert
+    expect(src).toContain("profile.sessionStat.isAvailable");
+    expect(src).toContain("profile.sessionStat.label");
+    expect(src).toContain("profile.sessionStat.value");
+    expect(src).toContain("profile.sessionStat.badge");
+  });
+
   it("keeps server cards flex-only with member copy and coach label swap", () => {
     // Arrange + Act
     const src = athleteSrc();
@@ -36,7 +47,7 @@ describe("profile server cards", () => {
     expect(src).toContain("Pelatih Kepala UKM");
   });
 
-  it("wires Ubah Kata Sandi to ChangePasswordDialog", () => {
+  it("wires Ubah Kata Sandi to ChangePasswordDialog with role forwarding", () => {
     // Arrange + Act
     const src = securitySrc();
 
@@ -44,11 +55,23 @@ describe("profile server cards", () => {
     expect(src).toContain("Ubah Kata Sandi");
     expect(src).toContain("ChangePasswordDialog");
     expect(src).toContain("Kata Sandi Akun");
+    expect(src).toContain("role={role}");
+  });
+
+  it("renders role-aware subtitle and forwards role to security card in ProfilePage", () => {
+    // Arrange + Act
+    const src = read("features/profile/pages/profile-page.tsx");
+
+    // Assert
+    expect(src).toContain('role === "coach"');
+    expect(src).toContain("pengaturan keamanan akun pelatih Anda");
+    expect(src).toContain("preferensi akun atlet Anda");
+    expect(src).toContain("role={role}");
   });
 });
 
 describe("profile client islands", () => {
-  it("owns form state in the editor via FormProvider and zodResolver", () => {
+  it("owns form state in the editor via FormProvider and zodResolver with role, title, and division seeded", () => {
     // Arrange + Act
     const src = read("features/profile/components/profile-editor.tsx");
 
@@ -56,20 +79,26 @@ describe("profile client islands", () => {
     expect(src).toContain("FormProvider");
     expect(src).toContain("zodResolver(profileSchema)");
     expect(src).toContain("useForm<UpdateProfileInput>");
+    expect(src).toContain("role: profile.role");
+    expect(src).toContain("title: profile.title");
+    expect(src).toContain("division: profile.division");
+    expect(src).toContain("profile.role === \"member\"");
     expect(src).not.toContain("Batal");
   });
 
-  it("wires real server action calling updateMemberProfileApiV1MemberProfilePatch", () => {
+  it("wires real server action calling updateMemberProfileApiV1MemberProfilePatch and updateCoachProfileApiV1CoachProfilePatch", () => {
     // Arrange + Act
     const src = read("features/profile/actions/update-profile.ts");
 
     // Assert
     expect(src).toContain("updateProfileSchema.safeParse");
     expect(src).toContain("updateMemberProfileApiV1MemberProfilePatch");
+    expect(src).toContain("updateCoachProfileApiV1CoachProfilePatch");
     expect(src).toContain("getAccessToken");
+    expect(src).toContain('parsed.data.role === "coach"');
   });
 
-  it("saves with Save icon, invalidates generated member query key, and refreshes router", () => {
+  it("saves with Save icon, invalidates member and coach query keys conditionally, and refreshes router", () => {
     // Arrange + Act
     const src = read("features/profile/components/profile-save-action.tsx");
 
@@ -78,15 +107,19 @@ describe("profile client islands", () => {
     expect(src).toContain("toast.promise");
     expect(src).toContain("Simpan Perubahan");
     expect(src).toContain("memberProfileApiV1MemberProfileGetQueryKey()");
+    expect(src).toContain("coachProfileApiV1CoachProfileGetQueryKey()");
     expect(src).toContain("router.refresh()");
     expect(src).not.toContain("Batal");
   });
 
-  it("keeps NPM and Email read-only with explanatory captions in biodata form", () => {
+  it("renders coach-specific fields and hides NPM when role is coach in biodata form", () => {
     // Arrange + Act
     const src = read("features/profile/components/profile-biodata-form.tsx");
 
     // Assert
+    expect(src).toContain("Jabatan Pelatih");
+    expect(src).toContain("Divisi / Perguruan");
+    expect(src).toContain("Email Akun Pelatih");
     expect(src).toContain("Nomor Induk Mahasiswa terdaftar permanen");
     expect(src).toContain("Ubah email melalui menu verifikasi keamanan akun");
     expect(src).toContain("readOnly");
