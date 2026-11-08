@@ -25,7 +25,10 @@ export function ProfileEditor({
     mode: "onChange",
     criteriaMode: "firstError",
     defaultValues: {
+      role: profile.role,
       name: profile.name,
+      title: profile.title,
+      division: profile.division,
       nim: profile.npm !== "-" ? profile.npm : "",
       email: profile.email !== "Email belum ditautkan" ? profile.email : "",
       cameraDeviceId: cameras[0]?.id ?? "",
@@ -35,11 +38,13 @@ export function ProfileEditor({
   return (
     <FormProvider {...methods}>
       <div className="flex flex-col gap-4">
-        <ProfileBiodataForm />
-        <ProfileCameraCard cameras={cameras} />
+        <ProfileBiodataForm role={profile.role} />
+        {profile.role === "member" ? (
+          <ProfileCameraCard cameras={cameras} />
+        ) : null}
         {children}
         <div className="flex flex-col gap-2 pt-2">
-          <ProfileSaveAction />
+          <ProfileSaveAction role={profile.role} />
           <ProfileLogoutButton />
         </div>
       </div>

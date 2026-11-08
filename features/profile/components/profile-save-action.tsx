@@ -5,12 +5,20 @@ import { useFormContext } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
-import { memberProfileApiV1MemberProfileGetQueryKey } from "@/api/@tanstack/react-query.gen";
+import {
+  coachProfileApiV1CoachProfileGetQueryKey,
+  memberProfileApiV1MemberProfileGetQueryKey,
+} from "@/api/@tanstack/react-query.gen";
 import { Button } from "@/components/ui/button";
 import { updateProfileAction } from "@/features/profile/actions/update-profile";
 import type { UpdateProfileInput } from "@/features/profile/schemas";
+import type { ProfileRole } from "@/features/profile/types";
 
-export function ProfileSaveAction() {
+export function ProfileSaveAction({
+  role = "member",
+}: {
+  role?: ProfileRole;
+}) {
   const { handleSubmit, formState, reset } = useFormContext<UpdateProfileInput>();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -25,7 +33,10 @@ export function ProfileSaveAction() {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: memberProfileApiV1MemberProfileGetQueryKey(),
+        queryKey:
+          role === "coach"
+            ? coachProfileApiV1CoachProfileGetQueryKey()
+            : memberProfileApiV1MemberProfileGetQueryKey(),
       });
       reset(variables);
       router.refresh();

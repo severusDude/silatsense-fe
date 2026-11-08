@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -20,15 +21,19 @@ import {
   passwordChangeFormSchema,
   type PasswordChangeFormInput,
 } from "@/features/profile/schemas";
+import type { ProfileRole } from "@/features/profile/types";
 
 export function ChangePasswordDialog({
   open,
   onOpenChange,
+  role = "member",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  role?: ProfileRole;
 }) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const {
     control,
@@ -48,7 +53,7 @@ export function ChangePasswordDialog({
 
   const onSubmit = (values: PasswordChangeFormInput) => {
     startTransition(async () => {
-      const res = await changePasswordAction(values);
+      const res = await changePasswordAction(values, role);
       if (!res.ok) {
         if (res.error.fieldErrors) {
           for (const [field, msg] of Object.entries(res.error.fieldErrors)) {
@@ -62,6 +67,7 @@ export function ChangePasswordDialog({
       toast.success("Kata sandi berhasil diperbarui");
       reset();
       onOpenChange(false);
+      router.refresh();
     });
   };
 
