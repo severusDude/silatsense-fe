@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getMemberDetail } from "@/features/coach/data/get-member-detail";
+import { getCoachMemberDetail } from "@/features/coach/data/get-member-detail";
 import { LatestEvaluationSection } from "@/features/coach/components/latest-evaluation";
 import { MemberDetailProfile } from "@/features/coach/components/member-detail-profile";
 import { MemberFeedbackCard } from "@/features/coach/components/member-feedback-card";
@@ -31,31 +31,37 @@ export function MemberDetailPage({ id }: { id: string }) {
 }
 
 async function ProfileSection({ id }: { id: string }) {
-  const detail = await getMemberDetail(id);
+  const detail = await getCoachMemberDetail(id);
   if (detail === null) notFound();
-  return <MemberDetailProfile detail={detail} />;
+  return <MemberDetailProfile profile={detail.profile} />;
 }
 
 async function PilarSection({ id }: { id: string }) {
-  const detail = await getMemberDetail(id);
+  const detail = await getCoachMemberDetail(id);
   if (detail === null) notFound();
-  return <PilarPerformanceSection pilares={detail.pilares} />;
+  return <PilarPerformanceSection pillars={detail.pillars} />;
 }
 
 async function EvaluationSection({ id }: { id: string }) {
-  const detail = await getMemberDetail(id);
+  const detail = await getCoachMemberDetail(id);
   if (detail === null) notFound();
   return <LatestEvaluationSection evaluation={detail.evaluation} />;
 }
 
 async function FeedbackSection({ id }: { id: string }) {
-  const detail = await getMemberDetail(id);
+  const detail = await getCoachMemberDetail(id);
   if (detail === null) notFound();
-  return <MemberFeedbackCard memberId={detail.id} memberName={detail.name} />;
+  return (
+    <MemberFeedbackCard
+      memberId={detail.profile.id}
+      memberName={detail.profile.name}
+      feedback={detail.feedback}
+    />
+  );
 }
 
 async function HistorySection({ id }: { id: string }) {
-  const detail = await getMemberDetail(id);
+  const detail = await getCoachMemberDetail(id);
   if (detail === null) notFound();
-  return <SessionHistoryLog history={detail.history} memberId={detail.id} />;
+  return <SessionHistoryLog history={detail.history} memberId={detail.profile.id} />;
 }

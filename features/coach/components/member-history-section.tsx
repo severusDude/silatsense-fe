@@ -1,11 +1,17 @@
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { META_BADGE_VARIANT } from "@/components/shared/silat-reference";
 import { HistoryPagination } from "@/features/coach/components/history-pagination";
 import { HistorySessionCard } from "@/features/coach/components/history-session-card";
-import type { HistoryPageSlice } from "@/features/coach/data/paginate-history";
-import type { MemberHistory } from "@/features/coach/types";
+import type { CoachMemberHistoryPageViewModel } from "@/features/coach/types";
 
-export function MemberHistorySection({ history, slice }: { history: MemberHistory; slice: HistoryPageSlice }) {
+export function MemberHistorySection({
+  history,
+  hasCursor = false,
+}: {
+  history: CoachMemberHistoryPageViewModel;
+  hasCursor?: boolean;
+}) {
   return (
     <section aria-labelledby="member-history-heading" className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-2">
@@ -13,24 +19,31 @@ export function MemberHistorySection({ history, slice }: { history: MemberHistor
           Daftar Riwayat Sesi
         </h2>
         <Badge variant={META_BADGE_VARIANT.count}>
-          {slice.sessions.length} / {history.totalSessions} Sesi
+          {history.items.length} Sesi
         </Badge>
       </div>
       <p className="text-xs text-muted-foreground">Catatan telemetri repetisi dan akurasi sensorik MediaPipe.</p>
-      <ul className="flex flex-col gap-2.5">
-        {slice.sessions.map((session) => (
-          <li key={session.id}>
-            <HistorySessionCard session={session} />
-          </li>
-        ))}
-      </ul>
+
+      {history.items.length === 0 ? (
+        <Card size="sm" className="opacity-70 bg-muted/20 border border-dashed border-border/80">
+          <CardContent className="py-6 text-center text-xs text-muted-foreground">
+            Belum ada riwayat sesi.
+          </CardContent>
+        </Card>
+      ) : (
+        <ul className="flex flex-col gap-2.5">
+          {history.items.map((session) => (
+            <li key={session.id}>
+              <HistorySessionCard session={session} />
+            </li>
+          ))}
+        </ul>
+      )}
+
       <HistoryPagination
         memberId={history.memberId}
-        page={slice.page}
-        totalPages={slice.totalPages}
-        totalSessions={history.totalSessions}
-        rangeStart={slice.rangeStart}
-        rangeEnd={slice.rangeEnd}
+        nextCursor={history.nextCursor}
+        hasCursor={hasCursor}
       />
     </section>
   );

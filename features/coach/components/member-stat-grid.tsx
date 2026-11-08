@@ -1,7 +1,8 @@
 import { CircleCheckBig, Target, Users, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { CoachStat } from "@/features/coach/types";
+import { cn } from "@/lib/utils";
+import type { CoachMemberStat } from "@/features/coach/types";
 
 const statIcons = {
   "total-atlet": Users,
@@ -10,13 +11,21 @@ const statIcons = {
   fokus: Video,
 } as const;
 
-export function MemberStatGrid({ stats }: { stats: CoachStat[] }) {
+export function MemberStatGrid({ stats }: { stats: CoachMemberStat[] }) {
   return (
     <section aria-label="Statistik binaan" className="grid grid-cols-2 gap-2.5">
       {stats.map((stat) => {
         const Icon = statIcons[stat.id] ?? Users;
+        const isDimmed = !stat.valueAvailable;
         return (
-          <Card key={stat.id} size="sm" className="gap-0">
+          <Card
+            key={stat.id}
+            size="sm"
+            className={cn(
+              "gap-0",
+              isDimmed && "opacity-60 bg-muted/20 border border-dashed border-border/80",
+            )}
+          >
             <CardHeader>
               <CardTitle className="text-xs">{stat.label}</CardTitle>
               <CardAction>
@@ -26,11 +35,27 @@ export function MemberStatGrid({ stats }: { stats: CoachStat[] }) {
               </CardAction>
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-1.5">
-              <p className="text-lg font-bold tabular-nums">{stat.value}</p>
+              <p className={cn("text-lg font-bold tabular-nums", isDimmed && "text-muted-foreground")}>
+                {stat.valueAvailable ? stat.value : "Segera hadir"}
+              </p>
               {stat.badge ? (
-                <Badge variant={stat.id === "akurasi-tim" ? "outline" : "secondary"}>{stat.badge}</Badge>
+                <Badge
+                  variant={stat.badgeAvailable ? "secondary" : "outline"}
+                  className={!stat.badgeAvailable ? "text-muted-foreground border-dashed" : undefined}
+                >
+                  {stat.badge}
+                </Badge>
               ) : null}
-              {stat.note ? <p className="text-[11px] text-muted-foreground">{stat.note}</p> : null}
+              {stat.note ? (
+                <p
+                  className={cn(
+                    "text-[11px]",
+                    stat.noteAvailable ? "text-muted-foreground" : "text-muted-foreground/70",
+                  )}
+                >
+                  {stat.note}
+                </p>
+              ) : null}
             </CardContent>
           </Card>
         );

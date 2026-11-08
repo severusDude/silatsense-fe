@@ -10,9 +10,10 @@ const membersPage = readFileSync("features/coach/pages/coach-members-page.tsx", 
 const search = readFileSync("features/coach/components/member-search.tsx", "utf8");
 
 describe("members route", () => {
-  it("wires the thin RSC route to the members page composition", () => {
+  it("wires the thin RSC route to the members page composition forwarding searchParams", () => {
     // Arrange + Act + Assert
     expect(page).toContain("CoachMembersPage");
+    expect(page).toContain("searchParams");
     expect(page).not.toContain('"use client"');
     expect(page).not.toContain("getTeamMembers");
   });
@@ -26,37 +27,31 @@ describe("members route", () => {
 
   it("keeps the members segment layout pass-through so each leaf owns one shell", () => {
     // Arrange + Act + Assert
-    // Regression: an ancestor segment layout must not render CoachLayout, or the
-    // nested [id] leaf shell stacks a second header/nav (double-chrome bug).
     expect(segmentLayout).not.toContain("CoachLayout");
   });
 
-  it("streams header, stats, and search list behind Suspense units", () => {
+  it("streams header, stats, and search list behind Suspense units with live reader", () => {
     // Arrange + Act + Assert
     expect(membersPage).toContain("MemberHeader");
     expect(membersPage).toContain("MemberStatGrid");
     expect(membersPage).toContain("MemberSearch");
+    expect(membersPage).toContain("MemberCardList");
     expect(membersPage).toContain("<Suspense");
-    expect(membersPage).toContain("getTeamMembers");
-    expect(membersPage).toContain("getTeamMemberStats");
+    expect(membersPage).toContain("getCoachMembersPage");
     expect(membersPage).not.toContain('"use client"');
   });
 
-  it("keeps the search island client-side with name-or-NIM filtering", () => {
+  it("keeps the search island client-side with debounced router write", () => {
     // Arrange + Act + Assert
     expect(search).toContain('"use client"');
-    expect(search).toContain("filterMembers");
+    expect(search).toContain("router.replace");
     expect(search).toContain("Cari nama atlet atau NIM");
-    expect(search).toContain("MemberCardList");
     expect(search).not.toContain("getTeamMembers");
-    expect(search).not.toContain("absolute");
+    expect(search).not.toContain("filterMembers");
   });
 
   it("renders exactly one coach shell on the dashboard (parent layout is pass-through)", () => {
-    // Arrange + Act
-    // (parentLayout + dashboardPage reads at top of file)
-
-    // Assert
+    // Arrange + Act + Assert
     expect(parentLayout).not.toContain("CoachLayout");
     expect(dashboardPage).toContain("<CoachLayout>");
     expect(dashboardPage).toContain("CoachDashboardPage");

@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getMemberDetail } from "@/features/coach/data/get-member-detail";
-import { getMemberHistory } from "@/features/coach/data/get-member-history";
-import { paginateHistory, parseHistoryPage } from "@/features/coach/data/paginate-history";
+import { getCoachMemberDetail } from "@/features/coach/data/get-member-detail";
+import { getCoachMemberHistory } from "@/features/coach/data/get-member-history";
 import { MemberDetailProfile } from "@/features/coach/components/member-detail-profile";
 import { MemberHistorySection } from "@/features/coach/components/member-history-section";
+import { coachMemberHistoryQuerySchema } from "@/features/coach/schemas";
 
 export function MemberHistoryPage({
   id,
@@ -27,9 +27,9 @@ export function MemberHistoryPage({
 }
 
 async function ProfileSection({ id }: { id: string }) {
-  const detail = await getMemberDetail(id);
+  const detail = await getCoachMemberDetail(id);
   if (detail === null) notFound();
-  return <MemberDetailProfile detail={detail} />;
+  return <MemberDetailProfile profile={detail.profile} />;
 }
 
 async function HistorySection({
@@ -39,9 +39,15 @@ async function HistorySection({
   id: string;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [history, query] = await Promise.all([getMemberHistory(id), searchParams]);
+  const raw = await searchParams;
+  const query = coachMemberHistoryQuerySchema.parse(raw);
+  const history = await getCoachMemberHistory(id, query);
   if (history === null) notFound();
-  const page = parseHistoryPage(query.page);
-  const slice = paginateHistory(history.sessions, page, history.pageSize);
-  return <MemberHistorySection history={history} slice={slice} />;
+
+  return (
+    <MemberHistorySection
+      history={history}
+      hasCursor={Boolean(query.cursor)}
+    />
+  );
 }

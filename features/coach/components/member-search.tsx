@@ -1,31 +1,61 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRef, useState, useTransition } from "react";
 import { Search } from "lucide-react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { filterMembers } from "@/features/coach/components/filter-members";
-import { MemberCardList } from "@/features/coach/components/member-card-list";
-import type { TeamMember } from "@/features/coach/types";
 
-export function MemberSearch({ members, totalAktif }: { members: TeamMember[]; totalAktif: number }) {
-  const [query, setQuery] = useState("");
-  const filtered = useMemo(() => filterMembers(members, query), [members, query]);
+export function MemberSearch({ initialQuery = "" }: { initialQuery?: string }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(initialQuery);
+  const [prevInitialQuery, setPrevInitialQuery] = useState(initialQuery);
+  const [, startTransition] = useTransition();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  if (prevInitialQuery !== initialQuery) {
+    setPrevInitialQuery(initialQuery);
+    setQuery(initialQuery);
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = setTimeout(() => {
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      const trimmed = val.trim();
+      if (trimmed) {
+        params.set("q", trimmed);
+      } else {
+        params.delete("q");
+      }
+      params.delete("cursor");
+
+      const qs = params.toString();
+      startTransition(() => {
+        router.replace(qs ? `${pathname}?${qs}` : pathname);
+      });
+    }, 300);
+  };
 
   return (
-    <div className="flex flex-col gap-2.5">
-      <InputGroup className="h-10">
-        <InputGroupAddon>
-          <Search className="size-4" aria-hidden="true" />
-        </InputGroupAddon>
-        <InputGroupInput
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Cari nama atlet atau NIM…"
-          aria-label="Cari nama atlet atau NIM"
-        />
-      </InputGroup>
-      <MemberCardList members={filtered} totalAktif={totalAktif} />
-    </div>
+    <InputGroup className="h-10">
+      <InputGroupAddon>
+        <Search className="size-4" aria-hidden="true" />
+      </InputGroupAddon>
+      <InputGroupInput
+        type="search"
+        value={query}
+        onChange={handleChange}
+        placeholder="Cari nama atlet atau NIM…"
+        aria-label="Cari nama atlet atau NIM"
+      />
+    </InputGroup>
   );
 }

@@ -7,11 +7,11 @@ const detailPage = readFileSync("features/coach/pages/member-detail-page.tsx", "
 const cardList = readFileSync("features/coach/components/member-card-list.tsx", "utf8");
 
 describe("member detail route", () => {
-  it("wires the thin RSC [id] route with static params and no client code", () => {
+  it("wires the thin RSC [id] route with no static params and no client code", () => {
     // Arrange + Act + Assert
     expect(page).toContain("MemberDetailPage");
-    expect(page).toContain("generateStaticParams");
-    expect(page).toContain("memberDetailIds");
+    expect(page).not.toContain("generateStaticParams");
+    expect(page).not.toContain("memberDetailIds");
     expect(page).not.toContain('"use client"');
     expect(page).not.toContain("getMemberDetail");
   });
@@ -37,7 +37,7 @@ describe("member detail route", () => {
 
   it("links every list card to its live detail route", () => {
     // Arrange + Act + Assert
-    expect(cardList).toContain("`/coach/members/${member.id}`");
+    expect(cardList).toContain("member.detailHref");
     expect(cardList).toContain("Lihat Detail");
     expect(cardList).not.toContain("TODO");
   });

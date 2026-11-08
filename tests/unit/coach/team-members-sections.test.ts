@@ -5,7 +5,7 @@ const statGrid = readFileSync("features/coach/components/member-stat-grid.tsx", 
 const cardList = readFileSync("features/coach/components/member-card-list.tsx", "utf8");
 
 describe("member sections", () => {
-  it("renders the member stat grid with four icons and no footers", () => {
+  it("renders the member stat grid with four icons and honest UI note/badges", () => {
     // Arrange + Act + Assert
     expect(statGrid).toContain("Statistik binaan");
     expect(statGrid).toContain("Users");
@@ -18,10 +18,10 @@ describe("member sections", () => {
     expect(statGrid).not.toContain("absolute");
   });
 
-  it("renders the member card list with full Card composition and ghost CTAs", () => {
+  it("renders the member card list with full Card composition, cursor links, and ghost CTAs", () => {
     // Arrange + Act + Assert
     expect(cardList).toContain("Monitoring Pose Kinematika");
-    expect(cardList).toContain("Atlet Aktif");
+    expect(cardList).toContain("{countLabel}");
     expect(cardList).toContain("<section");
     expect(cardList).toContain("<h2");
     expect(cardList).toContain("<CardHeader");
@@ -32,9 +32,12 @@ describe("member sections", () => {
     expect(cardList).toContain("buttonVariants");
     expect(cardList).toContain('variant: "ghost"');
     expect(cardList).toContain("Lihat Detail");
-    expect(cardList).toContain("`/coach/members/${member.id}`");
+    expect(cardList).toContain("member.detailHref");
     expect(cardList).toContain("Tidak ada atlet yang cocok");
-    expect(cardList).toContain("stageBadgeVariant");
+    expect(cardList).toContain("member.statusVariant");
+    expect(cardList).toContain("member.scoreLabel");
+    expect(cardList).toContain("Muat Lebih Banyak");
+    expect(cardList).toContain("Kembali ke Awal");
     expect(cardList).toContain('role="img"');
   });
 
