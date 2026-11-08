@@ -5,6 +5,10 @@ import {
   coachProfileApiV1CoachProfileGet,
   memberProfileApiV1MemberProfileGet,
 } from "@/api";
+import {
+  zCoachProfileApiV1CoachProfileGetResponse,
+  zMemberProfileApiV1MemberProfileGetResponse,
+} from "@/api/zod.gen";
 import { getAccessToken } from "@/features/auth/data/session";
 import { toProfileViewModel } from "@/features/profile/data/profile-mapper";
 import type { ProfileRole, ProfileViewModel } from "@/features/profile/types";
@@ -41,6 +45,11 @@ export const getProfile = cache(
       );
     }
 
-    return toProfileViewModel(data);
+    const parsed =
+      role === "coach"
+        ? zCoachProfileApiV1CoachProfileGetResponse.parse(data)
+        : zMemberProfileApiV1MemberProfileGetResponse.parse(data);
+
+    return toProfileViewModel(parsed);
   }
 );
