@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { MovementOption, UploadRequest } from "@/api";
 import { checksum, directUpload, putVideo, type UploadActions, type UploadState } from "@/features/member/direct-upload";
 import { formatBytes } from "@/features/member/data/format";
+import { prepareVideoFile } from "@/features/member/video-file";
 import {
   baseMimeType,
   effectiveUploadMaxBytes,
@@ -54,6 +55,8 @@ export function useMediaRecorder({
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RecordedClip | null>(null);
+  const [isPreparingFile, setIsPreparingFile] = useState(false);
+  const fileSelectionRef = useRef<AbortController | null>(null);
 
   const uploadStateRef = useRef<UploadState>({});
   const abortRef = useRef<AbortController | null>(null);
@@ -77,6 +80,7 @@ export function useMediaRecorder({
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      fileSelectionRef.current?.abort();
 
       abortRef.current?.abort();
       const xhr = xhrRef.current;
@@ -210,7 +214,7 @@ export function useMediaRecorder({
   }, [maxBytes, maxDurationSec, slug, stream]);
 
   const start = useCallback(() => {
-    if (phase !== "idle") return;
+    if (phase !== "idle" || isPreparingFile) return;
     if ((movementIdRequired && !movementId) || (movementId && !movements.some((item) => item.id === movementId))) {
       setError("Pilih target gerakan sebelum merekam."); return;
     }
@@ -251,7 +255,43 @@ export function useMediaRecorder({
     setCountdownRemaining(Math.max(0, Math.round(countdownSec)));
     setError(null);
     setPhase("countdown");
-  }, [acceptedMimeTypes, countdownSec, phase, stream, movementId, movementIdRequired, movements]);
+  }, [acceptedMimeTypes, countdownSec, phase, stream, movementId, movementIdRequired, movements, isPreparingFile]);
+
+  const selectFile = useCallback(async (file: File) => {
+    if (phase !== "idle" || isPreparingFile) return;
+    if ((movementIdRequired && !movementId) || (movementId && !movements.some((item) => item.id === movementId))) {
+      setError("Pilih target gerakan sebelum memilih video.");
+      return;
+    }
+    fileSelectionRef.current?.abort();
+    const controller = new AbortController();
+    fileSelectionRef.current = controller;
+    targetRef.current = movementId;
+    setIsPreparingFile(true);
+    setError(null);
+    try {
+      const clip = await prepareVideoFile(file, { acceptedMimeTypes, maxBytes, maxDurationSec }, controller.signal);
+      if (!mountedRef.current || controller.signal.aborted) {
+        URL.revokeObjectURL(clip.previewUrl);
+        return;
+      }
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = clip.previewUrl;
+      uploadStateRef.current = {};
+      idempotencyKeyRef.current = crypto.randomUUID();
+      setResult(clip);
+      setElapsedSec(clip.durationSec);
+      setProgress(0);
+      setPhase("recorded");
+      onRecordingCompleteRef.current?.();
+    } catch (error) {
+      if (mountedRef.current && !controller.signal.aborted) {
+        setError(error instanceof Error ? error.message : "Video gagal dibaca. Pilih video lain.");
+      }
+    } finally {
+      if (mountedRef.current && fileSelectionRef.current === controller) setIsPreparingFile(false);
+    }
+  }, [phase, isPreparingFile, movementId, movementIdRequired, movements, acceptedMimeTypes, maxBytes, maxDurationSec]);
 
   const cancelCountdown = useCallback(() => {
     setPhase("idle");
@@ -261,6 +301,8 @@ export function useMediaRecorder({
   }, []);
 
   const discard = useCallback(() => {
+    fileSelectionRef.current?.abort();
+    setIsPreparingFile(false);
     abortRef.current?.abort();
     uploadStateRef.current = {};
     const recorder = recorderRef.current;
@@ -399,6 +441,8 @@ export function useMediaRecorder({
     uploadStage,
     error,
     result,
+    isPreparingFile,
+    selectFile,
     start,
     cancelCountdown,
     stop,

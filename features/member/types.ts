@@ -297,6 +297,7 @@ export type RecorderPhase =
 
 /** Client-only recording result; never crosses the RSC boundary. */
 export interface RecordedClip {
+  source?: "camera" | "file";
   blob: Blob;
   previewUrl: string;
   durationSec: number;
