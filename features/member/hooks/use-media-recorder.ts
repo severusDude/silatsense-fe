@@ -50,6 +50,7 @@ export function useMediaRecorder({
   const [phase, setPhase] = useState<RecorderPhase>("idle");
   const [countdownRemaining, setCountdownRemaining] = useState(0);
   const [elapsedSec, setElapsedSec] = useState(0);
+  const [uploadStage, setUploadStage] = useState("Menyiapkan rekaman");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RecordedClip | null>(null);
@@ -364,6 +365,7 @@ export function useMediaRecorder({
     void (async () => {
       try {
         const state = uploadStateRef.current;
+        setUploadStage("Menghitung checksum rekaman");
         if (!state.metadata) state.metadata = {
           movementSlug: slug, movementId: targetRef.current as UploadRequest["movementId"],
           filename: result.fileName, mimeType: baseMimeType(result.mimeType) as UploadRequest["mimeType"],
@@ -371,7 +373,9 @@ export function useMediaRecorder({
         };
         const accepted = await directUpload(state, state.metadata, idempotencyKey, result.blob,
           { initAction, completeAction },
-          (ticket, blob) => putVideo(ticket, blob, (value) => { if (mountedRef.current) setProgress(value); }, controller.signal, (xhr) => { xhrRef.current = xhr; }), controller.signal);
+          (ticket, blob) => putVideo(ticket, blob, (value) => { if (mountedRef.current) setProgress(value); }, controller.signal, (xhr) => { xhrRef.current = xhr; }), controller.signal, (stage) => {
+            if (mountedRef.current && !controller.signal.aborted) setUploadStage(stage === "ticket" ? "Meminta tiket unggahan" : stage === "put" ? "Mengunggah langsung ke penyimpanan" : "Mengonfirmasi unggahan");
+          });
         if (mountedRef.current && !controller.signal.aborted) {
           if (targetRef.current) { try { sessionStorage.setItem(`silatsense:target:${accepted.sessionId}`, targetRef.current); } catch {} }
           setProgress(100); router.push(`/latihan/${slug}/sesi/${accepted.sessionId}`); }
@@ -392,6 +396,7 @@ export function useMediaRecorder({
     countdownRemaining,
     elapsedSec,
     progress,
+    uploadStage,
     error,
     result,
     start,

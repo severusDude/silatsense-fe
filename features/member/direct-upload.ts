@@ -10,9 +10,10 @@ export async function checksum(blob: Blob): Promise<string> {
   return Array.from(new Uint8Array(hash), (value) => value.toString(16).padStart(2, "0")).join("");
 }
 export async function directUpload(state: UploadState, metadata: UploadRequest, key: string, blob: Blob, actions: UploadActions,
-  put: (ticket: UploadTicket, blob: Blob) => Promise<void>, signal: AbortSignal): Promise<AcceptedSession> {
+  put: (ticket: UploadTicket, blob: Blob) => Promise<void>, signal: AbortSignal, onStage?: (stage: "ticket" | "put" | "complete") => void): Promise<AcceptedSession> {
   signal.throwIfAborted();
   if (!state.ticket || (!state.putComplete && Date.parse(state.ticket.expiresAt) <= Date.now())) {
+    onStage?.("ticket");
     const result = await actions.initAction(metadata, key);
     if (!result.ok) throw new Error(result.error.message);
     state.ticket = result.data;
@@ -21,10 +22,12 @@ export async function directUpload(state: UploadState, metadata: UploadRequest, 
   if (state.ticket.acceptedSession) return state.ticket.acceptedSession;
   if (!state.putComplete) {
     if (!state.ticket.uploadUrl) throw new Error("Tiket unggahan tidak memiliki alamat penyimpanan.");
+    onStage?.("put");
     await put(state.ticket, blob);
     state.putComplete = true;
   }
   signal.throwIfAborted();
+  onStage?.("complete");
   const result = await actions.completeAction(state.ticket.uploadId);
   if (!result.ok) throw new Error(`Video sudah terunggah. ${result.error.message}`);
   return result.data;

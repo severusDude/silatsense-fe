@@ -48,5 +48,5 @@ async function RekamContent({
   const previous = retryOf ? await getEvaluation(retryOf) : null;
   const requestedTarget = readRetryOf(query.movementId);
   const target = detail.movements?.find((item) => item.id === requestedTarget)?.id ?? (previous?.slug === slug ? previous.coachComparison?.movementId : undefined);
-  return <RekamRecorder detail={detail} retryOf={retryOf} initialMovementId={target} initAction={initUpload} completeAction={completeUpload} />;
+  return <RekamRecorder key={`${slug}:${retryOf ?? ""}:${target ?? ""}`} detail={detail} retryOf={retryOf} initialMovementId={target} initAction={initUpload} completeAction={completeUpload} />;
 }

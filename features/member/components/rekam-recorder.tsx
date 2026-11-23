@@ -90,6 +90,7 @@ export function RekamRecorder({
           <span className="text-xs text-muted-foreground">Target dikunci selama rekaman. Rekam ulang untuk mengganti target.</span>
         </label>
       ) : null}
+      {recorder.phase === "uploading" ? <p role="status" className="text-xs">{recorder.uploadStage}</p> : null}
       {recorder.phase === "uploading" ? <button type="button" onClick={recorder.cancelUpload} className="text-sm underline">Batalkan unggahan</button> : null}
       <RekamViewport
         trainingName={detail.trainingName}

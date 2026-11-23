@@ -17,6 +17,16 @@ describe("direct browser upload", () => {
     expect(api.initAction).toHaveBeenCalledWith(metadata, "same-key"); expect(put).toHaveBeenCalledWith(ticket, blob);
     expect(api.completeAction).toHaveBeenCalledWith("upload"); expect(calls).toEqual(["init", "put", "complete"]);
   });
+  it("does not PUT or complete when ticket initialization fails", async () => {
+    const api = actions(), put = vi.fn(); api.initAction.mockResolvedValue({ ok: false, error: { message: "Sesi berakhir" } });
+    await expect(directUpload({}, metadata, "key", new Blob(), api, put, signal())).rejects.toThrow("Sesi berakhir");
+    expect(put).not.toHaveBeenCalled(); expect(api.completeAction).not.toHaveBeenCalled();
+  });
+  it("reports ticket, storage and completion stages in order", async () => {
+    const stages: string[] = [];
+    await directUpload({}, metadata, "key", new Blob(), actions(), vi.fn(), signal(), (stage) => stages.push(stage));
+    expect(stages).toEqual(["ticket", "put", "complete"]);
+  });
   it("recovers complete failure without another ticket or another PUT", async () => {
     const api = actions(), state: UploadState = {}, put = vi.fn().mockResolvedValue(undefined);
     api.completeAction.mockResolvedValueOnce({ ok: false, error: { message: "Coba konfirmasi lagi" } });
