@@ -52,3 +52,13 @@ Pilih kategori/target, rekam, Gunakan Rekaman, tunggu status tahap upload, lalu 
 Lihat [bukti pengujian](coach-reference-verification.md). Direct PUT B2 browser/CORS, rekaman kamera penuh, dan overlay berwarna pada video pose nyata belum diuji end-to-end pada deployment. Sesi gagal tanpa evaluasi pada perangkat/browser lain tidak dapat memulihkan movementId otomatis karena SessionOut BE tidak mengekspos target; UI meminta pilihan eksplisit. Untuk pemulihan lintas perangkat yang lengkap, tambahan minimal BE adalah `SessionOut.movementId` nullable yang dibaca dari snapshot request, tanpa menebak classifier.
 
 `pnpm build` memakai opsi resmi Next.js `--webpack`: worker PostCSS Turbopack lokal keluar sebelum koneksi terbentuk, sedangkan build Webpack selesai. Tidak ada dependency baru; desain/route app tetap memakai Cache Components dan boundary server existing.
+
+## Upload video dari perangkat
+
+Halaman persiapan kini memiliki tombol **Upload Video dari Perangkat** yang membuka `/latihan/{slug}/rekam?source=file`. Di halaman rekam, pilihan **Rekam Kamera / Upload Video** memakai desain tombol pil dan kartu aplikasi existing. Memilih file tidak memerlukan izin kamera.
+
+Pilih target gerakan, tekan **Pilih File Video**, lalu tinjau pratinjau, nama, ukuran, dan durasi. Tekan **Unggah Video** untuk mengirim; pemilihan file sendiri belum membuat tiket atau mengirim video. **Pilih Video Lain** membuang pratinjau dan membuka kembali pilihan target tanpa memindai kamera. Target dan sumber terkunci selama klip terpilih agar identitas permintaan tidak berubah.
+
+Format, ukuran, dan durasi mengikuti record-config BE. MP4/MOV/WebM hanya ditawarkan jika diizinkan konfigurasi kategori; file kosong, ekstensi/MIME yang tidak cocok, ukuran berlebih, dan durasi tidak valid/berlebih ditolak di browser. Jika browser tidak menyediakan MIME, ekstensi dipakai sebagai fallback; BE tetap memvalidasi byte video. Codec tidak terbaca atau durasi WebM tidak finite mendapat pesan untuk ekspor ulang ke MP4/H.264. Pembacaan metadata dibatasi 15 detik.
+
+File asli, filename, MIME, byteSize, movementId, retryOf dan SHA256 masuk ke alur direct-upload existing tanpa transcode atau proxy body video. Setiap file baru mendapat key idempotensi baru; retry file yang sama mempertahankan state upload/complete existing. Object URL dibersihkan saat gagal, dibuang, diganti, dibatalkan atau unmount. Metadata dan pratinjau hanya lokal sampai pengguna mengonfirmasi upload. Tidak ada dependency tambahan.

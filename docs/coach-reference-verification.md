@@ -84,3 +84,15 @@ Server FE dan BE dihentikan beserta process tree; port listener 3101/8101 dibeba
 | Tes baru | `tests/unit/member/direct-upload.test.ts`, `direct-upload-actions.test.ts`, `pose-overlay.test.ts`, `pose-data.test.ts`, `coach-comparison.test.ts`; `tests/unit/coach/video-route.test.ts`; `tests/unit/auth/refresh-coordinator.test.ts`, `authenticated-request.test.ts`, `proxy-session-recovery.test.ts` |
 | Tes existing diperbarui | Recorder/mapper/evaluation/session detail/playback Member dan mapper/detail Coach yang semula mengharuskan proxy upload/placeholder |
 | Build/dokumen | `package.json`; dokumen ini, `coach-reference-integration.md`, `b2-cors.example.json` |
+
+## Tambahan upload file perangkat — 23 November 2026
+
+Commit fitur `93bf5ef`: kartu pemilihan/pratinjau video perangkat dan pilihan sumber kamera/file, dengan tombol masuk langsung dari halaman persiapan. Berkas tambahan `features/member/video-file.ts`, `components/video-file-input.tsx` dan dua modul tes di `tests/unit/member/video-file*.test.ts`; recorder/controls/page/types existing diperbarui untuk memakai jalur upload yang sama.
+
+- `pnpm test`: **535 passed, 73 test files** (14 tes tambahan). Meliputi format/MIME dan fallback, file kosong/berlebih, batas di atas cap proxy lama, durasi invalid/berlebih, metadata timeout, pembatalan, pelepasan object URL, dan tampilan input/preview/konfirmasi.
+- `pnpm typecheck`, `pnpm lint`, `pnpm build`, serta `git diff --check` lulus. Tidak menambah dependency.
+- Browser nyata memakai FE build produksi QA pada port 3102 dan BE lokal pada 8201, SQLite/media disposable serta akun sintetis. Server/data pengguna pada port 3101/8001 tidak diubah atau dihentikan. `.env.worker` tidak dimuat oleh QA.
+- Tombol upload di persiapan membuka mode file. File picker nonaktif sebelum target wajib dipilih; setelah target dipilih, video sintetis H.264 640×480, dua detik, 2,6 KB berhasil dipilih dan dipratinjau. Target/sumber terkunci, tombol **Unggah Video** muncul. **Pilih Video Lain** mengembalikan picker dan mempertahankan target tanpa meminta kamera. File `.txt` menampilkan error format dan tidak menghasilkan klip siap unggah.
+- Overflow mobile lulus pada 390 px (`scrollWidth=375`) untuk persiapan dan preview; desktop lulus pada 1440 px (`scrollWidth=1440`). Screenshot preview diambil pada browser QA.
+- Pemeriksaan ini berhenti sebelum konfirmasi upload: **0 panggilan endpoint uploads** tercatat pada BE QA. Tidak mengirim video ke B2/cloud, menjalankan inference, atau memakai video privat. Jalur init/PUT/complete existing tetap tercakup tes mock; CORS/PUT B2 nyata masih merupakan dependensi eksternal sebagaimana dicatat di atas.
+- Server QA, akun/database, klip sintetis dan log sementara dibersihkan setelah pengujian. Build akhir dikembalikan menggunakan konfigurasi FE existing; env pengguna tidak diubah.
