@@ -65,8 +65,8 @@ describe("session video player", () => {
     expect(src).toContain("techniqueName");
     expect(src).toContain("techniqueDesc");
     expect(src).toContain("aspect-video");
-    expect(src).toContain("<video");
-    expect(src).toContain('preload="metadata"');
+    expect(src).toContain("PoseVideoPlayer");
+    expect(read("features/member/components/pose-video-player.tsx")).toContain('preload="metadata"');
     expect(src).toContain("/api/member/sessions/${session.id}/video");
     expect(src).not.toContain("TODO");
     expect(src).not.toContain("<img");

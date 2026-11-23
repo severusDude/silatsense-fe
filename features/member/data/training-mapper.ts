@@ -61,6 +61,7 @@ export function toTrainingModuleViewModel(
     levelLabel: trainingModule.level ?? FALLBACK_LEVEL,
     description: trainingModule.description ?? "",
     estimateLabel: formatMinutesId(trainingModule.estimatedDurationSeconds),
+    referenceComparisonAvailable: trainingModule.capability.referenceComparisonAvailable ?? false,
     scoringAvailable: trainingModule.capability.scoringAvailable,
     scoringReason: trainingModule.capability.reason,
     similarity: toSimilarity(trainingModule.slug, statistics),

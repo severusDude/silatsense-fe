@@ -1,3 +1,4 @@
+import { comparisonMessage } from "@/features/member/pose-overlay";
 import type {
   AnalysisIssue,
   EvaluationOut,
@@ -145,7 +146,7 @@ function buildScoreSummary(
   postures: PostureAssessmentViewModel[],
 ): string {
   if (evaluation.analysisStatus === "reference_compared") return "Perbandingan eksperimental selesai. Kebenaran teknik belum tervalidasi; skor tidak tersedia.";
-  if (evaluation.scoreReason) return evaluation.scoreReason;
+  if (evaluation.scoreReason) return evaluation.method === "coach-reference-dtw" ? comparisonMessage(evaluation.scoreReason) : evaluation.scoreReason;
 
   if (evaluation.score === null) {
     if (evaluation.unavailableReasons.length > 0) {
@@ -195,7 +196,7 @@ export function toEvaluationViewModel(
     id: evaluation.id,
     sessionId: evaluation.sessionId,
     slug: evaluation.movementSlug,
-    techniqueName: PILAR_NAMES[evaluation.movementSlug],
+    techniqueName: evaluation.coachComparison ? humanizeIdentifier(evaluation.coachComparison.movementId) : PILAR_NAMES[evaluation.movementSlug],
     evaluatedAtLabel: formatDateTimeId(evaluation.evaluatedAt),
     framesProcessed: evaluation.framesProcessed,
     validPoseFrames: evaluation.validPoseFrames,

@@ -118,6 +118,7 @@ export interface MemberDashboardViewModel {
 export type MemberDashboard = MemberDashboardViewModel;
 
 export interface TrainingModuleViewModel {
+  referenceComparisonAvailable?: boolean;
   slug: TrainingModuleSlug;
   order: number;
   orderLabel: string;

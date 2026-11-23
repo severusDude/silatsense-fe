@@ -553,3 +553,19 @@ describe("toEvaluationViewModel", () => {
     );
   });
 });
+
+
+describe("temporal evaluation compatibility", () => {
+  it("keeps a completed comparison with null score readable after media expires", () => {
+    const dto = evaluationFixture({ method: "coach-reference-dtw", analysisStatus: "reference_compared", score: null, scoreReason: "correctness_not_validated", measurements: [], issues: [], coachComparison: { movementId: "pukulan_depan", status: "compared", toleranceStatus: "ready", frames: [], features: {} } });
+    const session = toSessionViewModel(sessionFixture({ processingStatus: "completed", analysisStatus: "reference_compared", media: { ...sessionFixture().media, status: "expired" } }));
+    const vm = toEvaluationViewModel(dto, session);
+    expect(vm.score.value).toBeNull(); expect(vm.score.available).toBe(false);
+    expect(vm.score.statusLabel).toBe("Perbandingan referensi selesai"); expect(vm.score.summary).toContain("belum tervalidasi");
+    expect(vm.coachComparison?.movementId).toBe("pukulan_depan"); expect(vm.mediaStatus).toBe("expired"); expect(session.canViewEvaluation).toBe(true);
+  });
+  it("keeps completed not-assessable distinct from a failed analysis", () => {
+    const vm = toEvaluationViewModel(evaluationFixture({ analysisStatus: "insufficient_pose", score: null, measurements: [], coachComparison: { movementId: "pukulan_depan", status: "not_assessable", reason: "insufficient_pose", toleranceStatus: "ready", frames: [], features: {} } }));
+    expect(vm.coachComparison?.status).toBe("not_assessable"); expect(vm.score.value).toBeNull(); expect(vm.score.status).toBe("insufficient_pose");
+  });
+});

@@ -562,8 +562,9 @@ describe("coach-members-mapper", () => {
         },
       ]);
 
-      expect(vm.postures.length).toBeGreaterThanOrEqual(1);
-      const siku = vm.postures.find((p) => p.id === "siku_kanan");
+      expect(vm.postures[0].note).toBe("Posisi siku sudah tepat 90 derajat.");
+      expect(vm.aiPostures?.length).toBeGreaterThanOrEqual(1);
+      const siku = vm.aiPostures?.find((p) => p.id === "elbow_angle");
       expect(siku).toBeDefined();
       expect(siku?.status).toBe("sesuai");
     });

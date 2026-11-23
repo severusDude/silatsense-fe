@@ -1,3 +1,4 @@
+import { authenticatedRequest } from "@/features/auth/data/authenticated-request";
 import { getAccessToken } from "@/features/auth/data/session";
 import { client } from "@/lib/api-client";
 import {
@@ -71,18 +72,18 @@ export async function GET(
   const { sessionId } = await params;
   const range = request.headers.get("range");
 
-  const { data, error, response } = await client.get({
+  const { data, error, response } = await authenticatedRequest((accessToken) => client.get({
     url: "/api/v1/member/sessions/{session_id}/video",
     path: { session_id: sessionId },
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${accessToken}`,
       "Content-Type": null,
       ...(range ? { Range: range } : {}),
     },
     parseAs: "stream",
     cache: "no-store",
     throwOnError: false,
-  });
+  }));
 
   if (!response?.ok) {
     return upstreamDomainErrorResponse(

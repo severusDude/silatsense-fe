@@ -1,3 +1,4 @@
+import type { CoachComparison } from "@/api";
 import type { PilarSlug } from "@/components/shared/silat-reference";
 import type { SessionViewModel } from "@/features/member/types";
 
@@ -149,6 +150,8 @@ export interface CoachMemberPillarViewModel {
 }
 
 export interface CoachMemberEvaluationViewModel {
+  coachComparison?: CoachComparison | null;
+  aiPostures?: CoachMemberEvaluationViewModel["postures"];
   available: boolean;
   techniqueName: string;
   metaLabel: string;

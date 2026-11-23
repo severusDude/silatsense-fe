@@ -1,3 +1,6 @@
+import { getPose } from "@/features/member/data/get-pose";
+import { PoseVideoPlayer } from "@/features/member/components/pose-video-player";
+import { CoachComparisonPanel } from "@/features/member/components/coach-comparison";
 import { AlertCircle } from "lucide-react";
 import {
   Card,
@@ -8,13 +11,14 @@ import {
 } from "@/components/ui/card";
 import type { SessionDetailViewModel } from "@/features/member/types";
 
-export function SessionVideoPlaceholder({
+export async function SessionVideoPlaceholder({
   session,
 }: {
   session: SessionDetailViewModel;
 }) {
   const isAvailable = session.session.mediaStatus === "available";
 
+  const pose = isAvailable ? await getPose(session.id, "member") : null;
   return (
     <section aria-label="Tinjauan kinematika" className="flex flex-col gap-2">
       <Card>
@@ -25,12 +29,7 @@ export function SessionVideoPlaceholder({
         <CardContent className="flex flex-col gap-2">
           {isAvailable ? (
             <div className="-mx-(--card-spacing) -mb-(--card-spacing) aspect-video w-auto overflow-hidden bg-black">
-              <video
-                controls
-                preload="metadata"
-                src={`/api/member/sessions/${session.id}/video`}
-                className="size-full object-contain"
-              />
+              <PoseVideoPlayer src={`/api/member/sessions/${session.id}/video`} timeline={pose?.timeline} comparison={session.evaluation?.coachComparison} poseError={pose?.error} />
             </div>
           ) : (
             <div
@@ -49,6 +48,7 @@ export function SessionVideoPlaceholder({
           )}
         </CardContent>
       </Card>
+      <CoachComparisonPanel comparison={session.evaluation?.coachComparison} />
     </section>
   );
 }

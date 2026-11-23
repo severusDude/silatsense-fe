@@ -1,3 +1,6 @@
+import { getPose } from "@/features/member/data/get-pose";
+import { PoseVideoPlayer } from "@/features/member/components/pose-video-player";
+import { CoachComparisonPanel } from "@/features/member/components/coach-comparison";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -9,11 +12,12 @@ import {
 import { MediaUnavailable } from "@/features/member/components/media-unavailable";
 import type { EvaluationViewModel } from "@/features/member/types";
 
-export function EvaluasiPlayback({
+export async function EvaluasiPlayback({
   evaluation,
 }: {
   evaluation: EvaluationViewModel;
 }) {
+  const pose = evaluation.mediaStatus === "available" ? await getPose(evaluation.sessionId, "member") : null;
   return (
     <section aria-label="Rekaman evaluasi" className="flex flex-col gap-2">
       <Card>
@@ -25,13 +29,7 @@ export function EvaluasiPlayback({
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           {evaluation.mediaStatus === "available" ? (
-            <video
-              controls
-              preload="metadata"
-              src={`/api/member/sessions/${evaluation.sessionId}/video`}
-              aria-label={`${evaluation.techniqueName} — rekaman evaluasi`}
-              className="aspect-[4/3] -mx-6 min-w-[calc(100%_+_3rem)] rounded-2xl border bg-black"
-            />
+            <PoseVideoPlayer src={`/api/member/sessions/${evaluation.sessionId}/video`} timeline={pose?.timeline} comparison={evaluation.coachComparison} poseError={pose?.error} />
           ) : (
             <MediaUnavailable
               status={evaluation.mediaStatus}
@@ -40,6 +38,7 @@ export function EvaluasiPlayback({
           )}
         </CardContent>
       </Card>
+      <CoachComparisonPanel comparison={evaluation.coachComparison} />
     </section>
   );
 }

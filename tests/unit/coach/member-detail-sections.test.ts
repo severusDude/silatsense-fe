@@ -68,8 +68,8 @@ describe("member detail sections", () => {
     // Arrange + Act + Assert
     expect(profile).toContain("getInitials");
     expect(profile).toContain('role="img"');
-    expect(evaluasi).toContain("ImagePlaceholder");
-    expect(evaluasi).toContain("Visual tracking");
+    expect(evaluasi).toContain("PoseVideoPlayer");
+    expect(evaluasi).toContain("/api/coach/sessions/");
     expect(pilar).toContain("PersonStanding");
     expect(pilar).toContain("Footprints");
     expect(all).toContain("lucide-react");
