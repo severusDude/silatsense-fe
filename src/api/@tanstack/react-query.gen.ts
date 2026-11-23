@@ -7,12 +7,12 @@ import { acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePost, authSess
 import type { AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostData, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostError, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse, AuthSessionApiV1AuthSessionGetData, AuthSessionApiV1AuthSessionGetResponse, CoachPasswordApiV1CoachPasswordPatchData, CoachPasswordApiV1CoachPasswordPatchError, CoachPasswordApiV1CoachPasswordPatchResponse, CoachProfileApiV1CoachProfileGetData, CoachProfileApiV1CoachProfileGetError, CoachProfileApiV1CoachProfileGetResponse, CompleteApiV1MemberUploadsUploadIdCompletePostData, CompleteApiV1MemberUploadsUploadIdCompletePostError, CompleteApiV1MemberUploadsUploadIdCompletePostResponse, DashboardApiV1MemberDashboardGetData, DashboardApiV1MemberDashboardGetError, DashboardApiV1MemberDashboardGetResponse, DetailApiV1MemberHistorySessionIdGetData, DetailApiV1MemberHistorySessionIdGetError, DetailApiV1MemberHistorySessionIdGetResponse, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutData, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutError, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponse, EmailLinkApiV1AuthEmailLinkRequestPostData, EmailLinkApiV1AuthEmailLinkRequestPostError, EmailLinkApiV1AuthEmailLinkRequestPostResponse, EmailVerifyApiV1AuthEmailVerificationRequestPostData, EmailVerifyApiV1AuthEmailVerificationRequestPostError, EmailVerifyApiV1AuthEmailVerificationRequestPostResponse, EvaluationApiV1MemberSessionsSessionIdEvaluationGetData, EvaluationApiV1MemberSessionsSessionIdEvaluationGetError, EvaluationApiV1MemberSessionsSessionIdEvaluationGetResponse, HealthHealthGetData, HistoryApiV1MemberHistoryGetData, HistoryApiV1MemberHistoryGetError, HistoryApiV1MemberHistoryGetResponse, InitiateApiV1MemberUploadsPostData, InitiateApiV1MemberUploadsPostError, InitiateApiV1MemberUploadsPostResponse, LinkConfirmApiV1AuthEmailLinkConfirmPostData, LinkConfirmApiV1AuthEmailLinkConfirmPostError, LinkConfirmApiV1AuthEmailLinkConfirmPostResponse, LiveHealthLiveGetData, LogoutApiV1AuthLogoutPostData, LogoutApiV1AuthLogoutPostResponse, MemberDetailApiV1CoachRosterMemberIdGetData, MemberDetailApiV1CoachRosterMemberIdGetError, MemberDetailApiV1CoachRosterMemberIdGetResponse, MemberPasswordApiV1MemberPasswordPatchData, MemberPasswordApiV1MemberPasswordPatchError, MemberPasswordApiV1MemberPasswordPatchResponse, MemberProfileApiV1MemberProfileGetData, MemberProfileApiV1MemberProfileGetError, MemberProfileApiV1MemberProfileGetResponse, MemberSessionsApiV1CoachRosterMemberIdSessionsGetData, MemberSessionsApiV1CoachRosterMemberIdSessionsGetError, MemberSessionsApiV1CoachRosterMemberIdSessionsGetResponse, ModulesApiV1MemberTrainingModulesGetData, ModulesApiV1MemberTrainingModulesGetError, ModulesApiV1MemberTrainingModulesGetResponse, OverviewApiV1CoachOverviewGetData, OverviewApiV1CoachOverviewGetError, OverviewApiV1CoachOverviewGetResponse, PoseApiV1CoachSessionsSessionIdPoseGetData, PoseApiV1CoachSessionsSessionIdPoseGetError, PoseApiV1CoachSessionsSessionIdPoseGetResponse, PoseApiV1MemberSessionsSessionIdPoseGetData, PoseApiV1MemberSessionsSessionIdPoseGetError, PoseApiV1MemberSessionsSessionIdPoseGetResponse, PrepApiV1MemberTrainingPrepSlugGetData, PrepApiV1MemberTrainingPrepSlugGetError, PrepApiV1MemberTrainingPrepSlugGetResponse, PublishApiV1CoachSessionsSessionIdReviewsPostData, PublishApiV1CoachSessionsSessionIdReviewsPostError, PublishApiV1CoachSessionsSessionIdReviewsPostResponse, ReadyHealthReadyGetData, RecordConfigApiV1MemberRecordConfigSlugGetData, RecordConfigApiV1MemberRecordConfigSlugGetError, RecordConfigApiV1MemberRecordConfigSlugGetResponse, RefreshApiV1AuthRefreshSessionPostData, RefreshApiV1AuthRefreshSessionPostResponse, RemoveSessionApiV1MemberSessionsSessionIdDeleteData, RemoveSessionApiV1MemberSessionsSessionIdDeleteError, RemoveSessionApiV1MemberSessionsSessionIdDeleteResponse, ResetConfirmApiV1AuthPasswordResetConfirmPostData, ResetConfirmApiV1AuthPasswordResetConfirmPostError, ResetConfirmApiV1AuthPasswordResetConfirmPostResponse, ResetRequestApiV1AuthPasswordResetRequestPostData, ResetRequestApiV1AuthPasswordResetRequestPostError, ResetRequestApiV1AuthPasswordResetRequestPostResponse, RetryApiV1MemberSessionsSessionIdFollowUpsPostData, RetryApiV1MemberSessionsSessionIdFollowUpsPostError, RetryApiV1MemberSessionsSessionIdFollowUpsPostResponse, RosterApiV1CoachRosterGetData, RosterApiV1CoachRosterGetError, RosterApiV1CoachRosterGetResponse, SessionDetailApiV1CoachSessionsSessionIdGetData, SessionDetailApiV1CoachSessionsSessionIdGetError, SessionDetailApiV1CoachSessionsSessionIdGetResponse, SessionStatusApiV1MemberSessionsSessionIdGetData, SessionStatusApiV1MemberSessionsSessionIdGetError, SessionStatusApiV1MemberSessionsSessionIdGetResponse, SignInApiV1AuthSignInPostData, SignInApiV1AuthSignInPostError, SignInApiV1AuthSignInPostResponse, SignUpApiV1AuthSignUpPostData, SignUpApiV1AuthSignUpPostError, SignUpApiV1AuthSignUpPostResponse, TaskApiV1MemberFollowUpTasksTaskIdPatchData, TaskApiV1MemberFollowUpTasksTaskIdPatchError, TaskApiV1MemberFollowUpTasksTaskIdPatchResponse, UpdateCoachProfileApiV1CoachProfilePatchData, UpdateCoachProfileApiV1CoachProfilePatchError, UpdateCoachProfileApiV1CoachProfilePatchResponse, UpdateMemberProfileApiV1MemberProfilePatchData, UpdateMemberProfileApiV1MemberProfilePatchError, UpdateMemberProfileApiV1MemberProfilePatchResponse, UploadSessionApiV1MemberSessionsPostData, UploadSessionApiV1MemberSessionsPostError, UploadSessionApiV1MemberSessionsPostResponse, VerifyConfirmApiV1AuthEmailVerificationConfirmPostData, VerifyConfirmApiV1AuthEmailVerificationConfirmPostError, VerifyConfirmApiV1AuthEmailVerificationConfirmPostResponse, VideoApiV1CoachSessionsSessionIdVideoGetData, VideoApiV1CoachSessionsSessionIdVideoGetError, VideoApiV1CoachSessionsSessionIdVideoGetResponse, VideoApiV1MemberSessionsSessionIdVideoGetData, VideoApiV1MemberSessionsSessionIdVideoGetError, VideoApiV1MemberSessionsSessionIdVideoGetResponse } from '../types.gen';
 
 /**
- * Sign Up
+ * Link Confirm
  */
-export const signUpApiV1AuthSignUpPostMutation = (options?: Partial<Options<SignUpApiV1AuthSignUpPostData>>): UseMutationOptions<SignUpApiV1AuthSignUpPostResponse, SignUpApiV1AuthSignUpPostError, Options<SignUpApiV1AuthSignUpPostData>> => {
-    const mutationOptions: UseMutationOptions<SignUpApiV1AuthSignUpPostResponse, SignUpApiV1AuthSignUpPostError, Options<SignUpApiV1AuthSignUpPostData>> = {
+export const linkConfirmApiV1AuthEmailLinkConfirmPostMutation = (options?: Partial<Options<LinkConfirmApiV1AuthEmailLinkConfirmPostData>>): UseMutationOptions<LinkConfirmApiV1AuthEmailLinkConfirmPostResponse, LinkConfirmApiV1AuthEmailLinkConfirmPostError, Options<LinkConfirmApiV1AuthEmailLinkConfirmPostData>> => {
+    const mutationOptions: UseMutationOptions<LinkConfirmApiV1AuthEmailLinkConfirmPostResponse, LinkConfirmApiV1AuthEmailLinkConfirmPostError, Options<LinkConfirmApiV1AuthEmailLinkConfirmPostData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await signUpApiV1AuthSignUpPost({
+            const { data } = await linkConfirmApiV1AuthEmailLinkConfirmPost({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -24,12 +24,114 @@ export const signUpApiV1AuthSignUpPostMutation = (options?: Partial<Options<Sign
 };
 
 /**
- * Sign In
+ * Email Link
  */
-export const signInApiV1AuthSignInPostMutation = (options?: Partial<Options<SignInApiV1AuthSignInPostData>>): UseMutationOptions<SignInApiV1AuthSignInPostResponse, SignInApiV1AuthSignInPostError, Options<SignInApiV1AuthSignInPostData>> => {
-    const mutationOptions: UseMutationOptions<SignInApiV1AuthSignInPostResponse, SignInApiV1AuthSignInPostError, Options<SignInApiV1AuthSignInPostData>> = {
+export const emailLinkApiV1AuthEmailLinkRequestPostMutation = (options?: Partial<Options<EmailLinkApiV1AuthEmailLinkRequestPostData>>): UseMutationOptions<EmailLinkApiV1AuthEmailLinkRequestPostResponse, EmailLinkApiV1AuthEmailLinkRequestPostError, Options<EmailLinkApiV1AuthEmailLinkRequestPostData>> => {
+    const mutationOptions: UseMutationOptions<EmailLinkApiV1AuthEmailLinkRequestPostResponse, EmailLinkApiV1AuthEmailLinkRequestPostError, Options<EmailLinkApiV1AuthEmailLinkRequestPostData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await signInApiV1AuthSignInPost({
+            const { data } = await emailLinkApiV1AuthEmailLinkRequestPost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Verify Confirm
+ */
+export const verifyConfirmApiV1AuthEmailVerificationConfirmPostMutation = (options?: Partial<Options<VerifyConfirmApiV1AuthEmailVerificationConfirmPostData>>): UseMutationOptions<VerifyConfirmApiV1AuthEmailVerificationConfirmPostResponse, VerifyConfirmApiV1AuthEmailVerificationConfirmPostError, Options<VerifyConfirmApiV1AuthEmailVerificationConfirmPostData>> => {
+    const mutationOptions: UseMutationOptions<VerifyConfirmApiV1AuthEmailVerificationConfirmPostResponse, VerifyConfirmApiV1AuthEmailVerificationConfirmPostError, Options<VerifyConfirmApiV1AuthEmailVerificationConfirmPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await verifyConfirmApiV1AuthEmailVerificationConfirmPost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Email Verify
+ */
+export const emailVerifyApiV1AuthEmailVerificationRequestPostMutation = (options?: Partial<Options<EmailVerifyApiV1AuthEmailVerificationRequestPostData>>): UseMutationOptions<EmailVerifyApiV1AuthEmailVerificationRequestPostResponse, EmailVerifyApiV1AuthEmailVerificationRequestPostError, Options<EmailVerifyApiV1AuthEmailVerificationRequestPostData>> => {
+    const mutationOptions: UseMutationOptions<EmailVerifyApiV1AuthEmailVerificationRequestPostResponse, EmailVerifyApiV1AuthEmailVerificationRequestPostError, Options<EmailVerifyApiV1AuthEmailVerificationRequestPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await emailVerifyApiV1AuthEmailVerificationRequestPost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Logout
+ */
+export const logoutApiV1AuthLogoutPostMutation = (options?: Partial<Options<LogoutApiV1AuthLogoutPostData>>): UseMutationOptions<LogoutApiV1AuthLogoutPostResponse, DefaultError, Options<LogoutApiV1AuthLogoutPostData>> => {
+    const mutationOptions: UseMutationOptions<LogoutApiV1AuthLogoutPostResponse, DefaultError, Options<LogoutApiV1AuthLogoutPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await logoutApiV1AuthLogoutPost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Reset Confirm
+ */
+export const resetConfirmApiV1AuthPasswordResetConfirmPostMutation = (options?: Partial<Options<ResetConfirmApiV1AuthPasswordResetConfirmPostData>>): UseMutationOptions<ResetConfirmApiV1AuthPasswordResetConfirmPostResponse, ResetConfirmApiV1AuthPasswordResetConfirmPostError, Options<ResetConfirmApiV1AuthPasswordResetConfirmPostData>> => {
+    const mutationOptions: UseMutationOptions<ResetConfirmApiV1AuthPasswordResetConfirmPostResponse, ResetConfirmApiV1AuthPasswordResetConfirmPostError, Options<ResetConfirmApiV1AuthPasswordResetConfirmPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await resetConfirmApiV1AuthPasswordResetConfirmPost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Reset Request
+ */
+export const resetRequestApiV1AuthPasswordResetRequestPostMutation = (options?: Partial<Options<ResetRequestApiV1AuthPasswordResetRequestPostData>>): UseMutationOptions<ResetRequestApiV1AuthPasswordResetRequestPostResponse, ResetRequestApiV1AuthPasswordResetRequestPostError, Options<ResetRequestApiV1AuthPasswordResetRequestPostData>> => {
+    const mutationOptions: UseMutationOptions<ResetRequestApiV1AuthPasswordResetRequestPostResponse, ResetRequestApiV1AuthPasswordResetRequestPostError, Options<ResetRequestApiV1AuthPasswordResetRequestPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await resetRequestApiV1AuthPasswordResetRequestPost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Refresh
+ */
+export const refreshApiV1AuthRefreshSessionPostMutation = (options?: Partial<Options<RefreshApiV1AuthRefreshSessionPostData>>): UseMutationOptions<RefreshApiV1AuthRefreshSessionPostResponse, DefaultError, Options<RefreshApiV1AuthRefreshSessionPostData>> => {
+    const mutationOptions: UseMutationOptions<RefreshApiV1AuthRefreshSessionPostResponse, DefaultError, Options<RefreshApiV1AuthRefreshSessionPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await refreshApiV1AuthRefreshSessionPost({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -92,12 +194,12 @@ export const authSessionApiV1AuthSessionGetOptions = (options?: Options<AuthSess
 });
 
 /**
- * Refresh
+ * Sign In
  */
-export const refreshApiV1AuthRefreshSessionPostMutation = (options?: Partial<Options<RefreshApiV1AuthRefreshSessionPostData>>): UseMutationOptions<RefreshApiV1AuthRefreshSessionPostResponse, DefaultError, Options<RefreshApiV1AuthRefreshSessionPostData>> => {
-    const mutationOptions: UseMutationOptions<RefreshApiV1AuthRefreshSessionPostResponse, DefaultError, Options<RefreshApiV1AuthRefreshSessionPostData>> = {
+export const signInApiV1AuthSignInPostMutation = (options?: Partial<Options<SignInApiV1AuthSignInPostData>>): UseMutationOptions<SignInApiV1AuthSignInPostResponse, SignInApiV1AuthSignInPostError, Options<SignInApiV1AuthSignInPostData>> => {
+    const mutationOptions: UseMutationOptions<SignInApiV1AuthSignInPostResponse, SignInApiV1AuthSignInPostError, Options<SignInApiV1AuthSignInPostData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await refreshApiV1AuthRefreshSessionPost({
+            const { data } = await signInApiV1AuthSignInPost({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -109,12 +211,12 @@ export const refreshApiV1AuthRefreshSessionPostMutation = (options?: Partial<Opt
 };
 
 /**
- * Logout
+ * Sign Up
  */
-export const logoutApiV1AuthLogoutPostMutation = (options?: Partial<Options<LogoutApiV1AuthLogoutPostData>>): UseMutationOptions<LogoutApiV1AuthLogoutPostResponse, DefaultError, Options<LogoutApiV1AuthLogoutPostData>> => {
-    const mutationOptions: UseMutationOptions<LogoutApiV1AuthLogoutPostResponse, DefaultError, Options<LogoutApiV1AuthLogoutPostData>> = {
+export const signUpApiV1AuthSignUpPostMutation = (options?: Partial<Options<SignUpApiV1AuthSignUpPostData>>): UseMutationOptions<SignUpApiV1AuthSignUpPostResponse, SignUpApiV1AuthSignUpPostError, Options<SignUpApiV1AuthSignUpPostData>> => {
+    const mutationOptions: UseMutationOptions<SignUpApiV1AuthSignUpPostResponse, SignUpApiV1AuthSignUpPostError, Options<SignUpApiV1AuthSignUpPostData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await logoutApiV1AuthLogoutPost({
+            const { data } = await signUpApiV1AuthSignUpPost({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -125,14 +227,14 @@ export const logoutApiV1AuthLogoutPostMutation = (options?: Partial<Options<Logo
     return mutationOptions;
 };
 
-export const memberProfileApiV1MemberProfileGetQueryKey = (options?: Options<MemberProfileApiV1MemberProfileGetData>) => createQueryKey('memberProfileApiV1MemberProfileGet', options);
+export const overviewApiV1CoachOverviewGetQueryKey = (options?: Options<OverviewApiV1CoachOverviewGetData>) => createQueryKey('overviewApiV1CoachOverviewGet', options);
 
 /**
- * Member Profile
+ * Overview
  */
-export const memberProfileApiV1MemberProfileGetOptions = (options?: Options<MemberProfileApiV1MemberProfileGetData>) => queryOptions<MemberProfileApiV1MemberProfileGetResponse, MemberProfileApiV1MemberProfileGetError, MemberProfileApiV1MemberProfileGetResponse, ReturnType<typeof memberProfileApiV1MemberProfileGetQueryKey>>({
+export const overviewApiV1CoachOverviewGetOptions = (options?: Options<OverviewApiV1CoachOverviewGetData>) => queryOptions<OverviewApiV1CoachOverviewGetResponse, OverviewApiV1CoachOverviewGetError, OverviewApiV1CoachOverviewGetResponse, ReturnType<typeof overviewApiV1CoachOverviewGetQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await memberProfileApiV1MemberProfileGet({
+        const { data } = await overviewApiV1CoachOverviewGet({
             ...options,
             ...queryKey[0],
             signal,
@@ -140,16 +242,16 @@ export const memberProfileApiV1MemberProfileGetOptions = (options?: Options<Memb
         });
         return data;
     },
-    queryKey: memberProfileApiV1MemberProfileGetQueryKey(options)
+    queryKey: overviewApiV1CoachOverviewGetQueryKey(options)
 });
 
 /**
- * Update Member Profile
+ * Coach Password
  */
-export const updateMemberProfileApiV1MemberProfilePatchMutation = (options?: Partial<Options<UpdateMemberProfileApiV1MemberProfilePatchData>>): UseMutationOptions<UpdateMemberProfileApiV1MemberProfilePatchResponse, UpdateMemberProfileApiV1MemberProfilePatchError, Options<UpdateMemberProfileApiV1MemberProfilePatchData>> => {
-    const mutationOptions: UseMutationOptions<UpdateMemberProfileApiV1MemberProfilePatchResponse, UpdateMemberProfileApiV1MemberProfilePatchError, Options<UpdateMemberProfileApiV1MemberProfilePatchData>> = {
+export const coachPasswordApiV1CoachPasswordPatchMutation = (options?: Partial<Options<CoachPasswordApiV1CoachPasswordPatchData>>): UseMutationOptions<CoachPasswordApiV1CoachPasswordPatchResponse, CoachPasswordApiV1CoachPasswordPatchError, Options<CoachPasswordApiV1CoachPasswordPatchData>> => {
+    const mutationOptions: UseMutationOptions<CoachPasswordApiV1CoachPasswordPatchResponse, CoachPasswordApiV1CoachPasswordPatchError, Options<CoachPasswordApiV1CoachPasswordPatchData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await updateMemberProfileApiV1MemberProfilePatch({
+            const { data } = await coachPasswordApiV1CoachPasswordPatch({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -195,48 +297,14 @@ export const updateCoachProfileApiV1CoachProfilePatchMutation = (options?: Parti
     return mutationOptions;
 };
 
-/**
- * Member Password
- */
-export const memberPasswordApiV1MemberPasswordPatchMutation = (options?: Partial<Options<MemberPasswordApiV1MemberPasswordPatchData>>): UseMutationOptions<MemberPasswordApiV1MemberPasswordPatchResponse, MemberPasswordApiV1MemberPasswordPatchError, Options<MemberPasswordApiV1MemberPasswordPatchData>> => {
-    const mutationOptions: UseMutationOptions<MemberPasswordApiV1MemberPasswordPatchResponse, MemberPasswordApiV1MemberPasswordPatchError, Options<MemberPasswordApiV1MemberPasswordPatchData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await memberPasswordApiV1MemberPasswordPatch({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
+export const rosterApiV1CoachRosterGetQueryKey = (options?: Options<RosterApiV1CoachRosterGetData>) => createQueryKey('rosterApiV1CoachRosterGet', options);
 
 /**
- * Coach Password
+ * Roster
  */
-export const coachPasswordApiV1CoachPasswordPatchMutation = (options?: Partial<Options<CoachPasswordApiV1CoachPasswordPatchData>>): UseMutationOptions<CoachPasswordApiV1CoachPasswordPatchResponse, CoachPasswordApiV1CoachPasswordPatchError, Options<CoachPasswordApiV1CoachPasswordPatchData>> => {
-    const mutationOptions: UseMutationOptions<CoachPasswordApiV1CoachPasswordPatchResponse, CoachPasswordApiV1CoachPasswordPatchError, Options<CoachPasswordApiV1CoachPasswordPatchData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await coachPasswordApiV1CoachPasswordPatch({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-export const modulesApiV1MemberTrainingModulesGetQueryKey = (options?: Options<ModulesApiV1MemberTrainingModulesGetData>) => createQueryKey('modulesApiV1MemberTrainingModulesGet', options);
-
-/**
- * Modules
- */
-export const modulesApiV1MemberTrainingModulesGetOptions = (options?: Options<ModulesApiV1MemberTrainingModulesGetData>) => queryOptions<ModulesApiV1MemberTrainingModulesGetResponse, ModulesApiV1MemberTrainingModulesGetError, ModulesApiV1MemberTrainingModulesGetResponse, ReturnType<typeof modulesApiV1MemberTrainingModulesGetQueryKey>>({
+export const rosterApiV1CoachRosterGetOptions = (options?: Options<RosterApiV1CoachRosterGetData>) => queryOptions<RosterApiV1CoachRosterGetResponse, RosterApiV1CoachRosterGetError, RosterApiV1CoachRosterGetResponse, ReturnType<typeof rosterApiV1CoachRosterGetQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await modulesApiV1MemberTrainingModulesGet({
+        const { data } = await rosterApiV1CoachRosterGet({
             ...options,
             ...queryKey[0],
             signal,
@@ -244,218 +312,7 @@ export const modulesApiV1MemberTrainingModulesGetOptions = (options?: Options<Mo
         });
         return data;
     },
-    queryKey: modulesApiV1MemberTrainingModulesGetQueryKey(options)
-});
-
-export const prepApiV1MemberTrainingPrepSlugGetQueryKey = (options: Options<PrepApiV1MemberTrainingPrepSlugGetData>) => createQueryKey('prepApiV1MemberTrainingPrepSlugGet', options);
-
-/**
- * Prep
- */
-export const prepApiV1MemberTrainingPrepSlugGetOptions = (options: Options<PrepApiV1MemberTrainingPrepSlugGetData>) => queryOptions<PrepApiV1MemberTrainingPrepSlugGetResponse, PrepApiV1MemberTrainingPrepSlugGetError, PrepApiV1MemberTrainingPrepSlugGetResponse, ReturnType<typeof prepApiV1MemberTrainingPrepSlugGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await prepApiV1MemberTrainingPrepSlugGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: prepApiV1MemberTrainingPrepSlugGetQueryKey(options)
-});
-
-export const recordConfigApiV1MemberRecordConfigSlugGetQueryKey = (options: Options<RecordConfigApiV1MemberRecordConfigSlugGetData>) => createQueryKey('recordConfigApiV1MemberRecordConfigSlugGet', options);
-
-/**
- * Record Config
- */
-export const recordConfigApiV1MemberRecordConfigSlugGetOptions = (options: Options<RecordConfigApiV1MemberRecordConfigSlugGetData>) => queryOptions<RecordConfigApiV1MemberRecordConfigSlugGetResponse, RecordConfigApiV1MemberRecordConfigSlugGetError, RecordConfigApiV1MemberRecordConfigSlugGetResponse, ReturnType<typeof recordConfigApiV1MemberRecordConfigSlugGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await recordConfigApiV1MemberRecordConfigSlugGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: recordConfigApiV1MemberRecordConfigSlugGetQueryKey(options)
-});
-
-/**
- * Upload Session
- */
-export const uploadSessionApiV1MemberSessionsPostMutation = (options?: Partial<Options<UploadSessionApiV1MemberSessionsPostData>>): UseMutationOptions<UploadSessionApiV1MemberSessionsPostResponse, UploadSessionApiV1MemberSessionsPostError, Options<UploadSessionApiV1MemberSessionsPostData>> => {
-    const mutationOptions: UseMutationOptions<UploadSessionApiV1MemberSessionsPostResponse, UploadSessionApiV1MemberSessionsPostError, Options<UploadSessionApiV1MemberSessionsPostData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await uploadSessionApiV1MemberSessionsPost({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-/**
- * Remove Session
- */
-export const removeSessionApiV1MemberSessionsSessionIdDeleteMutation = (options?: Partial<Options<RemoveSessionApiV1MemberSessionsSessionIdDeleteData>>): UseMutationOptions<RemoveSessionApiV1MemberSessionsSessionIdDeleteResponse, RemoveSessionApiV1MemberSessionsSessionIdDeleteError, Options<RemoveSessionApiV1MemberSessionsSessionIdDeleteData>> => {
-    const mutationOptions: UseMutationOptions<RemoveSessionApiV1MemberSessionsSessionIdDeleteResponse, RemoveSessionApiV1MemberSessionsSessionIdDeleteError, Options<RemoveSessionApiV1MemberSessionsSessionIdDeleteData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await removeSessionApiV1MemberSessionsSessionIdDelete({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-export const sessionStatusApiV1MemberSessionsSessionIdGetQueryKey = (options: Options<SessionStatusApiV1MemberSessionsSessionIdGetData>) => createQueryKey('sessionStatusApiV1MemberSessionsSessionIdGet', options);
-
-/**
- * Session Status
- */
-export const sessionStatusApiV1MemberSessionsSessionIdGetOptions = (options: Options<SessionStatusApiV1MemberSessionsSessionIdGetData>) => queryOptions<SessionStatusApiV1MemberSessionsSessionIdGetResponse, SessionStatusApiV1MemberSessionsSessionIdGetError, SessionStatusApiV1MemberSessionsSessionIdGetResponse, ReturnType<typeof sessionStatusApiV1MemberSessionsSessionIdGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await sessionStatusApiV1MemberSessionsSessionIdGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: sessionStatusApiV1MemberSessionsSessionIdGetQueryKey(options)
-});
-
-export const evaluationApiV1MemberSessionsSessionIdEvaluationGetQueryKey = (options: Options<EvaluationApiV1MemberSessionsSessionIdEvaluationGetData>) => createQueryKey('evaluationApiV1MemberSessionsSessionIdEvaluationGet', options);
-
-/**
- * Evaluation
- */
-export const evaluationApiV1MemberSessionsSessionIdEvaluationGetOptions = (options: Options<EvaluationApiV1MemberSessionsSessionIdEvaluationGetData>) => queryOptions<EvaluationApiV1MemberSessionsSessionIdEvaluationGetResponse, EvaluationApiV1MemberSessionsSessionIdEvaluationGetError, EvaluationApiV1MemberSessionsSessionIdEvaluationGetResponse, ReturnType<typeof evaluationApiV1MemberSessionsSessionIdEvaluationGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await evaluationApiV1MemberSessionsSessionIdEvaluationGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: evaluationApiV1MemberSessionsSessionIdEvaluationGetQueryKey(options)
-});
-
-export const poseApiV1MemberSessionsSessionIdPoseGetQueryKey = (options: Options<PoseApiV1MemberSessionsSessionIdPoseGetData>) => createQueryKey('poseApiV1MemberSessionsSessionIdPoseGet', options);
-
-/**
- * Pose
- */
-export const poseApiV1MemberSessionsSessionIdPoseGetOptions = (options: Options<PoseApiV1MemberSessionsSessionIdPoseGetData>) => queryOptions<PoseApiV1MemberSessionsSessionIdPoseGetResponse, PoseApiV1MemberSessionsSessionIdPoseGetError, PoseApiV1MemberSessionsSessionIdPoseGetResponse, ReturnType<typeof poseApiV1MemberSessionsSessionIdPoseGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await poseApiV1MemberSessionsSessionIdPoseGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: poseApiV1MemberSessionsSessionIdPoseGetQueryKey(options)
-});
-
-export const videoApiV1MemberSessionsSessionIdVideoGetQueryKey = (options: Options<VideoApiV1MemberSessionsSessionIdVideoGetData>) => createQueryKey('videoApiV1MemberSessionsSessionIdVideoGet', options);
-
-/**
- * Video
- */
-export const videoApiV1MemberSessionsSessionIdVideoGetOptions = (options: Options<VideoApiV1MemberSessionsSessionIdVideoGetData>) => queryOptions<VideoApiV1MemberSessionsSessionIdVideoGetResponse, VideoApiV1MemberSessionsSessionIdVideoGetError, VideoApiV1MemberSessionsSessionIdVideoGetResponse, ReturnType<typeof videoApiV1MemberSessionsSessionIdVideoGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await videoApiV1MemberSessionsSessionIdVideoGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: videoApiV1MemberSessionsSessionIdVideoGetQueryKey(options)
-});
-
-/**
- * Acknowledge Session
- */
-export const acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostMutation = (options?: Partial<Options<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostData>>): UseMutationOptions<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostError, Options<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostData>> => {
-    const mutationOptions: UseMutationOptions<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostError, Options<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePost({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-/**
- * Initiate
- */
-export const initiateApiV1MemberUploadsPostMutation = (options?: Partial<Options<InitiateApiV1MemberUploadsPostData>>): UseMutationOptions<InitiateApiV1MemberUploadsPostResponse, InitiateApiV1MemberUploadsPostError, Options<InitiateApiV1MemberUploadsPostData>> => {
-    const mutationOptions: UseMutationOptions<InitiateApiV1MemberUploadsPostResponse, InitiateApiV1MemberUploadsPostError, Options<InitiateApiV1MemberUploadsPostData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await initiateApiV1MemberUploadsPost({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-/**
- * Complete
- */
-export const completeApiV1MemberUploadsUploadIdCompletePostMutation = (options?: Partial<Options<CompleteApiV1MemberUploadsUploadIdCompletePostData>>): UseMutationOptions<CompleteApiV1MemberUploadsUploadIdCompletePostResponse, CompleteApiV1MemberUploadsUploadIdCompletePostError, Options<CompleteApiV1MemberUploadsUploadIdCompletePostData>> => {
-    const mutationOptions: UseMutationOptions<CompleteApiV1MemberUploadsUploadIdCompletePostResponse, CompleteApiV1MemberUploadsUploadIdCompletePostError, Options<CompleteApiV1MemberUploadsUploadIdCompletePostData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await completeApiV1MemberUploadsUploadIdCompletePost({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-export const historyApiV1MemberHistoryGetQueryKey = (options?: Options<HistoryApiV1MemberHistoryGetData>) => createQueryKey('historyApiV1MemberHistoryGet', options);
-
-/**
- * History
- */
-export const historyApiV1MemberHistoryGetOptions = (options?: Options<HistoryApiV1MemberHistoryGetData>) => queryOptions<HistoryApiV1MemberHistoryGetResponse, HistoryApiV1MemberHistoryGetError, HistoryApiV1MemberHistoryGetResponse, ReturnType<typeof historyApiV1MemberHistoryGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await historyApiV1MemberHistoryGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: historyApiV1MemberHistoryGetQueryKey(options)
+    queryKey: rosterApiV1CoachRosterGetQueryKey(options)
 });
 
 const createInfiniteParams = <K extends Pick<QueryKey<Options>[0], 'body' | 'headers' | 'path' | 'query'>>(queryKey: QueryKey<Options>, page: K) => {
@@ -486,108 +343,6 @@ const createInfiniteParams = <K extends Pick<QueryKey<Options>[0], 'body' | 'hea
     }
     return params as unknown as typeof page;
 };
-
-export const historyApiV1MemberHistoryGetInfiniteQueryKey = (options?: Options<HistoryApiV1MemberHistoryGetData>): QueryKey<Options<HistoryApiV1MemberHistoryGetData>> => createQueryKey('historyApiV1MemberHistoryGet', options, true);
-
-/**
- * History
- */
-export const historyApiV1MemberHistoryGetInfiniteOptions = (options?: Options<HistoryApiV1MemberHistoryGetData>) => {
-    const opts = infiniteQueryOptions<HistoryApiV1MemberHistoryGetResponse, HistoryApiV1MemberHistoryGetError, InfiniteData<HistoryApiV1MemberHistoryGetResponse>, QueryKey<Options<HistoryApiV1MemberHistoryGetData>>, string | null | Pick<QueryKey<Options<HistoryApiV1MemberHistoryGetData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-    // @ts-ignore
-    {
-        queryFn: async ({ pageParam, queryKey, signal }) => {
-            // @ts-ignore
-            const page: Pick<QueryKey<Options<HistoryApiV1MemberHistoryGetData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-                query: {
-                    cursor: pageParam
-                }
-            };
-            const params = createInfiniteParams(queryKey, page);
-            const { data } = await historyApiV1MemberHistoryGet({
-                ...options,
-                ...params,
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: historyApiV1MemberHistoryGetInfiniteQueryKey(options)
-    });
-    return opts as Omit<typeof opts, 'initialData'>;
-};
-
-export const detailApiV1MemberHistorySessionIdGetQueryKey = (options: Options<DetailApiV1MemberHistorySessionIdGetData>) => createQueryKey('detailApiV1MemberHistorySessionIdGet', options);
-
-/**
- * Detail
- */
-export const detailApiV1MemberHistorySessionIdGetOptions = (options: Options<DetailApiV1MemberHistorySessionIdGetData>) => queryOptions<DetailApiV1MemberHistorySessionIdGetResponse, DetailApiV1MemberHistorySessionIdGetError, DetailApiV1MemberHistorySessionIdGetResponse, ReturnType<typeof detailApiV1MemberHistorySessionIdGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await detailApiV1MemberHistorySessionIdGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: detailApiV1MemberHistorySessionIdGetQueryKey(options)
-});
-
-export const dashboardApiV1MemberDashboardGetQueryKey = (options?: Options<DashboardApiV1MemberDashboardGetData>) => createQueryKey('dashboardApiV1MemberDashboardGet', options);
-
-/**
- * Dashboard
- */
-export const dashboardApiV1MemberDashboardGetOptions = (options?: Options<DashboardApiV1MemberDashboardGetData>) => queryOptions<DashboardApiV1MemberDashboardGetResponse, DashboardApiV1MemberDashboardGetError, DashboardApiV1MemberDashboardGetResponse, ReturnType<typeof dashboardApiV1MemberDashboardGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await dashboardApiV1MemberDashboardGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: dashboardApiV1MemberDashboardGetQueryKey(options)
-});
-
-export const overviewApiV1CoachOverviewGetQueryKey = (options?: Options<OverviewApiV1CoachOverviewGetData>) => createQueryKey('overviewApiV1CoachOverviewGet', options);
-
-/**
- * Overview
- */
-export const overviewApiV1CoachOverviewGetOptions = (options?: Options<OverviewApiV1CoachOverviewGetData>) => queryOptions<OverviewApiV1CoachOverviewGetResponse, OverviewApiV1CoachOverviewGetError, OverviewApiV1CoachOverviewGetResponse, ReturnType<typeof overviewApiV1CoachOverviewGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await overviewApiV1CoachOverviewGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: overviewApiV1CoachOverviewGetQueryKey(options)
-});
-
-export const rosterApiV1CoachRosterGetQueryKey = (options?: Options<RosterApiV1CoachRosterGetData>) => createQueryKey('rosterApiV1CoachRosterGet', options);
-
-/**
- * Roster
- */
-export const rosterApiV1CoachRosterGetOptions = (options?: Options<RosterApiV1CoachRosterGetData>) => queryOptions<RosterApiV1CoachRosterGetResponse, RosterApiV1CoachRosterGetError, RosterApiV1CoachRosterGetResponse, ReturnType<typeof rosterApiV1CoachRosterGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await rosterApiV1CoachRosterGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: rosterApiV1CoachRosterGetQueryKey(options)
-});
 
 export const rosterApiV1CoachRosterGetInfiniteQueryKey = (options?: Options<RosterApiV1CoachRosterGetData>): QueryKey<Options<RosterApiV1CoachRosterGetData>> => createQueryKey('rosterApiV1CoachRosterGet', options, true);
 
@@ -703,6 +458,23 @@ export const sessionDetailApiV1CoachSessionsSessionIdGetOptions = (options: Opti
     queryKey: sessionDetailApiV1CoachSessionsSessionIdGetQueryKey(options)
 });
 
+/**
+ * Draft
+ */
+export const draftApiV1CoachSessionsSessionIdFeedbackDraftPutMutation = (options?: Partial<Options<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutData>>): UseMutationOptions<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponse, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutError, Options<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutData>> => {
+    const mutationOptions: UseMutationOptions<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponse, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutError, Options<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await draftApiV1CoachSessionsSessionIdFeedbackDraftPut({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const poseApiV1CoachSessionsSessionIdPoseGetQueryKey = (options: Options<PoseApiV1CoachSessionsSessionIdPoseGetData>) => createQueryKey('poseApiV1CoachSessionsSessionIdPoseGet', options);
 
 /**
@@ -720,6 +492,23 @@ export const poseApiV1CoachSessionsSessionIdPoseGetOptions = (options: Options<P
     },
     queryKey: poseApiV1CoachSessionsSessionIdPoseGetQueryKey(options)
 });
+
+/**
+ * Publish
+ */
+export const publishApiV1CoachSessionsSessionIdReviewsPostMutation = (options?: Partial<Options<PublishApiV1CoachSessionsSessionIdReviewsPostData>>): UseMutationOptions<PublishApiV1CoachSessionsSessionIdReviewsPostResponse, PublishApiV1CoachSessionsSessionIdReviewsPostError, Options<PublishApiV1CoachSessionsSessionIdReviewsPostData>> => {
+    const mutationOptions: UseMutationOptions<PublishApiV1CoachSessionsSessionIdReviewsPostResponse, PublishApiV1CoachSessionsSessionIdReviewsPostError, Options<PublishApiV1CoachSessionsSessionIdReviewsPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await publishApiV1CoachSessionsSessionIdReviewsPost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 export const videoApiV1CoachSessionsSessionIdVideoGetQueryKey = (options: Options<VideoApiV1CoachSessionsSessionIdVideoGetData>) => createQueryKey('videoApiV1CoachSessionsSessionIdVideoGet', options);
 
@@ -739,56 +528,23 @@ export const videoApiV1CoachSessionsSessionIdVideoGetOptions = (options: Options
     queryKey: videoApiV1CoachSessionsSessionIdVideoGetQueryKey(options)
 });
 
-/**
- * Draft
- */
-export const draftApiV1CoachSessionsSessionIdFeedbackDraftPutMutation = (options?: Partial<Options<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutData>>): UseMutationOptions<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponse, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutError, Options<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutData>> => {
-    const mutationOptions: UseMutationOptions<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponse, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutError, Options<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await draftApiV1CoachSessionsSessionIdFeedbackDraftPut({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
+export const dashboardApiV1MemberDashboardGetQueryKey = (options?: Options<DashboardApiV1MemberDashboardGetData>) => createQueryKey('dashboardApiV1MemberDashboardGet', options);
 
 /**
- * Publish
+ * Dashboard
  */
-export const publishApiV1CoachSessionsSessionIdReviewsPostMutation = (options?: Partial<Options<PublishApiV1CoachSessionsSessionIdReviewsPostData>>): UseMutationOptions<PublishApiV1CoachSessionsSessionIdReviewsPostResponse, PublishApiV1CoachSessionsSessionIdReviewsPostError, Options<PublishApiV1CoachSessionsSessionIdReviewsPostData>> => {
-    const mutationOptions: UseMutationOptions<PublishApiV1CoachSessionsSessionIdReviewsPostResponse, PublishApiV1CoachSessionsSessionIdReviewsPostError, Options<PublishApiV1CoachSessionsSessionIdReviewsPostData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await publishApiV1CoachSessionsSessionIdReviewsPost({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-/**
- * Retry
- */
-export const retryApiV1MemberSessionsSessionIdFollowUpsPostMutation = (options?: Partial<Options<RetryApiV1MemberSessionsSessionIdFollowUpsPostData>>): UseMutationOptions<RetryApiV1MemberSessionsSessionIdFollowUpsPostResponse, RetryApiV1MemberSessionsSessionIdFollowUpsPostError, Options<RetryApiV1MemberSessionsSessionIdFollowUpsPostData>> => {
-    const mutationOptions: UseMutationOptions<RetryApiV1MemberSessionsSessionIdFollowUpsPostResponse, RetryApiV1MemberSessionsSessionIdFollowUpsPostError, Options<RetryApiV1MemberSessionsSessionIdFollowUpsPostData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await retryApiV1MemberSessionsSessionIdFollowUpsPost({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
+export const dashboardApiV1MemberDashboardGetOptions = (options?: Options<DashboardApiV1MemberDashboardGetData>) => queryOptions<DashboardApiV1MemberDashboardGetResponse, DashboardApiV1MemberDashboardGetError, DashboardApiV1MemberDashboardGetResponse, ReturnType<typeof dashboardApiV1MemberDashboardGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await dashboardApiV1MemberDashboardGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: dashboardApiV1MemberDashboardGetQueryKey(options)
+});
 
 /**
  * Task
@@ -807,13 +563,149 @@ export const taskApiV1MemberFollowUpTasksTaskIdPatchMutation = (options?: Partia
     return mutationOptions;
 };
 
+export const historyApiV1MemberHistoryGetQueryKey = (options?: Options<HistoryApiV1MemberHistoryGetData>) => createQueryKey('historyApiV1MemberHistoryGet', options);
+
 /**
- * Email Link
+ * History
  */
-export const emailLinkApiV1AuthEmailLinkRequestPostMutation = (options?: Partial<Options<EmailLinkApiV1AuthEmailLinkRequestPostData>>): UseMutationOptions<EmailLinkApiV1AuthEmailLinkRequestPostResponse, EmailLinkApiV1AuthEmailLinkRequestPostError, Options<EmailLinkApiV1AuthEmailLinkRequestPostData>> => {
-    const mutationOptions: UseMutationOptions<EmailLinkApiV1AuthEmailLinkRequestPostResponse, EmailLinkApiV1AuthEmailLinkRequestPostError, Options<EmailLinkApiV1AuthEmailLinkRequestPostData>> = {
+export const historyApiV1MemberHistoryGetOptions = (options?: Options<HistoryApiV1MemberHistoryGetData>) => queryOptions<HistoryApiV1MemberHistoryGetResponse, HistoryApiV1MemberHistoryGetError, HistoryApiV1MemberHistoryGetResponse, ReturnType<typeof historyApiV1MemberHistoryGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await historyApiV1MemberHistoryGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: historyApiV1MemberHistoryGetQueryKey(options)
+});
+
+export const historyApiV1MemberHistoryGetInfiniteQueryKey = (options?: Options<HistoryApiV1MemberHistoryGetData>): QueryKey<Options<HistoryApiV1MemberHistoryGetData>> => createQueryKey('historyApiV1MemberHistoryGet', options, true);
+
+/**
+ * History
+ */
+export const historyApiV1MemberHistoryGetInfiniteOptions = (options?: Options<HistoryApiV1MemberHistoryGetData>) => {
+    const opts = infiniteQueryOptions<HistoryApiV1MemberHistoryGetResponse, HistoryApiV1MemberHistoryGetError, InfiniteData<HistoryApiV1MemberHistoryGetResponse>, QueryKey<Options<HistoryApiV1MemberHistoryGetData>>, string | null | Pick<QueryKey<Options<HistoryApiV1MemberHistoryGetData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<HistoryApiV1MemberHistoryGetData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    cursor: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await historyApiV1MemberHistoryGet({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: historyApiV1MemberHistoryGetInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+export const detailApiV1MemberHistorySessionIdGetQueryKey = (options: Options<DetailApiV1MemberHistorySessionIdGetData>) => createQueryKey('detailApiV1MemberHistorySessionIdGet', options);
+
+/**
+ * Detail
+ */
+export const detailApiV1MemberHistorySessionIdGetOptions = (options: Options<DetailApiV1MemberHistorySessionIdGetData>) => queryOptions<DetailApiV1MemberHistorySessionIdGetResponse, DetailApiV1MemberHistorySessionIdGetError, DetailApiV1MemberHistorySessionIdGetResponse, ReturnType<typeof detailApiV1MemberHistorySessionIdGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await detailApiV1MemberHistorySessionIdGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: detailApiV1MemberHistorySessionIdGetQueryKey(options)
+});
+
+/**
+ * Member Password
+ */
+export const memberPasswordApiV1MemberPasswordPatchMutation = (options?: Partial<Options<MemberPasswordApiV1MemberPasswordPatchData>>): UseMutationOptions<MemberPasswordApiV1MemberPasswordPatchResponse, MemberPasswordApiV1MemberPasswordPatchError, Options<MemberPasswordApiV1MemberPasswordPatchData>> => {
+    const mutationOptions: UseMutationOptions<MemberPasswordApiV1MemberPasswordPatchResponse, MemberPasswordApiV1MemberPasswordPatchError, Options<MemberPasswordApiV1MemberPasswordPatchData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await emailLinkApiV1AuthEmailLinkRequestPost({
+            const { data } = await memberPasswordApiV1MemberPasswordPatch({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const memberProfileApiV1MemberProfileGetQueryKey = (options?: Options<MemberProfileApiV1MemberProfileGetData>) => createQueryKey('memberProfileApiV1MemberProfileGet', options);
+
+/**
+ * Member Profile
+ */
+export const memberProfileApiV1MemberProfileGetOptions = (options?: Options<MemberProfileApiV1MemberProfileGetData>) => queryOptions<MemberProfileApiV1MemberProfileGetResponse, MemberProfileApiV1MemberProfileGetError, MemberProfileApiV1MemberProfileGetResponse, ReturnType<typeof memberProfileApiV1MemberProfileGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await memberProfileApiV1MemberProfileGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: memberProfileApiV1MemberProfileGetQueryKey(options)
+});
+
+/**
+ * Update Member Profile
+ */
+export const updateMemberProfileApiV1MemberProfilePatchMutation = (options?: Partial<Options<UpdateMemberProfileApiV1MemberProfilePatchData>>): UseMutationOptions<UpdateMemberProfileApiV1MemberProfilePatchResponse, UpdateMemberProfileApiV1MemberProfilePatchError, Options<UpdateMemberProfileApiV1MemberProfilePatchData>> => {
+    const mutationOptions: UseMutationOptions<UpdateMemberProfileApiV1MemberProfilePatchResponse, UpdateMemberProfileApiV1MemberProfilePatchError, Options<UpdateMemberProfileApiV1MemberProfilePatchData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateMemberProfileApiV1MemberProfilePatch({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const recordConfigApiV1MemberRecordConfigSlugGetQueryKey = (options: Options<RecordConfigApiV1MemberRecordConfigSlugGetData>) => createQueryKey('recordConfigApiV1MemberRecordConfigSlugGet', options);
+
+/**
+ * Record Config
+ */
+export const recordConfigApiV1MemberRecordConfigSlugGetOptions = (options: Options<RecordConfigApiV1MemberRecordConfigSlugGetData>) => queryOptions<RecordConfigApiV1MemberRecordConfigSlugGetResponse, RecordConfigApiV1MemberRecordConfigSlugGetError, RecordConfigApiV1MemberRecordConfigSlugGetResponse, ReturnType<typeof recordConfigApiV1MemberRecordConfigSlugGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await recordConfigApiV1MemberRecordConfigSlugGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: recordConfigApiV1MemberRecordConfigSlugGetQueryKey(options)
+});
+
+/**
+ * Upload Session
+ */
+export const uploadSessionApiV1MemberSessionsPostMutation = (options?: Partial<Options<UploadSessionApiV1MemberSessionsPostData>>): UseMutationOptions<UploadSessionApiV1MemberSessionsPostResponse, UploadSessionApiV1MemberSessionsPostError, Options<UploadSessionApiV1MemberSessionsPostData>> => {
+    const mutationOptions: UseMutationOptions<UploadSessionApiV1MemberSessionsPostResponse, UploadSessionApiV1MemberSessionsPostError, Options<UploadSessionApiV1MemberSessionsPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await uploadSessionApiV1MemberSessionsPost({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -825,12 +717,171 @@ export const emailLinkApiV1AuthEmailLinkRequestPostMutation = (options?: Partial
 };
 
 /**
- * Email Verify
+ * Remove Session
  */
-export const emailVerifyApiV1AuthEmailVerificationRequestPostMutation = (options?: Partial<Options<EmailVerifyApiV1AuthEmailVerificationRequestPostData>>): UseMutationOptions<EmailVerifyApiV1AuthEmailVerificationRequestPostResponse, EmailVerifyApiV1AuthEmailVerificationRequestPostError, Options<EmailVerifyApiV1AuthEmailVerificationRequestPostData>> => {
-    const mutationOptions: UseMutationOptions<EmailVerifyApiV1AuthEmailVerificationRequestPostResponse, EmailVerifyApiV1AuthEmailVerificationRequestPostError, Options<EmailVerifyApiV1AuthEmailVerificationRequestPostData>> = {
+export const removeSessionApiV1MemberSessionsSessionIdDeleteMutation = (options?: Partial<Options<RemoveSessionApiV1MemberSessionsSessionIdDeleteData>>): UseMutationOptions<RemoveSessionApiV1MemberSessionsSessionIdDeleteResponse, RemoveSessionApiV1MemberSessionsSessionIdDeleteError, Options<RemoveSessionApiV1MemberSessionsSessionIdDeleteData>> => {
+    const mutationOptions: UseMutationOptions<RemoveSessionApiV1MemberSessionsSessionIdDeleteResponse, RemoveSessionApiV1MemberSessionsSessionIdDeleteError, Options<RemoveSessionApiV1MemberSessionsSessionIdDeleteData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await emailVerifyApiV1AuthEmailVerificationRequestPost({
+            const { data } = await removeSessionApiV1MemberSessionsSessionIdDelete({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const sessionStatusApiV1MemberSessionsSessionIdGetQueryKey = (options: Options<SessionStatusApiV1MemberSessionsSessionIdGetData>) => createQueryKey('sessionStatusApiV1MemberSessionsSessionIdGet', options);
+
+/**
+ * Session Status
+ */
+export const sessionStatusApiV1MemberSessionsSessionIdGetOptions = (options: Options<SessionStatusApiV1MemberSessionsSessionIdGetData>) => queryOptions<SessionStatusApiV1MemberSessionsSessionIdGetResponse, SessionStatusApiV1MemberSessionsSessionIdGetError, SessionStatusApiV1MemberSessionsSessionIdGetResponse, ReturnType<typeof sessionStatusApiV1MemberSessionsSessionIdGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await sessionStatusApiV1MemberSessionsSessionIdGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: sessionStatusApiV1MemberSessionsSessionIdGetQueryKey(options)
+});
+
+/**
+ * Acknowledge Session
+ */
+export const acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostMutation = (options?: Partial<Options<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostData>>): UseMutationOptions<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostError, Options<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostData>> => {
+    const mutationOptions: UseMutationOptions<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostError, Options<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const evaluationApiV1MemberSessionsSessionIdEvaluationGetQueryKey = (options: Options<EvaluationApiV1MemberSessionsSessionIdEvaluationGetData>) => createQueryKey('evaluationApiV1MemberSessionsSessionIdEvaluationGet', options);
+
+/**
+ * Evaluation
+ */
+export const evaluationApiV1MemberSessionsSessionIdEvaluationGetOptions = (options: Options<EvaluationApiV1MemberSessionsSessionIdEvaluationGetData>) => queryOptions<EvaluationApiV1MemberSessionsSessionIdEvaluationGetResponse, EvaluationApiV1MemberSessionsSessionIdEvaluationGetError, EvaluationApiV1MemberSessionsSessionIdEvaluationGetResponse, ReturnType<typeof evaluationApiV1MemberSessionsSessionIdEvaluationGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await evaluationApiV1MemberSessionsSessionIdEvaluationGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: evaluationApiV1MemberSessionsSessionIdEvaluationGetQueryKey(options)
+});
+
+/**
+ * Retry
+ */
+export const retryApiV1MemberSessionsSessionIdFollowUpsPostMutation = (options?: Partial<Options<RetryApiV1MemberSessionsSessionIdFollowUpsPostData>>): UseMutationOptions<RetryApiV1MemberSessionsSessionIdFollowUpsPostResponse, RetryApiV1MemberSessionsSessionIdFollowUpsPostError, Options<RetryApiV1MemberSessionsSessionIdFollowUpsPostData>> => {
+    const mutationOptions: UseMutationOptions<RetryApiV1MemberSessionsSessionIdFollowUpsPostResponse, RetryApiV1MemberSessionsSessionIdFollowUpsPostError, Options<RetryApiV1MemberSessionsSessionIdFollowUpsPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await retryApiV1MemberSessionsSessionIdFollowUpsPost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const poseApiV1MemberSessionsSessionIdPoseGetQueryKey = (options: Options<PoseApiV1MemberSessionsSessionIdPoseGetData>) => createQueryKey('poseApiV1MemberSessionsSessionIdPoseGet', options);
+
+/**
+ * Pose
+ */
+export const poseApiV1MemberSessionsSessionIdPoseGetOptions = (options: Options<PoseApiV1MemberSessionsSessionIdPoseGetData>) => queryOptions<PoseApiV1MemberSessionsSessionIdPoseGetResponse, PoseApiV1MemberSessionsSessionIdPoseGetError, PoseApiV1MemberSessionsSessionIdPoseGetResponse, ReturnType<typeof poseApiV1MemberSessionsSessionIdPoseGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await poseApiV1MemberSessionsSessionIdPoseGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: poseApiV1MemberSessionsSessionIdPoseGetQueryKey(options)
+});
+
+export const videoApiV1MemberSessionsSessionIdVideoGetQueryKey = (options: Options<VideoApiV1MemberSessionsSessionIdVideoGetData>) => createQueryKey('videoApiV1MemberSessionsSessionIdVideoGet', options);
+
+/**
+ * Video
+ */
+export const videoApiV1MemberSessionsSessionIdVideoGetOptions = (options: Options<VideoApiV1MemberSessionsSessionIdVideoGetData>) => queryOptions<VideoApiV1MemberSessionsSessionIdVideoGetResponse, VideoApiV1MemberSessionsSessionIdVideoGetError, VideoApiV1MemberSessionsSessionIdVideoGetResponse, ReturnType<typeof videoApiV1MemberSessionsSessionIdVideoGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await videoApiV1MemberSessionsSessionIdVideoGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: videoApiV1MemberSessionsSessionIdVideoGetQueryKey(options)
+});
+
+export const modulesApiV1MemberTrainingModulesGetQueryKey = (options?: Options<ModulesApiV1MemberTrainingModulesGetData>) => createQueryKey('modulesApiV1MemberTrainingModulesGet', options);
+
+/**
+ * Modules
+ */
+export const modulesApiV1MemberTrainingModulesGetOptions = (options?: Options<ModulesApiV1MemberTrainingModulesGetData>) => queryOptions<ModulesApiV1MemberTrainingModulesGetResponse, ModulesApiV1MemberTrainingModulesGetError, ModulesApiV1MemberTrainingModulesGetResponse, ReturnType<typeof modulesApiV1MemberTrainingModulesGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await modulesApiV1MemberTrainingModulesGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: modulesApiV1MemberTrainingModulesGetQueryKey(options)
+});
+
+export const prepApiV1MemberTrainingPrepSlugGetQueryKey = (options: Options<PrepApiV1MemberTrainingPrepSlugGetData>) => createQueryKey('prepApiV1MemberTrainingPrepSlugGet', options);
+
+/**
+ * Prep
+ */
+export const prepApiV1MemberTrainingPrepSlugGetOptions = (options: Options<PrepApiV1MemberTrainingPrepSlugGetData>) => queryOptions<PrepApiV1MemberTrainingPrepSlugGetResponse, PrepApiV1MemberTrainingPrepSlugGetError, PrepApiV1MemberTrainingPrepSlugGetResponse, ReturnType<typeof prepApiV1MemberTrainingPrepSlugGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await prepApiV1MemberTrainingPrepSlugGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: prepApiV1MemberTrainingPrepSlugGetQueryKey(options)
+});
+
+/**
+ * Initiate
+ */
+export const initiateApiV1MemberUploadsPostMutation = (options?: Partial<Options<InitiateApiV1MemberUploadsPostData>>): UseMutationOptions<InitiateApiV1MemberUploadsPostResponse, InitiateApiV1MemberUploadsPostError, Options<InitiateApiV1MemberUploadsPostData>> => {
+    const mutationOptions: UseMutationOptions<InitiateApiV1MemberUploadsPostResponse, InitiateApiV1MemberUploadsPostError, Options<InitiateApiV1MemberUploadsPostData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await initiateApiV1MemberUploadsPost({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -842,12 +893,12 @@ export const emailVerifyApiV1AuthEmailVerificationRequestPostMutation = (options
 };
 
 /**
- * Reset Request
+ * Complete
  */
-export const resetRequestApiV1AuthPasswordResetRequestPostMutation = (options?: Partial<Options<ResetRequestApiV1AuthPasswordResetRequestPostData>>): UseMutationOptions<ResetRequestApiV1AuthPasswordResetRequestPostResponse, ResetRequestApiV1AuthPasswordResetRequestPostError, Options<ResetRequestApiV1AuthPasswordResetRequestPostData>> => {
-    const mutationOptions: UseMutationOptions<ResetRequestApiV1AuthPasswordResetRequestPostResponse, ResetRequestApiV1AuthPasswordResetRequestPostError, Options<ResetRequestApiV1AuthPasswordResetRequestPostData>> = {
+export const completeApiV1MemberUploadsUploadIdCompletePostMutation = (options?: Partial<Options<CompleteApiV1MemberUploadsUploadIdCompletePostData>>): UseMutationOptions<CompleteApiV1MemberUploadsUploadIdCompletePostResponse, CompleteApiV1MemberUploadsUploadIdCompletePostError, Options<CompleteApiV1MemberUploadsUploadIdCompletePostData>> => {
+    const mutationOptions: UseMutationOptions<CompleteApiV1MemberUploadsUploadIdCompletePostResponse, CompleteApiV1MemberUploadsUploadIdCompletePostError, Options<CompleteApiV1MemberUploadsUploadIdCompletePostData>> = {
         mutationFn: async (fnOptions) => {
-            const { data } = await resetRequestApiV1AuthPasswordResetRequestPost({
+            const { data } = await completeApiV1MemberUploadsUploadIdCompletePost({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -858,56 +909,23 @@ export const resetRequestApiV1AuthPasswordResetRequestPostMutation = (options?: 
     return mutationOptions;
 };
 
-/**
- * Link Confirm
- */
-export const linkConfirmApiV1AuthEmailLinkConfirmPostMutation = (options?: Partial<Options<LinkConfirmApiV1AuthEmailLinkConfirmPostData>>): UseMutationOptions<LinkConfirmApiV1AuthEmailLinkConfirmPostResponse, LinkConfirmApiV1AuthEmailLinkConfirmPostError, Options<LinkConfirmApiV1AuthEmailLinkConfirmPostData>> => {
-    const mutationOptions: UseMutationOptions<LinkConfirmApiV1AuthEmailLinkConfirmPostResponse, LinkConfirmApiV1AuthEmailLinkConfirmPostError, Options<LinkConfirmApiV1AuthEmailLinkConfirmPostData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await linkConfirmApiV1AuthEmailLinkConfirmPost({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
+export const healthHealthGetQueryKey = (options?: Options<HealthHealthGetData>) => createQueryKey('healthHealthGet', options);
 
 /**
- * Verify Confirm
+ * Health
  */
-export const verifyConfirmApiV1AuthEmailVerificationConfirmPostMutation = (options?: Partial<Options<VerifyConfirmApiV1AuthEmailVerificationConfirmPostData>>): UseMutationOptions<VerifyConfirmApiV1AuthEmailVerificationConfirmPostResponse, VerifyConfirmApiV1AuthEmailVerificationConfirmPostError, Options<VerifyConfirmApiV1AuthEmailVerificationConfirmPostData>> => {
-    const mutationOptions: UseMutationOptions<VerifyConfirmApiV1AuthEmailVerificationConfirmPostResponse, VerifyConfirmApiV1AuthEmailVerificationConfirmPostError, Options<VerifyConfirmApiV1AuthEmailVerificationConfirmPostData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await verifyConfirmApiV1AuthEmailVerificationConfirmPost({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-/**
- * Reset Confirm
- */
-export const resetConfirmApiV1AuthPasswordResetConfirmPostMutation = (options?: Partial<Options<ResetConfirmApiV1AuthPasswordResetConfirmPostData>>): UseMutationOptions<ResetConfirmApiV1AuthPasswordResetConfirmPostResponse, ResetConfirmApiV1AuthPasswordResetConfirmPostError, Options<ResetConfirmApiV1AuthPasswordResetConfirmPostData>> => {
-    const mutationOptions: UseMutationOptions<ResetConfirmApiV1AuthPasswordResetConfirmPostResponse, ResetConfirmApiV1AuthPasswordResetConfirmPostError, Options<ResetConfirmApiV1AuthPasswordResetConfirmPostData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await resetConfirmApiV1AuthPasswordResetConfirmPost({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
+export const healthHealthGetOptions = (options?: Options<HealthHealthGetData>) => queryOptions<unknown, DefaultError, unknown, ReturnType<typeof healthHealthGetQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await healthHealthGet({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: healthHealthGetQueryKey(options)
+});
 
 export const liveHealthLiveGetQueryKey = (options?: Options<LiveHealthLiveGetData>) => createQueryKey('liveHealthLiveGet', options);
 
@@ -943,22 +961,4 @@ export const readyHealthReadyGetOptions = (options?: Options<ReadyHealthReadyGet
         return data;
     },
     queryKey: readyHealthReadyGetQueryKey(options)
-});
-
-export const healthHealthGetQueryKey = (options?: Options<HealthHealthGetData>) => createQueryKey('healthHealthGet', options);
-
-/**
- * Health
- */
-export const healthHealthGetOptions = (options?: Options<HealthHealthGetData>) => queryOptions<unknown, DefaultError, unknown, ReturnType<typeof healthHealthGetQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await healthHealthGet({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: healthHealthGetQueryKey(options)
 });

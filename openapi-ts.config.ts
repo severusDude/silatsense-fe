@@ -1,7 +1,7 @@
 import { defineConfig } from "@hey-api/openapi-ts";
 
 export default defineConfig({
-  input: "https://silatsense-be.vercel.app/openapi.json",
+  input: process.env.SILATSENSE_OPENAPI_PATH ?? "../silatsense-be/docs/openapi.json",
   output: "src/api",
   plugins: [
     {
@@ -13,3 +13,4 @@ export default defineConfig({
     "@tanstack/react-query",
   ],
 });
+

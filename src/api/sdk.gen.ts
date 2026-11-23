@@ -22,21 +22,158 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
- * Sign Up
+ * Link Confirm
  */
-export const signUpApiV1AuthSignUpPost = <ThrowOnError extends boolean = false>(options: Options<SignUpApiV1AuthSignUpPostData, ThrowOnError>): RequestResult<SignUpApiV1AuthSignUpPostResponses, SignUpApiV1AuthSignUpPostErrors, ThrowOnError> => (options.client ?? client).post<SignUpApiV1AuthSignUpPostResponses, SignUpApiV1AuthSignUpPostErrors, ThrowOnError>({
+export const linkConfirmApiV1AuthEmailLinkConfirmPost = <ThrowOnError extends boolean = false>(options: Options<LinkConfirmApiV1AuthEmailLinkConfirmPostData, ThrowOnError>): RequestResult<LinkConfirmApiV1AuthEmailLinkConfirmPostResponses, LinkConfirmApiV1AuthEmailLinkConfirmPostErrors, ThrowOnError> => (options.client ?? client).post<LinkConfirmApiV1AuthEmailLinkConfirmPostResponses, LinkConfirmApiV1AuthEmailLinkConfirmPostErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zSignUpApiV1AuthSignUpPostBody,
+        body: zLinkConfirmApiV1AuthEmailLinkConfirmPostBody,
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zSignUpApiV1AuthSignUpPostResponse.parseAsync(data),
-    url: '/api/v1/auth/sign-up',
+    responseValidator: async (data) => await zLinkConfirmApiV1AuthEmailLinkConfirmPostResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/auth/email-link/confirm',
     ...options,
     headers: {
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Email Link
+ */
+export const emailLinkApiV1AuthEmailLinkRequestPost = <ThrowOnError extends boolean = false>(options: Options<EmailLinkApiV1AuthEmailLinkRequestPostData, ThrowOnError>): RequestResult<EmailLinkApiV1AuthEmailLinkRequestPostResponses, EmailLinkApiV1AuthEmailLinkRequestPostErrors, ThrowOnError> => (options.client ?? client).post<EmailLinkApiV1AuthEmailLinkRequestPostResponses, EmailLinkApiV1AuthEmailLinkRequestPostErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zEmailLinkApiV1AuthEmailLinkRequestPostBody,
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zEmailLinkApiV1AuthEmailLinkRequestPostResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/auth/email-link/request',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Verify Confirm
+ */
+export const verifyConfirmApiV1AuthEmailVerificationConfirmPost = <ThrowOnError extends boolean = false>(options: Options<VerifyConfirmApiV1AuthEmailVerificationConfirmPostData, ThrowOnError>): RequestResult<VerifyConfirmApiV1AuthEmailVerificationConfirmPostResponses, VerifyConfirmApiV1AuthEmailVerificationConfirmPostErrors, ThrowOnError> => (options.client ?? client).post<VerifyConfirmApiV1AuthEmailVerificationConfirmPostResponses, VerifyConfirmApiV1AuthEmailVerificationConfirmPostErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zVerifyConfirmApiV1AuthEmailVerificationConfirmPostBody,
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zVerifyConfirmApiV1AuthEmailVerificationConfirmPostResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/auth/email-verification/confirm',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Email Verify
+ */
+export const emailVerifyApiV1AuthEmailVerificationRequestPost = <ThrowOnError extends boolean = false>(options: Options<EmailVerifyApiV1AuthEmailVerificationRequestPostData, ThrowOnError>): RequestResult<EmailVerifyApiV1AuthEmailVerificationRequestPostResponses, EmailVerifyApiV1AuthEmailVerificationRequestPostErrors, ThrowOnError> => (options.client ?? client).post<EmailVerifyApiV1AuthEmailVerificationRequestPostResponses, EmailVerifyApiV1AuthEmailVerificationRequestPostErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zEmailVerifyApiV1AuthEmailVerificationRequestPostBody,
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zEmailVerifyApiV1AuthEmailVerificationRequestPostResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/auth/email-verification/request',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Logout
+ */
+export const logoutApiV1AuthLogoutPost = <ThrowOnError extends boolean = false>(options?: Options<LogoutApiV1AuthLogoutPostData, ThrowOnError>): RequestResult<LogoutApiV1AuthLogoutPostResponses, unknown, ThrowOnError> => (options?.client ?? client).post<LogoutApiV1AuthLogoutPostResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zLogoutApiV1AuthLogoutPostResponse.parseAsync(data),
+    url: '/api/v1/auth/logout',
+    ...options
+});
+
+/**
+ * Reset Confirm
+ */
+export const resetConfirmApiV1AuthPasswordResetConfirmPost = <ThrowOnError extends boolean = false>(options: Options<ResetConfirmApiV1AuthPasswordResetConfirmPostData, ThrowOnError>): RequestResult<ResetConfirmApiV1AuthPasswordResetConfirmPostResponses, ResetConfirmApiV1AuthPasswordResetConfirmPostErrors, ThrowOnError> => (options.client ?? client).post<ResetConfirmApiV1AuthPasswordResetConfirmPostResponses, ResetConfirmApiV1AuthPasswordResetConfirmPostErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zResetConfirmApiV1AuthPasswordResetConfirmPostBody,
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zResetConfirmApiV1AuthPasswordResetConfirmPostResponse.parseAsync(data),
+    url: '/api/v1/auth/password-reset/confirm',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Reset Request
+ */
+export const resetRequestApiV1AuthPasswordResetRequestPost = <ThrowOnError extends boolean = false>(options: Options<ResetRequestApiV1AuthPasswordResetRequestPostData, ThrowOnError>): RequestResult<ResetRequestApiV1AuthPasswordResetRequestPostResponses, ResetRequestApiV1AuthPasswordResetRequestPostErrors, ThrowOnError> => (options.client ?? client).post<ResetRequestApiV1AuthPasswordResetRequestPostResponses, ResetRequestApiV1AuthPasswordResetRequestPostErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zResetRequestApiV1AuthPasswordResetRequestPostBody,
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zResetRequestApiV1AuthPasswordResetRequestPostResponse.parseAsync(data),
+    url: '/api/v1/auth/password-reset/request',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Refresh
+ */
+export const refreshApiV1AuthRefreshSessionPost = <ThrowOnError extends boolean = false>(options?: Options<RefreshApiV1AuthRefreshSessionPostData, ThrowOnError>): RequestResult<RefreshApiV1AuthRefreshSessionPostResponses, unknown, ThrowOnError> => (options?.client ?? client).post<RefreshApiV1AuthRefreshSessionPostResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zRefreshApiV1AuthRefreshSessionPostResponse.parseAsync(data),
+    url: '/api/v1/auth/refresh-session',
+    ...options
+});
+
+/**
+ * Auth Session
+ */
+export const authSessionApiV1AuthSessionGet = <ThrowOnError extends boolean = false>(options?: Options<AuthSessionApiV1AuthSessionGetData, ThrowOnError>): RequestResult<AuthSessionApiV1AuthSessionGetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<AuthSessionApiV1AuthSessionGetResponses, unknown, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zAuthSessionApiV1AuthSessionGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/auth/session',
+    ...options
 });
 
 /**
@@ -58,75 +195,50 @@ export const signInApiV1AuthSignInPost = <ThrowOnError extends boolean = false>(
 });
 
 /**
- * Auth Session
+ * Sign Up
  */
-export const authSessionApiV1AuthSessionGet = <ThrowOnError extends boolean = false>(options?: Options<AuthSessionApiV1AuthSessionGetData, ThrowOnError>): RequestResult<AuthSessionApiV1AuthSessionGetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<AuthSessionApiV1AuthSessionGetResponses, unknown, ThrowOnError>({
+export const signUpApiV1AuthSignUpPost = <ThrowOnError extends boolean = false>(options: Options<SignUpApiV1AuthSignUpPostData, ThrowOnError>): RequestResult<SignUpApiV1AuthSignUpPostResponses, SignUpApiV1AuthSignUpPostErrors, ThrowOnError> => (options.client ?? client).post<SignUpApiV1AuthSignUpPostResponses, SignUpApiV1AuthSignUpPostErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zSignUpApiV1AuthSignUpPostBody,
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zSignUpApiV1AuthSignUpPostResponse.parseAsync(data),
+    url: '/api/v1/auth/sign-up',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Overview
+ */
+export const overviewApiV1CoachOverviewGet = <ThrowOnError extends boolean = false>(options?: Options<OverviewApiV1CoachOverviewGetData, ThrowOnError>): RequestResult<OverviewApiV1CoachOverviewGetResponses, OverviewApiV1CoachOverviewGetErrors, ThrowOnError> => (options?.client ?? client).get<OverviewApiV1CoachOverviewGetResponses, OverviewApiV1CoachOverviewGetErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zAuthSessionApiV1AuthSessionGetResponse.parseAsync(data),
+    responseValidator: async (data) => await zOverviewApiV1CoachOverviewGetResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/auth/session',
+    url: '/api/v1/coach/overview',
     ...options
 });
 
 /**
- * Refresh
+ * Coach Password
  */
-export const refreshApiV1AuthRefreshSessionPost = <ThrowOnError extends boolean = false>(options?: Options<RefreshApiV1AuthRefreshSessionPostData, ThrowOnError>): RequestResult<RefreshApiV1AuthRefreshSessionPostResponses, unknown, ThrowOnError> => (options?.client ?? client).post<RefreshApiV1AuthRefreshSessionPostResponses, unknown, ThrowOnError>({
+export const coachPasswordApiV1CoachPasswordPatch = <ThrowOnError extends boolean = false>(options: Options<CoachPasswordApiV1CoachPasswordPatchData, ThrowOnError>): RequestResult<CoachPasswordApiV1CoachPasswordPatchResponses, CoachPasswordApiV1CoachPasswordPatchErrors, ThrowOnError> => (options.client ?? client).patch<CoachPasswordApiV1CoachPasswordPatchResponses, CoachPasswordApiV1CoachPasswordPatchErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
+        body: zCoachPasswordApiV1CoachPasswordPatchBody,
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zRefreshApiV1AuthRefreshSessionPostResponse.parseAsync(data),
-    url: '/api/v1/auth/refresh-session',
-    ...options
-});
-
-/**
- * Logout
- */
-export const logoutApiV1AuthLogoutPost = <ThrowOnError extends boolean = false>(options?: Options<LogoutApiV1AuthLogoutPostData, ThrowOnError>): RequestResult<LogoutApiV1AuthLogoutPostResponses, unknown, ThrowOnError> => (options?.client ?? client).post<LogoutApiV1AuthLogoutPostResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zLogoutApiV1AuthLogoutPostResponse.parseAsync(data),
-    url: '/api/v1/auth/logout',
-    ...options
-});
-
-/**
- * Member Profile
- */
-export const memberProfileApiV1MemberProfileGet = <ThrowOnError extends boolean = false>(options?: Options<MemberProfileApiV1MemberProfileGetData, ThrowOnError>): RequestResult<MemberProfileApiV1MemberProfileGetResponses, MemberProfileApiV1MemberProfileGetErrors, ThrowOnError> => (options?.client ?? client).get<MemberProfileApiV1MemberProfileGetResponses, MemberProfileApiV1MemberProfileGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zMemberProfileApiV1MemberProfileGetResponse.parseAsync(data),
+    responseValidator: async (data) => await zCoachPasswordApiV1CoachPasswordPatchResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/profile',
-    ...options
-});
-
-/**
- * Update Member Profile
- */
-export const updateMemberProfileApiV1MemberProfilePatch = <ThrowOnError extends boolean = false>(options: Options<UpdateMemberProfileApiV1MemberProfilePatchData, ThrowOnError>): RequestResult<UpdateMemberProfileApiV1MemberProfilePatchResponses, UpdateMemberProfileApiV1MemberProfilePatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateMemberProfileApiV1MemberProfilePatchResponses, UpdateMemberProfileApiV1MemberProfilePatchErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zUpdateMemberProfileApiV1MemberProfilePatchBody,
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zUpdateMemberProfileApiV1MemberProfilePatchResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/profile',
+    url: '/api/v1/coach/password',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -169,6 +281,200 @@ export const updateCoachProfileApiV1CoachProfilePatch = <ThrowOnError extends bo
 });
 
 /**
+ * Roster
+ */
+export const rosterApiV1CoachRosterGet = <ThrowOnError extends boolean = false>(options?: Options<RosterApiV1CoachRosterGetData, ThrowOnError>): RequestResult<RosterApiV1CoachRosterGetResponses, RosterApiV1CoachRosterGetErrors, ThrowOnError> => (options?.client ?? client).get<RosterApiV1CoachRosterGetResponses, RosterApiV1CoachRosterGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: zRosterApiV1CoachRosterGetQuery.optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zRosterApiV1CoachRosterGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/coach/roster',
+    ...options
+});
+
+/**
+ * Member Detail
+ */
+export const memberDetailApiV1CoachRosterMemberIdGet = <ThrowOnError extends boolean = false>(options: Options<MemberDetailApiV1CoachRosterMemberIdGetData, ThrowOnError>): RequestResult<MemberDetailApiV1CoachRosterMemberIdGetResponses, MemberDetailApiV1CoachRosterMemberIdGetErrors, ThrowOnError> => (options.client ?? client).get<MemberDetailApiV1CoachRosterMemberIdGetResponses, MemberDetailApiV1CoachRosterMemberIdGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zMemberDetailApiV1CoachRosterMemberIdGetPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zMemberDetailApiV1CoachRosterMemberIdGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/coach/roster/{member_id}',
+    ...options
+});
+
+/**
+ * Member Sessions
+ */
+export const memberSessionsApiV1CoachRosterMemberIdSessionsGet = <ThrowOnError extends boolean = false>(options: Options<MemberSessionsApiV1CoachRosterMemberIdSessionsGetData, ThrowOnError>): RequestResult<MemberSessionsApiV1CoachRosterMemberIdSessionsGetResponses, MemberSessionsApiV1CoachRosterMemberIdSessionsGetErrors, ThrowOnError> => (options.client ?? client).get<MemberSessionsApiV1CoachRosterMemberIdSessionsGetResponses, MemberSessionsApiV1CoachRosterMemberIdSessionsGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zMemberSessionsApiV1CoachRosterMemberIdSessionsGetPath,
+        query: zMemberSessionsApiV1CoachRosterMemberIdSessionsGetQuery.optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zMemberSessionsApiV1CoachRosterMemberIdSessionsGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/coach/roster/{member_id}/sessions',
+    ...options
+});
+
+/**
+ * Session Detail
+ */
+export const sessionDetailApiV1CoachSessionsSessionIdGet = <ThrowOnError extends boolean = false>(options: Options<SessionDetailApiV1CoachSessionsSessionIdGetData, ThrowOnError>): RequestResult<SessionDetailApiV1CoachSessionsSessionIdGetResponses, SessionDetailApiV1CoachSessionsSessionIdGetErrors, ThrowOnError> => (options.client ?? client).get<SessionDetailApiV1CoachSessionsSessionIdGetResponses, SessionDetailApiV1CoachSessionsSessionIdGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zSessionDetailApiV1CoachSessionsSessionIdGetPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zSessionDetailApiV1CoachSessionsSessionIdGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/coach/sessions/{session_id}',
+    ...options
+});
+
+/**
+ * Draft
+ */
+export const draftApiV1CoachSessionsSessionIdFeedbackDraftPut = <ThrowOnError extends boolean = false>(options: Options<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutData, ThrowOnError>): RequestResult<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponses, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutErrors, ThrowOnError> => (options.client ?? client).put<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponses, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutBody,
+        path: zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/coach/sessions/{session_id}/feedback-draft',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Pose
+ */
+export const poseApiV1CoachSessionsSessionIdPoseGet = <ThrowOnError extends boolean = false>(options: Options<PoseApiV1CoachSessionsSessionIdPoseGetData, ThrowOnError>): RequestResult<PoseApiV1CoachSessionsSessionIdPoseGetResponses, PoseApiV1CoachSessionsSessionIdPoseGetErrors, ThrowOnError> => (options.client ?? client).get<PoseApiV1CoachSessionsSessionIdPoseGetResponses, PoseApiV1CoachSessionsSessionIdPoseGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zPoseApiV1CoachSessionsSessionIdPoseGetPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zPoseApiV1CoachSessionsSessionIdPoseGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/coach/sessions/{session_id}/pose',
+    ...options
+});
+
+/**
+ * Publish
+ */
+export const publishApiV1CoachSessionsSessionIdReviewsPost = <ThrowOnError extends boolean = false>(options: Options<PublishApiV1CoachSessionsSessionIdReviewsPostData, ThrowOnError>): RequestResult<PublishApiV1CoachSessionsSessionIdReviewsPostResponses, PublishApiV1CoachSessionsSessionIdReviewsPostErrors, ThrowOnError> => (options.client ?? client).post<PublishApiV1CoachSessionsSessionIdReviewsPostResponses, PublishApiV1CoachSessionsSessionIdReviewsPostErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zPublishApiV1CoachSessionsSessionIdReviewsPostBody,
+        headers: zPublishApiV1CoachSessionsSessionIdReviewsPostHeaders,
+        path: zPublishApiV1CoachSessionsSessionIdReviewsPostPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zPublishApiV1CoachSessionsSessionIdReviewsPostResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/coach/sessions/{session_id}/reviews',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Video
+ */
+export const videoApiV1CoachSessionsSessionIdVideoGet = <ThrowOnError extends boolean = false>(options: Options<VideoApiV1CoachSessionsSessionIdVideoGetData, ThrowOnError>): RequestResult<VideoApiV1CoachSessionsSessionIdVideoGetResponses, VideoApiV1CoachSessionsSessionIdVideoGetErrors, ThrowOnError> => (options.client ?? client).get<VideoApiV1CoachSessionsSessionIdVideoGetResponses, VideoApiV1CoachSessionsSessionIdVideoGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        headers: zVideoApiV1CoachSessionsSessionIdVideoGetHeaders.optional(),
+        path: zVideoApiV1CoachSessionsSessionIdVideoGetPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zVideoApiV1CoachSessionsSessionIdVideoGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/coach/sessions/{session_id}/video',
+    ...options
+});
+
+/**
+ * Dashboard
+ */
+export const dashboardApiV1MemberDashboardGet = <ThrowOnError extends boolean = false>(options?: Options<DashboardApiV1MemberDashboardGetData, ThrowOnError>): RequestResult<DashboardApiV1MemberDashboardGetResponses, DashboardApiV1MemberDashboardGetErrors, ThrowOnError> => (options?.client ?? client).get<DashboardApiV1MemberDashboardGetResponses, DashboardApiV1MemberDashboardGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zDashboardApiV1MemberDashboardGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/member/dashboard',
+    ...options
+});
+
+/**
+ * Task
+ */
+export const taskApiV1MemberFollowUpTasksTaskIdPatch = <ThrowOnError extends boolean = false>(options: Options<TaskApiV1MemberFollowUpTasksTaskIdPatchData, ThrowOnError>): RequestResult<TaskApiV1MemberFollowUpTasksTaskIdPatchResponses, TaskApiV1MemberFollowUpTasksTaskIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<TaskApiV1MemberFollowUpTasksTaskIdPatchResponses, TaskApiV1MemberFollowUpTasksTaskIdPatchErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zTaskApiV1MemberFollowUpTasksTaskIdPatchBody,
+        path: zTaskApiV1MemberFollowUpTasksTaskIdPatchPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zTaskApiV1MemberFollowUpTasksTaskIdPatchResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/member/follow-up-tasks/{task_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * History
+ */
+export const historyApiV1MemberHistoryGet = <ThrowOnError extends boolean = false>(options?: Options<HistoryApiV1MemberHistoryGetData, ThrowOnError>): RequestResult<HistoryApiV1MemberHistoryGetResponses, HistoryApiV1MemberHistoryGetErrors, ThrowOnError> => (options?.client ?? client).get<HistoryApiV1MemberHistoryGetResponses, HistoryApiV1MemberHistoryGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: z.never().optional(),
+        query: zHistoryApiV1MemberHistoryGetQuery.optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zHistoryApiV1MemberHistoryGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/member/history',
+    ...options
+});
+
+/**
+ * Detail
+ */
+export const detailApiV1MemberHistorySessionIdGet = <ThrowOnError extends boolean = false>(options: Options<DetailApiV1MemberHistorySessionIdGetData, ThrowOnError>): RequestResult<DetailApiV1MemberHistorySessionIdGetResponses, DetailApiV1MemberHistorySessionIdGetErrors, ThrowOnError> => (options.client ?? client).get<DetailApiV1MemberHistorySessionIdGetResponses, DetailApiV1MemberHistorySessionIdGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zDetailApiV1MemberHistorySessionIdGetPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zDetailApiV1MemberHistorySessionIdGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/member/history/{session_id}',
+    ...options
+});
+
+/**
  * Member Password
  */
 export const memberPasswordApiV1MemberPasswordPatch = <ThrowOnError extends boolean = false>(options: Options<MemberPasswordApiV1MemberPasswordPatchData, ThrowOnError>): RequestResult<MemberPasswordApiV1MemberPasswordPatchResponses, MemberPasswordApiV1MemberPasswordPatchErrors, ThrowOnError> => (options.client ?? client).patch<MemberPasswordApiV1MemberPasswordPatchResponses, MemberPasswordApiV1MemberPasswordPatchErrors, ThrowOnError>({
@@ -188,52 +494,37 @@ export const memberPasswordApiV1MemberPasswordPatch = <ThrowOnError extends bool
 });
 
 /**
- * Coach Password
+ * Member Profile
  */
-export const coachPasswordApiV1CoachPasswordPatch = <ThrowOnError extends boolean = false>(options: Options<CoachPasswordApiV1CoachPasswordPatchData, ThrowOnError>): RequestResult<CoachPasswordApiV1CoachPasswordPatchResponses, CoachPasswordApiV1CoachPasswordPatchErrors, ThrowOnError> => (options.client ?? client).patch<CoachPasswordApiV1CoachPasswordPatchResponses, CoachPasswordApiV1CoachPasswordPatchErrors, ThrowOnError>({
+export const memberProfileApiV1MemberProfileGet = <ThrowOnError extends boolean = false>(options?: Options<MemberProfileApiV1MemberProfileGetData, ThrowOnError>): RequestResult<MemberProfileApiV1MemberProfileGetResponses, MemberProfileApiV1MemberProfileGetErrors, ThrowOnError> => (options?.client ?? client).get<MemberProfileApiV1MemberProfileGetResponses, MemberProfileApiV1MemberProfileGetErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
-        body: zCoachPasswordApiV1CoachPasswordPatchBody,
+        body: z.never().optional(),
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zCoachPasswordApiV1CoachPasswordPatchResponse.parseAsync(data),
+    responseValidator: async (data) => await zMemberProfileApiV1MemberProfileGetResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/password',
+    url: '/api/v1/member/profile',
+    ...options
+});
+
+/**
+ * Update Member Profile
+ */
+export const updateMemberProfileApiV1MemberProfilePatch = <ThrowOnError extends boolean = false>(options: Options<UpdateMemberProfileApiV1MemberProfilePatchData, ThrowOnError>): RequestResult<UpdateMemberProfileApiV1MemberProfilePatchResponses, UpdateMemberProfileApiV1MemberProfilePatchErrors, ThrowOnError> => (options.client ?? client).patch<UpdateMemberProfileApiV1MemberProfilePatchResponses, UpdateMemberProfileApiV1MemberProfilePatchErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zUpdateMemberProfileApiV1MemberProfilePatchBody,
+        path: z.never().optional(),
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zUpdateMemberProfileApiV1MemberProfilePatchResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/member/profile',
     ...options,
     headers: {
         'Content-Type': 'application/json',
         ...options.headers
     }
-});
-
-/**
- * Modules
- */
-export const modulesApiV1MemberTrainingModulesGet = <ThrowOnError extends boolean = false>(options?: Options<ModulesApiV1MemberTrainingModulesGetData, ThrowOnError>): RequestResult<ModulesApiV1MemberTrainingModulesGetResponses, ModulesApiV1MemberTrainingModulesGetErrors, ThrowOnError> => (options?.client ?? client).get<ModulesApiV1MemberTrainingModulesGetResponses, ModulesApiV1MemberTrainingModulesGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zModulesApiV1MemberTrainingModulesGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/training-modules',
-    ...options
-});
-
-/**
- * Prep
- */
-export const prepApiV1MemberTrainingPrepSlugGet = <ThrowOnError extends boolean = false>(options: Options<PrepApiV1MemberTrainingPrepSlugGetData, ThrowOnError>): RequestResult<PrepApiV1MemberTrainingPrepSlugGetResponses, PrepApiV1MemberTrainingPrepSlugGetErrors, ThrowOnError> => (options.client ?? client).get<PrepApiV1MemberTrainingPrepSlugGetResponses, PrepApiV1MemberTrainingPrepSlugGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: zPrepApiV1MemberTrainingPrepSlugGetPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zPrepApiV1MemberTrainingPrepSlugGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/training-prep/{slug}',
-    ...options
 });
 
 /**
@@ -303,6 +594,21 @@ export const sessionStatusApiV1MemberSessionsSessionIdGet = <ThrowOnError extend
 });
 
 /**
+ * Acknowledge Session
+ */
+export const acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePost = <ThrowOnError extends boolean = false>(options: Options<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostData, ThrowOnError>): RequestResult<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponses, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostErrors, ThrowOnError> => (options.client ?? client).post<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponses, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/member/sessions/{session_id}/acknowledge',
+    ...options
+});
+
+/**
  * Evaluation
  */
 export const evaluationApiV1MemberSessionsSessionIdEvaluationGet = <ThrowOnError extends boolean = false>(options: Options<EvaluationApiV1MemberSessionsSessionIdEvaluationGetData, ThrowOnError>): RequestResult<EvaluationApiV1MemberSessionsSessionIdEvaluationGetResponses, EvaluationApiV1MemberSessionsSessionIdEvaluationGetErrors, ThrowOnError> => (options.client ?? client).get<EvaluationApiV1MemberSessionsSessionIdEvaluationGetResponses, EvaluationApiV1MemberSessionsSessionIdEvaluationGetErrors, ThrowOnError>({
@@ -315,6 +621,26 @@ export const evaluationApiV1MemberSessionsSessionIdEvaluationGet = <ThrowOnError
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/member/sessions/{session_id}/evaluation',
     ...options
+});
+
+/**
+ * Retry
+ */
+export const retryApiV1MemberSessionsSessionIdFollowUpsPost = <ThrowOnError extends boolean = false>(options: Options<RetryApiV1MemberSessionsSessionIdFollowUpsPostData, ThrowOnError>): RequestResult<RetryApiV1MemberSessionsSessionIdFollowUpsPostResponses, RetryApiV1MemberSessionsSessionIdFollowUpsPostErrors, ThrowOnError> => (options.client ?? client).post<RetryApiV1MemberSessionsSessionIdFollowUpsPostResponses, RetryApiV1MemberSessionsSessionIdFollowUpsPostErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: zRetryApiV1MemberSessionsSessionIdFollowUpsPostBody,
+        headers: zRetryApiV1MemberSessionsSessionIdFollowUpsPostHeaders,
+        path: zRetryApiV1MemberSessionsSessionIdFollowUpsPostPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zRetryApiV1MemberSessionsSessionIdFollowUpsPostResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/member/sessions/{session_id}/follow-ups',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**
@@ -349,17 +675,32 @@ export const videoApiV1MemberSessionsSessionIdVideoGet = <ThrowOnError extends b
 });
 
 /**
- * Acknowledge Session
+ * Modules
  */
-export const acknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePost = <ThrowOnError extends boolean = false>(options: Options<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostData, ThrowOnError>): RequestResult<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponses, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostErrors, ThrowOnError> => (options.client ?? client).post<AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponses, AcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostErrors, ThrowOnError>({
+export const modulesApiV1MemberTrainingModulesGet = <ThrowOnError extends boolean = false>(options?: Options<ModulesApiV1MemberTrainingModulesGetData, ThrowOnError>): RequestResult<ModulesApiV1MemberTrainingModulesGetResponses, ModulesApiV1MemberTrainingModulesGetErrors, ThrowOnError> => (options?.client ?? client).get<ModulesApiV1MemberTrainingModulesGetResponses, ModulesApiV1MemberTrainingModulesGetErrors, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
-        path: zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostPath,
+        path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse.parseAsync(data),
+    responseValidator: async (data) => await zModulesApiV1MemberTrainingModulesGetResponse.parseAsync(data),
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/sessions/{session_id}/acknowledge',
+    url: '/api/v1/member/training-modules',
+    ...options
+});
+
+/**
+ * Prep
+ */
+export const prepApiV1MemberTrainingPrepSlugGet = <ThrowOnError extends boolean = false>(options: Options<PrepApiV1MemberTrainingPrepSlugGetData, ThrowOnError>): RequestResult<PrepApiV1MemberTrainingPrepSlugGetResponses, PrepApiV1MemberTrainingPrepSlugGetErrors, ThrowOnError> => (options.client ?? client).get<PrepApiV1MemberTrainingPrepSlugGetResponses, PrepApiV1MemberTrainingPrepSlugGetErrors, ThrowOnError>({
+    requestValidator: async (data) => await z.object({
+        body: z.never().optional(),
+        path: zPrepApiV1MemberTrainingPrepSlugGetPath,
+        query: z.never().optional()
+    }).parseAsync(data),
+    responseValidator: async (data) => await zPrepApiV1MemberTrainingPrepSlugGetResponse.parseAsync(data),
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/member/training-prep/{slug}',
     ...options
 });
 
@@ -399,344 +740,16 @@ export const completeApiV1MemberUploadsUploadIdCompletePost = <ThrowOnError exte
 });
 
 /**
- * History
+ * Health
  */
-export const historyApiV1MemberHistoryGet = <ThrowOnError extends boolean = false>(options?: Options<HistoryApiV1MemberHistoryGetData, ThrowOnError>): RequestResult<HistoryApiV1MemberHistoryGetResponses, HistoryApiV1MemberHistoryGetErrors, ThrowOnError> => (options?.client ?? client).get<HistoryApiV1MemberHistoryGetResponses, HistoryApiV1MemberHistoryGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: z.never().optional(),
-        query: zHistoryApiV1MemberHistoryGetQuery.optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zHistoryApiV1MemberHistoryGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/history',
-    ...options
-});
-
-/**
- * Detail
- */
-export const detailApiV1MemberHistorySessionIdGet = <ThrowOnError extends boolean = false>(options: Options<DetailApiV1MemberHistorySessionIdGetData, ThrowOnError>): RequestResult<DetailApiV1MemberHistorySessionIdGetResponses, DetailApiV1MemberHistorySessionIdGetErrors, ThrowOnError> => (options.client ?? client).get<DetailApiV1MemberHistorySessionIdGetResponses, DetailApiV1MemberHistorySessionIdGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: zDetailApiV1MemberHistorySessionIdGetPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zDetailApiV1MemberHistorySessionIdGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/history/{session_id}',
-    ...options
-});
-
-/**
- * Dashboard
- */
-export const dashboardApiV1MemberDashboardGet = <ThrowOnError extends boolean = false>(options?: Options<DashboardApiV1MemberDashboardGetData, ThrowOnError>): RequestResult<DashboardApiV1MemberDashboardGetResponses, DashboardApiV1MemberDashboardGetErrors, ThrowOnError> => (options?.client ?? client).get<DashboardApiV1MemberDashboardGetResponses, DashboardApiV1MemberDashboardGetErrors, ThrowOnError>({
+export const healthHealthGet = <ThrowOnError extends boolean = false>(options?: Options<HealthHealthGetData, ThrowOnError>): RequestResult<HealthHealthGetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<HealthHealthGetResponses, unknown, ThrowOnError>({
     requestValidator: async (data) => await z.object({
         body: z.never().optional(),
         path: z.never().optional(),
         query: z.never().optional()
     }).parseAsync(data),
-    responseValidator: async (data) => await zDashboardApiV1MemberDashboardGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/dashboard',
+    url: '/health',
     ...options
-});
-
-/**
- * Overview
- */
-export const overviewApiV1CoachOverviewGet = <ThrowOnError extends boolean = false>(options?: Options<OverviewApiV1CoachOverviewGetData, ThrowOnError>): RequestResult<OverviewApiV1CoachOverviewGetResponses, OverviewApiV1CoachOverviewGetErrors, ThrowOnError> => (options?.client ?? client).get<OverviewApiV1CoachOverviewGetResponses, OverviewApiV1CoachOverviewGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zOverviewApiV1CoachOverviewGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/overview',
-    ...options
-});
-
-/**
- * Roster
- */
-export const rosterApiV1CoachRosterGet = <ThrowOnError extends boolean = false>(options?: Options<RosterApiV1CoachRosterGetData, ThrowOnError>): RequestResult<RosterApiV1CoachRosterGetResponses, RosterApiV1CoachRosterGetErrors, ThrowOnError> => (options?.client ?? client).get<RosterApiV1CoachRosterGetResponses, RosterApiV1CoachRosterGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: z.never().optional(),
-        query: zRosterApiV1CoachRosterGetQuery.optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zRosterApiV1CoachRosterGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/roster',
-    ...options
-});
-
-/**
- * Member Detail
- */
-export const memberDetailApiV1CoachRosterMemberIdGet = <ThrowOnError extends boolean = false>(options: Options<MemberDetailApiV1CoachRosterMemberIdGetData, ThrowOnError>): RequestResult<MemberDetailApiV1CoachRosterMemberIdGetResponses, MemberDetailApiV1CoachRosterMemberIdGetErrors, ThrowOnError> => (options.client ?? client).get<MemberDetailApiV1CoachRosterMemberIdGetResponses, MemberDetailApiV1CoachRosterMemberIdGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: zMemberDetailApiV1CoachRosterMemberIdGetPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zMemberDetailApiV1CoachRosterMemberIdGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/roster/{member_id}',
-    ...options
-});
-
-/**
- * Member Sessions
- */
-export const memberSessionsApiV1CoachRosterMemberIdSessionsGet = <ThrowOnError extends boolean = false>(options: Options<MemberSessionsApiV1CoachRosterMemberIdSessionsGetData, ThrowOnError>): RequestResult<MemberSessionsApiV1CoachRosterMemberIdSessionsGetResponses, MemberSessionsApiV1CoachRosterMemberIdSessionsGetErrors, ThrowOnError> => (options.client ?? client).get<MemberSessionsApiV1CoachRosterMemberIdSessionsGetResponses, MemberSessionsApiV1CoachRosterMemberIdSessionsGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: zMemberSessionsApiV1CoachRosterMemberIdSessionsGetPath,
-        query: zMemberSessionsApiV1CoachRosterMemberIdSessionsGetQuery.optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zMemberSessionsApiV1CoachRosterMemberIdSessionsGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/roster/{member_id}/sessions',
-    ...options
-});
-
-/**
- * Session Detail
- */
-export const sessionDetailApiV1CoachSessionsSessionIdGet = <ThrowOnError extends boolean = false>(options: Options<SessionDetailApiV1CoachSessionsSessionIdGetData, ThrowOnError>): RequestResult<SessionDetailApiV1CoachSessionsSessionIdGetResponses, SessionDetailApiV1CoachSessionsSessionIdGetErrors, ThrowOnError> => (options.client ?? client).get<SessionDetailApiV1CoachSessionsSessionIdGetResponses, SessionDetailApiV1CoachSessionsSessionIdGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: zSessionDetailApiV1CoachSessionsSessionIdGetPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zSessionDetailApiV1CoachSessionsSessionIdGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/sessions/{session_id}',
-    ...options
-});
-
-/**
- * Pose
- */
-export const poseApiV1CoachSessionsSessionIdPoseGet = <ThrowOnError extends boolean = false>(options: Options<PoseApiV1CoachSessionsSessionIdPoseGetData, ThrowOnError>): RequestResult<PoseApiV1CoachSessionsSessionIdPoseGetResponses, PoseApiV1CoachSessionsSessionIdPoseGetErrors, ThrowOnError> => (options.client ?? client).get<PoseApiV1CoachSessionsSessionIdPoseGetResponses, PoseApiV1CoachSessionsSessionIdPoseGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: zPoseApiV1CoachSessionsSessionIdPoseGetPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zPoseApiV1CoachSessionsSessionIdPoseGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/sessions/{session_id}/pose',
-    ...options
-});
-
-/**
- * Video
- */
-export const videoApiV1CoachSessionsSessionIdVideoGet = <ThrowOnError extends boolean = false>(options: Options<VideoApiV1CoachSessionsSessionIdVideoGetData, ThrowOnError>): RequestResult<VideoApiV1CoachSessionsSessionIdVideoGetResponses, VideoApiV1CoachSessionsSessionIdVideoGetErrors, ThrowOnError> => (options.client ?? client).get<VideoApiV1CoachSessionsSessionIdVideoGetResponses, VideoApiV1CoachSessionsSessionIdVideoGetErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        headers: zVideoApiV1CoachSessionsSessionIdVideoGetHeaders.optional(),
-        path: zVideoApiV1CoachSessionsSessionIdVideoGetPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zVideoApiV1CoachSessionsSessionIdVideoGetResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/sessions/{session_id}/video',
-    ...options
-});
-
-/**
- * Draft
- */
-export const draftApiV1CoachSessionsSessionIdFeedbackDraftPut = <ThrowOnError extends boolean = false>(options: Options<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutData, ThrowOnError>): RequestResult<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponses, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutErrors, ThrowOnError> => (options.client ?? client).put<DraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponses, DraftApiV1CoachSessionsSessionIdFeedbackDraftPutErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutBody,
-        path: zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/sessions/{session_id}/feedback-draft',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Publish
- */
-export const publishApiV1CoachSessionsSessionIdReviewsPost = <ThrowOnError extends boolean = false>(options: Options<PublishApiV1CoachSessionsSessionIdReviewsPostData, ThrowOnError>): RequestResult<PublishApiV1CoachSessionsSessionIdReviewsPostResponses, PublishApiV1CoachSessionsSessionIdReviewsPostErrors, ThrowOnError> => (options.client ?? client).post<PublishApiV1CoachSessionsSessionIdReviewsPostResponses, PublishApiV1CoachSessionsSessionIdReviewsPostErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zPublishApiV1CoachSessionsSessionIdReviewsPostBody,
-        headers: zPublishApiV1CoachSessionsSessionIdReviewsPostHeaders,
-        path: zPublishApiV1CoachSessionsSessionIdReviewsPostPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zPublishApiV1CoachSessionsSessionIdReviewsPostResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/coach/sessions/{session_id}/reviews',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Retry
- */
-export const retryApiV1MemberSessionsSessionIdFollowUpsPost = <ThrowOnError extends boolean = false>(options: Options<RetryApiV1MemberSessionsSessionIdFollowUpsPostData, ThrowOnError>): RequestResult<RetryApiV1MemberSessionsSessionIdFollowUpsPostResponses, RetryApiV1MemberSessionsSessionIdFollowUpsPostErrors, ThrowOnError> => (options.client ?? client).post<RetryApiV1MemberSessionsSessionIdFollowUpsPostResponses, RetryApiV1MemberSessionsSessionIdFollowUpsPostErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zRetryApiV1MemberSessionsSessionIdFollowUpsPostBody,
-        headers: zRetryApiV1MemberSessionsSessionIdFollowUpsPostHeaders,
-        path: zRetryApiV1MemberSessionsSessionIdFollowUpsPostPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zRetryApiV1MemberSessionsSessionIdFollowUpsPostResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/sessions/{session_id}/follow-ups',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Task
- */
-export const taskApiV1MemberFollowUpTasksTaskIdPatch = <ThrowOnError extends boolean = false>(options: Options<TaskApiV1MemberFollowUpTasksTaskIdPatchData, ThrowOnError>): RequestResult<TaskApiV1MemberFollowUpTasksTaskIdPatchResponses, TaskApiV1MemberFollowUpTasksTaskIdPatchErrors, ThrowOnError> => (options.client ?? client).patch<TaskApiV1MemberFollowUpTasksTaskIdPatchResponses, TaskApiV1MemberFollowUpTasksTaskIdPatchErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zTaskApiV1MemberFollowUpTasksTaskIdPatchBody,
-        path: zTaskApiV1MemberFollowUpTasksTaskIdPatchPath,
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zTaskApiV1MemberFollowUpTasksTaskIdPatchResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/member/follow-up-tasks/{task_id}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Email Link
- */
-export const emailLinkApiV1AuthEmailLinkRequestPost = <ThrowOnError extends boolean = false>(options: Options<EmailLinkApiV1AuthEmailLinkRequestPostData, ThrowOnError>): RequestResult<EmailLinkApiV1AuthEmailLinkRequestPostResponses, EmailLinkApiV1AuthEmailLinkRequestPostErrors, ThrowOnError> => (options.client ?? client).post<EmailLinkApiV1AuthEmailLinkRequestPostResponses, EmailLinkApiV1AuthEmailLinkRequestPostErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zEmailLinkApiV1AuthEmailLinkRequestPostBody,
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zEmailLinkApiV1AuthEmailLinkRequestPostResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/auth/email-link/request',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Email Verify
- */
-export const emailVerifyApiV1AuthEmailVerificationRequestPost = <ThrowOnError extends boolean = false>(options: Options<EmailVerifyApiV1AuthEmailVerificationRequestPostData, ThrowOnError>): RequestResult<EmailVerifyApiV1AuthEmailVerificationRequestPostResponses, EmailVerifyApiV1AuthEmailVerificationRequestPostErrors, ThrowOnError> => (options.client ?? client).post<EmailVerifyApiV1AuthEmailVerificationRequestPostResponses, EmailVerifyApiV1AuthEmailVerificationRequestPostErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zEmailVerifyApiV1AuthEmailVerificationRequestPostBody,
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zEmailVerifyApiV1AuthEmailVerificationRequestPostResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/auth/email-verification/request',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Reset Request
- */
-export const resetRequestApiV1AuthPasswordResetRequestPost = <ThrowOnError extends boolean = false>(options: Options<ResetRequestApiV1AuthPasswordResetRequestPostData, ThrowOnError>): RequestResult<ResetRequestApiV1AuthPasswordResetRequestPostResponses, ResetRequestApiV1AuthPasswordResetRequestPostErrors, ThrowOnError> => (options.client ?? client).post<ResetRequestApiV1AuthPasswordResetRequestPostResponses, ResetRequestApiV1AuthPasswordResetRequestPostErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zResetRequestApiV1AuthPasswordResetRequestPostBody,
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zResetRequestApiV1AuthPasswordResetRequestPostResponse.parseAsync(data),
-    url: '/api/v1/auth/password-reset/request',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Link Confirm
- */
-export const linkConfirmApiV1AuthEmailLinkConfirmPost = <ThrowOnError extends boolean = false>(options: Options<LinkConfirmApiV1AuthEmailLinkConfirmPostData, ThrowOnError>): RequestResult<LinkConfirmApiV1AuthEmailLinkConfirmPostResponses, LinkConfirmApiV1AuthEmailLinkConfirmPostErrors, ThrowOnError> => (options.client ?? client).post<LinkConfirmApiV1AuthEmailLinkConfirmPostResponses, LinkConfirmApiV1AuthEmailLinkConfirmPostErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zLinkConfirmApiV1AuthEmailLinkConfirmPostBody,
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zLinkConfirmApiV1AuthEmailLinkConfirmPostResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/auth/email-link/confirm',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Verify Confirm
- */
-export const verifyConfirmApiV1AuthEmailVerificationConfirmPost = <ThrowOnError extends boolean = false>(options: Options<VerifyConfirmApiV1AuthEmailVerificationConfirmPostData, ThrowOnError>): RequestResult<VerifyConfirmApiV1AuthEmailVerificationConfirmPostResponses, VerifyConfirmApiV1AuthEmailVerificationConfirmPostErrors, ThrowOnError> => (options.client ?? client).post<VerifyConfirmApiV1AuthEmailVerificationConfirmPostResponses, VerifyConfirmApiV1AuthEmailVerificationConfirmPostErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zVerifyConfirmApiV1AuthEmailVerificationConfirmPostBody,
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zVerifyConfirmApiV1AuthEmailVerificationConfirmPostResponse.parseAsync(data),
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/auth/email-verification/confirm',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Reset Confirm
- */
-export const resetConfirmApiV1AuthPasswordResetConfirmPost = <ThrowOnError extends boolean = false>(options: Options<ResetConfirmApiV1AuthPasswordResetConfirmPostData, ThrowOnError>): RequestResult<ResetConfirmApiV1AuthPasswordResetConfirmPostResponses, ResetConfirmApiV1AuthPasswordResetConfirmPostErrors, ThrowOnError> => (options.client ?? client).post<ResetConfirmApiV1AuthPasswordResetConfirmPostResponses, ResetConfirmApiV1AuthPasswordResetConfirmPostErrors, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: zResetConfirmApiV1AuthPasswordResetConfirmPostBody,
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    responseValidator: async (data) => await zResetConfirmApiV1AuthPasswordResetConfirmPostResponse.parseAsync(data),
-    url: '/api/v1/auth/password-reset/confirm',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
 });
 
 /**
@@ -762,18 +775,5 @@ export const readyHealthReadyGet = <ThrowOnError extends boolean = false>(option
         query: z.never().optional()
     }).parseAsync(data),
     url: '/health/ready',
-    ...options
-});
-
-/**
- * Health
- */
-export const healthHealthGet = <ThrowOnError extends boolean = false>(options?: Options<HealthHealthGetData, ThrowOnError>): RequestResult<HealthHealthGetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<HealthHealthGetResponses, unknown, ThrowOnError>({
-    requestValidator: async (data) => await z.object({
-        body: z.never().optional(),
-        path: z.never().optional(),
-        query: z.never().optional()
-    }).parseAsync(data),
-    url: '/health',
     ...options
 });

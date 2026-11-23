@@ -1,3 +1,4 @@
+import type { Capability, CoachComparison, MovementOption, UploadConfig } from "@/api";
 import type { PilarSlug } from "@/components/shared/silat-reference";
 import type { NormalizedApiError } from "@/lib/api-client";
 
@@ -125,7 +126,7 @@ export interface TrainingModuleViewModel {
   description: string;
   estimateLabel?: string;
   scoringAvailable: boolean;
-  scoringReason: "reference_not_ready" | null;
+  scoringReason: Capability["reason"];
   similarity: { averageScore: number; sampleCount: number } | null;
 }
 
@@ -156,8 +157,9 @@ export interface PersiapanViewModel {
   estimatedDurationLabel?: string;
   capability: {
     scoringAvailable: boolean;
-    reason: "reference_not_ready" | null;
-    method: "static-reference-pose";
+    reason: Capability["reason"];
+    method: Capability["method"];
+    referenceComparisonAvailable?: boolean;
     referenceVersions: string[];
   };
   checklist: GuideItemViewModel[];
@@ -165,6 +167,9 @@ export interface PersiapanViewModel {
 }
 
 export interface RekamViewModel {
+  movements?: MovementOption[];
+  movementIdRequired?: boolean;
+  analysisMethod?: UploadConfig["analysisMethod"];
   slug: TrainingModuleSlug;
   trainingName: string;
   eyebrow: string;
@@ -239,7 +244,8 @@ export interface EvaluationScoreViewModel {
     | "experimental"
     | "reference_not_ready"
     | "insufficient_pose"
-    | "insufficient_features";
+    | "insufficient_features"
+    | "reference_compared";
   statusLabel: string;
   reason: string | null;
   variantLabel: string | null;
@@ -247,6 +253,7 @@ export interface EvaluationScoreViewModel {
 }
 
 export interface EvaluationViewModel {
+  coachComparison?: CoachComparison | null;
   id: string;
   sessionId: string;
   slug: TrainingModuleSlug;

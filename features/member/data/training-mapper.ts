@@ -109,6 +109,7 @@ export function toPersiapanViewModel(prep: TrainingPrep): PersiapanViewModel {
       trainingModule.estimatedDurationSeconds,
     ),
     capability: {
+      referenceComparisonAvailable: trainingModule.capability.referenceComparisonAvailable ?? false,
       scoringAvailable: trainingModule.capability.scoringAvailable,
       reason: trainingModule.capability.reason,
       method: trainingModule.capability.method ?? "static-reference-pose",
@@ -131,6 +132,9 @@ export function toRekamViewModel(
 
   return {
     slug: config.movementSlug,
+    movements: config.movements ?? [],
+    movementIdRequired: config.movementIdRequired ?? false,
+    analysisMethod: config.analysisMethod ?? "static-reference-pose",
     trainingName: trainingModule.name,
     eyebrow: "MULAI LATIHAN",
     countdownSec: 3,
