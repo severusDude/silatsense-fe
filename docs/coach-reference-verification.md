@@ -63,7 +63,7 @@ Upload ini memakai endpoint multipart BE **khusus smoke storage lokal**. Ia buka
 
 ## Yang belum terbukti dan dependensi
 
-1. PUT video nyata browser → B2, preflight CORS pada origin deployment, progress/error network nyata B2 dan complete terpadu terhadap cloud. Tes transport otomatis adalah mock. [Contoh CORS](b2-cors.example.json) disiapkan, tidak diterapkan; bucket tetap privat. Ikuti [aturan resmi Backblaze](https://www.backblaze.com/docs/cloud-storage-cross-origin-resource-sharing-rules).
+1. PUT video nyata browser → B2, preflight CORS pada origin deployment, progress/error network nyata B2 dan complete terpadu terhadap cloud. Tes transport otomatis adalah mock. Pada pengujian awal, [contoh CORS](b2-cors.example.json) hanya disiapkan; penerapan khusus localhost:3101 kemudian diverifikasi pada bagian tindak lanjut CORS di bawah. Bucket tetap privat. Ikuti [aturan resmi Backblaze](https://www.backblaze.com/docs/cloud-storage-cross-origin-resource-sharing-rules).
 2. Perbandingan reference_compared dan overlay berwarna pada video pose nyata melalui FE/browser. Automatic approval review **menolak** pemakaian video privat dari cache smoke BE karena provenance/izin pemakaian sumber dianggap belum jelas. Perintah tidak dijalankan; tidak mencoba jalur lain untuk melewati penolakan. Memerlukan izin eksplisit atas satu video uji privat untuk pemrosesan lokal, atau media uji lain yang diizinkan. Bukti smoke BE terdahulu tidak dihitung sebagai pengujian FE pada tugas ini.
 3. Kamera penuh dan fullscreen browser biasa; izin/device browser uji membatasi pemeriksaan tersebut.
 4. Deployment Vercel/worker laptop persisten dan koordinasi refresh lintas instance. Tidak diaktifkan pada tugas ini.
@@ -96,3 +96,13 @@ Commit fitur `93bf5ef`: kartu pemilihan/pratinjau video perangkat dan pilihan su
 - Overflow mobile lulus pada 390 px (`scrollWidth=375`) untuk persiapan dan preview; desktop lulus pada 1440 px (`scrollWidth=1440`). Screenshot preview diambil pada browser QA.
 - Pemeriksaan ini berhenti sebelum konfirmasi upload: **0 panggilan endpoint uploads** tercatat pada BE QA. Tidak mengirim video ke B2/cloud, menjalankan inference, atau memakai video privat. Jalur init/PUT/complete existing tetap tercakup tes mock; CORS/PUT B2 nyata masih merupakan dependensi eksternal sebagaimana dicatat di atas.
 - Server QA, akun/database, klip sintetis dan log sementara dibersihkan setelah pengujian. Build akhir dikembalikan menggunakan konfigurasi FE existing; env pengguna tidak diubah.
+
+## Pemulihan CORS B2 — tindak lanjut 23 November 2026
+
+Setelah pengguna melaporkan kegagalan PUT browser, pemeriksaan cloud read-only mengembalikan `NoSuchCorsConfiguration` pada S3 GetBucketCors dan OPTIONS origin `http://localhost:3101` mengembalikan HTTP 403 tanpa header CORS. Pengguna kemudian meminta perbaikan langsung.
+
+Ditambahkan satu aturan S3-compatible `silatsense-localhost-3101-upload`: origin tepat `http://localhost:3101`, metode PUT, AllowedHeaders content-type, ExposeHeaders ETag, MaxAgeSeconds 300. Daftar aturan S3 sebelumnya kosong; implementasi mempertahankan aturan S3 existing bila ada dan tidak mengubah aturan Native API atau akses publik bucket. `.env.worker` hanya dimuat secara privat untuk otorisasi; tidak ditampilkan atau diubah.
+
+Read-your-own-write: GetBucketCors setelah perubahan mengembalikan satu aturan yang sesuai. OPTIONS ulang mengembalikan **HTTP 200**, Access-Control-Allow-Origin `http://localhost:3101`, Access-Control-Allow-Methods `PUT`, Access-Control-Allow-Headers `content-type`. Probe memakai path diagnostik tanpa objek dan tidak mengirim PUT, membuat marker, mengambil job, atau mengunggah video. Tidak ada signed URL atau kredensial di output.
+
+Ini membuktikan konfigurasi/preflight cloud untuk origin development tersebut; keberhasilan PUT video, complete, dan hasil analisis pada sesi pengguna masih perlu dikonfirmasi. Origin production, `127.0.0.1`, dan port lain belum diberi izin oleh aturan ini. Tidak ada perubahan source aplikasi atau kebutuhan restart FE/API untuk perubahan CORS bucket.
