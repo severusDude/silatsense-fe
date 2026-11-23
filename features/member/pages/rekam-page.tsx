@@ -1,3 +1,5 @@
+import { initUpload, completeUpload } from "@/features/member/actions/direct-upload";
+import { getEvaluation } from "@/features/member/data/get-evaluation";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -42,5 +44,9 @@ async function RekamContent({
   const detail = await getRekam(slug);
   if (!detail) notFound();
 
-  return <RekamRecorder detail={detail} retryOf={readRetryOf(query.retryOf)} />;
+  const retryOf = readRetryOf(query.retryOf);
+  const previous = retryOf ? await getEvaluation(retryOf) : null;
+  const requestedTarget = readRetryOf(query.movementId);
+  const target = detail.movements?.find((item) => item.id === requestedTarget)?.id ?? (previous?.slug === slug ? previous.coachComparison?.movementId : undefined);
+  return <RekamRecorder detail={detail} retryOf={retryOf} initialMovementId={target} initAction={initUpload} completeAction={completeUpload} />;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useSyncExternalStore } from "react";
+import type { UploadActions } from "@/features/member/direct-upload";
 import { qualityLabel } from "@/features/member/camera-format";
 import { RecordingControls } from "@/features/member/components/recording-controls";
 import { RekamViewport } from "@/features/member/components/rekam-viewport";
@@ -9,16 +11,35 @@ import { useMediaRecorder } from "@/features/member/hooks/use-media-recorder";
 import { effectiveUploadMaxBytes } from "@/features/member/recorder";
 import type { RekamViewModel } from "@/features/member/types";
 
+const subscribeTarget = () => () => {};
+
 export function RekamRecorder({
   detail,
   retryOf,
+  initialMovementId,
+  initAction,
+  completeAction,
 }: {
   detail: RekamViewModel;
   retryOf: string | null;
+  initialMovementId?: string;
+  initAction: UploadActions["initAction"];
+  completeAction: UploadActions["completeAction"];
 }) {
+  const savedTarget = useSyncExternalStore(subscribeTarget, () => {
+    try { return retryOf ? sessionStorage.getItem(`silatsense:target:${retryOf}`) ?? "" : ""; } catch { return ""; }
+  }, () => "");
+  const [selectedTarget, setMovementId] = useState<string | null>(null);
+  const candidate = selectedTarget ?? initialMovementId ?? savedTarget;
+  const movementId = detail.movements?.some((item) => item.id === candidate) ? candidate : "";
   const camera = useCamera();
   const recorder = useMediaRecorder({
     slug: detail.slug,
+    movementId: movementId || undefined,
+    movements: detail.movements,
+    movementIdRequired: detail.movementIdRequired,
+    initAction,
+    completeAction,
     stream: camera.stream,
     countdownSec: detail.countdownSec,
     maxDurationSec: detail.maxDurationSec,
@@ -33,6 +54,7 @@ export function RekamRecorder({
     : null;
   const uploadLimit = effectiveUploadMaxBytes(detail.maxBytes);
   const canStart =
+    (!detail.movementIdRequired || Boolean(detail.movements?.some((item) => item.id === movementId))) &&
     camera.status === "live" &&
     Boolean(camera.stream) &&
     recorder.phase === "idle";
@@ -58,6 +80,17 @@ export function RekamRecorder({
         </p>
       ) : null}
 
+      {detail.movements?.length ? (
+        <label className="flex min-w-0 flex-col gap-2 text-sm">Target gerakan
+          <select className="w-full min-w-0 rounded-lg border bg-background p-3" value={movementId}
+            disabled={recorder.phase !== "idle"} onChange={(event) => setMovementId(event.target.value)}>
+            <option value="">Pilih gerakan</option>
+            {detail.movements.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+          </select>
+          <span className="text-xs text-muted-foreground">Target dikunci selama rekaman. Rekam ulang untuk mengganti target.</span>
+        </label>
+      ) : null}
+      {recorder.phase === "uploading" ? <button type="button" onClick={recorder.cancelUpload} className="text-sm underline">Batalkan unggahan</button> : null}
       <RekamViewport
         trainingName={detail.trainingName}
         targetDurationSec={detail.targetDurationSec}

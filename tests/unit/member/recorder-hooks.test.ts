@@ -62,21 +62,14 @@ describe("useMediaRecorder", () => {
     expect(src).toContain("onRecordingComplete");
   });
 
-  it("uploads the confirmed blob with idempotency and retry context", () => {
-    // Arrange + Act
+  it("uploads directly using a frozen target and stable idempotency context", () => {
     const src = read("features/member/hooks/use-media-recorder.ts");
-
-    // Assert
-    expect(src).toContain("XMLHttpRequest");
-    expect(src).toContain('"/api/member/sessions"');
-    expect(src).toContain('"Idempotency-Key"');
-    expect(src).toContain('form.set("retryOf", retryOf)');
-    expect(src).toContain("xhr.upload.onprogress");
-    expect(src).toContain("effectiveUploadMaxBytes");
+    expect(src).toContain("directUpload");
+    expect(src).toContain("targetRef.current");
+    expect(src).toContain("idempotencyKeyRef");
+    expect(src).toContain("retryOf");
+    expect(src).not.toContain("new FormData");
     expect(src).toContain("router.push");
-    expect(src).toContain("/latihan/${slug}/sesi/${sessionId}");
-    expect(src).toContain("crypto.randomUUID");
-    expect(src).toContain("zAcceptedSession");
   });
 
   it("releases preview URLs and resets the clip on discard", () => {
@@ -95,8 +88,8 @@ describe("useMediaRecorder", () => {
     const src = read("features/member/hooks/use-media-recorder.ts");
 
     // Assert
-    expect(src).toContain("describeUploadFailure");
-    expect(src).toContain("readErrorDetail");
+    expect(src).toContain('setPhase("failed")');
+    expect(src).toContain("error.message");
     expect(src).not.toContain("72");
     expect(src).not.toContain("setTimeout(() => setProgress");
   });

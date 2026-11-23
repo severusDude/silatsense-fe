@@ -1,3 +1,4 @@
+import { coordinatedRefresh } from "@/features/auth/data/refresh-coordinator";
 import { NextResponse, type NextRequest } from "next/server";
 import {
   AUTH_ACCESS_TOKEN_COOKIE,
@@ -39,14 +40,8 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   // Proactive refresh
   if (shouldRefresh({ accessToken, refreshToken, expiresAt })) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://silatsense-be.vercel.app";
     try {
-      const res = await fetch(`${apiUrl}/api/v1/auth/refresh-session`, {
-        method: "POST",
-        headers: {
-          Cookie: `refresh_token=${refreshToken}`,
-        },
-      });
+      const res = await coordinatedRefresh(refreshToken!);
 
       if (res.ok) {
         const body = (await res.json()) as {
