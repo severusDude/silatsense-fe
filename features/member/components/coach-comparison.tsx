@@ -1,4 +1,5 @@
 import type { CoachComparison } from "@/api";
+import { PostureAssessmentPanel } from "@/features/member/components/posture-assessment";
 import { comparisonMessage } from "@/features/member/pose-overlay";
 const number = (value: number | null) => value === null ? "Tidak terukur" : value.toLocaleString("id-ID", { maximumFractionDigits: 3 });
 const unit = (value: string) => value === "deg" ? "derajat" : "rasio panjang torso";
@@ -10,7 +11,8 @@ export function CoachComparisonPanel({ comparison }: { comparison?: CoachCompari
     <p>Target: {label(comparison.movementId)}</p>
     <p>{comparison.status === "compared" ? "Perbandingan referensi selesai" : "Belum dapat dibandingkan"}</p>
     {comparison.reason ? <p>{comparisonMessage(comparison.reason)}</p> : null}
-    <p className="text-xs text-muted-foreground">Eksperimental: dibandingkan dengan demonstrasi Coach. Kebenaran teknik belum tervalidasi; skor dan jumlah repetisi tidak tersedia. Keputusan pelatih ditampilkan terpisah.</p>
+    <p className="text-xs text-muted-foreground">Perbandingan eksperimental dengan demonstrasi Coach. Penilaian pelatih ditampilkan terpisah.</p>
+    {comparison.postureAssessment && <PostureAssessmentPanel assessment={comparison.postureAssessment} />}
     <h3 className="font-semibold">Ringkasan fitur</h3>
     <ul className="space-y-2">{Object.entries(comparison.features).map(([name, feature]) => <li key={name} className="rounded border p-2">
       <p>{label(name)}</p><p className="text-xs">{feature.sampleCount} sampel · ketercakupan {(feature.coverage * 100).toFixed(1)}%</p>

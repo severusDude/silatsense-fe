@@ -145,7 +145,7 @@ function buildScoreSummary(
   evaluation: EvaluationOut,
   postures: PostureAssessmentViewModel[],
 ): string {
-  if (evaluation.analysisStatus === "reference_compared") return "Perbandingan eksperimental selesai. Kebenaran teknik belum tervalidasi; skor tidak tersedia.";
+  if (evaluation.analysisStatus === "reference_compared") return "Perbandingan eksperimental selesai. Skor keseluruhan gerakan belum tervalidasi.";
   if (evaluation.scoreReason) return evaluation.method === "coach-reference-dtw" ? comparisonMessage(evaluation.scoreReason) : evaluation.scoreReason;
 
   if (evaluation.score === null) {
