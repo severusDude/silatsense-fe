@@ -4,7 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { PersiapanViewModel } from "@/features/member/types";
 
 export function CalibrationCard({ detail }: { detail: PersiapanViewModel }) {
-  const capabilityLabel = detail.capability.scoringAvailable
+  const capabilityLabel = detail.capability.referenceComparisonAvailable
+    ? "Perbandingan referensi aktif"
+    : detail.capability.scoringAvailable
     ? "Penilaian aktif"
     : "Penilaian segera hadir";
 
@@ -44,8 +46,9 @@ export function CalibrationCard({ detail }: { detail: PersiapanViewModel }) {
           </div>
           {detail.capability.scoringAvailable ? null : (
             <p className="text-[11px] leading-relaxed text-muted-foreground">
-              Referensi gerakan belum siap — latihan tetap dapat dilakukan tanpa
-              skor kemiripan.
+              {detail.capability.referenceComparisonAvailable
+                ? "Perbandingan demonstrasi Coach tersedia secara eksperimental. Penilaian benar/salah belum tervalidasi; skor tidak tersedia."
+                : "Referensi gerakan belum siap — latihan tetap dapat dilakukan tanpa skor kemiripan."}
             </p>
           )}
           {detail.capability.referenceVersions.length > 0 ? (

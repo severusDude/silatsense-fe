@@ -58,8 +58,8 @@ export function EvaluasiActions({
             Siap Memperbaiki Gerakan?
           </CardTitle>
           <CardDescription>
-            Rekam ulang gerakan yang sama untuk membandingkan skor kemiripan
-            berikutnya.
+            Rekam ulang target gerakan yang sama untuk meninjau perbandingan
+            referensi berikutnya bersama pelatih.
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex-col items-stretch gap-2">
@@ -96,7 +96,7 @@ export function EvaluasiActions({
           )}
 
           <Link
-            href={`/latihan/${evaluation.slug}/rekam`}
+            href={`/latihan/${evaluation.slug}/rekam${evaluation.coachComparison ? `?movementId=${encodeURIComponent(evaluation.coachComparison.movementId)}` : ""}`}
             className={buttonVariants({
               size: "lg",
               className: "w-full rounded-full",

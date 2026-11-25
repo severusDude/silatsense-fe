@@ -120,7 +120,7 @@ export function RecordingControls({
             onClick={onUpload}
             disabled={!canUpload}
           >
-            <Upload data-icon="inline-start" /> Gunakan Rekaman
+            <Upload data-icon="inline-start" /> {result?.source === "file" ? "Unggah Video" : "Gunakan Rekaman"}
           </Button>
           <Button
             type="button"
@@ -129,7 +129,7 @@ export function RecordingControls({
             className="w-full rounded-full"
             onClick={onDiscard}
           >
-            <RotateCcw data-icon="inline-start" /> Rekam Ulang
+            <RotateCcw data-icon="inline-start" /> {result?.source === "file" ? "Pilih Video Lain" : "Rekam Ulang"}
           </Button>
         </>
       ) : null}
@@ -177,7 +177,7 @@ export function RecordingControls({
             className="w-full rounded-full"
             onClick={onDiscard}
           >
-            <RotateCcw data-icon="inline-start" /> Rekam Ulang
+            <RotateCcw data-icon="inline-start" /> {result?.source === "file" ? "Pilih Video Lain" : "Rekam Ulang"}
           </Button>
         </>
       ) : null}

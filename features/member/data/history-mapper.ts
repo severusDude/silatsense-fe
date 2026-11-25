@@ -68,6 +68,10 @@ export const SCORE_REASON_TRANSLATIONS: Record<string, string> = {
 
   // Analysis / Model states
   experimental: "Analisis eksperimental",
+  reference_compared: "Perbandingan referensi selesai",
+  correctness_not_validated: "Penilaian benar/salah belum tervalidasi",
+  reference_model_unavailable: "Model referensi belum tersedia",
+  reference_version_unavailable: "Versi referensi belum tersedia",
   scoring_unavailable: "Penilaian belum tersedia",
   unavailable: "Penilaian tidak tersedia",
 
@@ -235,7 +239,7 @@ export function toHistoryEntryViewModel(item: HistoryItem): HistoryEntryViewMode
 
   const scoreAvailable = item.score !== null;
   const scoreLabel = scoreAvailable ? `${Math.round(item.score!)} poin` : "—";
-  const scoreCaption = scoreAvailable ? "Skor Kemiripan" : "Belum dinilai";
+  const scoreCaption = scoreAvailable ? "Skor Kemiripan" : session.analysisStatus === "reference_compared" ? "Perbandingan selesai · tanpa skor" : "Belum dinilai";
 
   return {
     id: session.id,
@@ -358,7 +362,7 @@ export function toSessionDetailViewModel(detail: SessionDetail): SessionDetailVi
 
   const scoreValue = detail.evaluation?.score ?? null;
   const scoreAvailable = scoreValue !== null;
-  const scoreLabel = scoreAvailable ? `${Math.round(scoreValue!)} poin` : "Belum dinilai";
+  const scoreLabel = scoreAvailable ? `${Math.round(scoreValue!)} poin` : detail.evaluation?.analysisStatus === "reference_compared" ? "Perbandingan selesai · tanpa skor" : "Belum dinilai";
 
   // Body assessments from coach review
   const coachBodyAssessments: PostureAssessmentViewModel[] = (detail.review?.bodyAssessments ?? []).map((ba) => {

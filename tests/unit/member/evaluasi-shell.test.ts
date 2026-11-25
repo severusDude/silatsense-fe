@@ -13,8 +13,8 @@ describe("evaluasi components", () => {
     // Assert
     expect(src).not.toContain("absolute");
     expect(src).toContain("aspect-[4/3]");
-    expect(src).toContain("<video");
-    expect(src).toContain("controls");
+    expect(src).toContain("PoseVideoPlayer");
+    expect(read("features/member/components/pose-video-player.tsx")).toContain("controls");
     expect(src).toContain("/api/member/sessions/${evaluation.sessionId}/video");
     expect(src).toContain("MediaUnavailable");
     expect(src).toContain("mediaMetaLabel");
@@ -154,10 +154,10 @@ describe("evaluasi card shells", () => {
     const src = read("features/member/components/evaluasi-playback.tsx");
 
     // Assert
-    expect(src).toContain("-mx-6");
-    expect(src).toContain("min-w-[calc(100%_+_3rem)]");
+    expect(src).toContain("PoseVideoPlayer");
+    expect(read("features/member/components/pose-video-player.tsx")).toContain("min-w-0");
     expect(src).toContain("aspect-[4/3]");
-    expect(src).toContain("<video");
+    expect(src).toContain("PoseVideoPlayer");
     expect(src).not.toContain("absolute");
   });
 

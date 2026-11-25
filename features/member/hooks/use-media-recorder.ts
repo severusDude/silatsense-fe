@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { zAcceptedSession, zDomainErrorOut } from "@/api/zod.gen";
+import type { MovementOption, UploadRequest } from "@/api";
+import { checksum, directUpload, putVideo, type UploadActions, type UploadState } from "@/features/member/direct-upload";
 import { formatBytes } from "@/features/member/data/format";
+import { prepareVideoFile } from "@/features/member/video-file";
 import {
   baseMimeType,
-  describeUploadFailure,
   effectiveUploadMaxBytes,
   pickRecorderMimeType,
   recordingFileName,
@@ -17,36 +18,13 @@ import type {
   TrainingModuleSlug,
 } from "@/features/member/types";
 
-const UPLOAD_ENDPOINT = "/api/member/sessions";
-const UPLOAD_TIMEOUT_MS = 120_000;
-
-function parseJson(body: string): unknown {
-  try {
-    return JSON.parse(body) as unknown;
-  } catch {
-    return null;
-  }
-}
-
-function readSessionId(body: string): string | null {
-  const parsed = zAcceptedSession.safeParse(parseJson(body));
-  return parsed.success ? parsed.data.sessionId : null;
-}
-
-function readErrorDetail(body: string): string | null {
-  const parsed = zDomainErrorOut.safeParse(parseJson(body));
-  return parsed.success ? parsed.data.detail : null;
-}
-
-/**
- * Owns the capture lifecycle: countdown, MediaRecorder, max-duration stop,
- * preview URL, idempotent upload progress, and navigation to the session.
- *
- * The blob never leaves this client island until it is sent as multipart to
- * the same-origin BFF, so the HttpOnly access token stays server-side.
- */
 export function useMediaRecorder({
   slug,
+  movementId,
+  movements = [],
+  movementIdRequired = false,
+  initAction,
+  completeAction,
   stream,
   countdownSec,
   maxDurationSec,
@@ -56,6 +34,11 @@ export function useMediaRecorder({
   onRecordingComplete,
 }: {
   slug: TrainingModuleSlug;
+  movementId?: string;
+  movements?: MovementOption[];
+  movementIdRequired?: boolean;
+  initAction: UploadActions["initAction"];
+  completeAction: UploadActions["completeAction"];
   stream: MediaStream | null;
   countdownSec: number;
   maxDurationSec: number;
@@ -68,10 +51,16 @@ export function useMediaRecorder({
   const [phase, setPhase] = useState<RecorderPhase>("idle");
   const [countdownRemaining, setCountdownRemaining] = useState(0);
   const [elapsedSec, setElapsedSec] = useState(0);
+  const [uploadStage, setUploadStage] = useState("Menyiapkan rekaman");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RecordedClip | null>(null);
+  const [isPreparingFile, setIsPreparingFile] = useState(false);
+  const fileSelectionRef = useRef<AbortController | null>(null);
 
+  const uploadStateRef = useRef<UploadState>({});
+  const abortRef = useRef<AbortController | null>(null);
+  const targetRef = useRef<string | undefined>(undefined);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const startedAtRef = useRef<number | null>(null);
@@ -91,7 +80,9 @@ export function useMediaRecorder({
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      fileSelectionRef.current?.abort();
 
+      abortRef.current?.abort();
       const xhr = xhrRef.current;
       if (xhr) {
         xhr.upload.onprogress = null;
@@ -223,7 +214,12 @@ export function useMediaRecorder({
   }, [maxBytes, maxDurationSec, slug, stream]);
 
   const start = useCallback(() => {
-    if (phase !== "idle") return;
+    if (phase !== "idle" || isPreparingFile) return;
+    if ((movementIdRequired && !movementId) || (movementId && !movements.some((item) => item.id === movementId))) {
+      setError("Pilih target gerakan sebelum merekam."); return;
+    }
+    targetRef.current = movementId;
+    uploadStateRef.current = {};
 
     if (
       typeof window === "undefined" ||
@@ -259,7 +255,43 @@ export function useMediaRecorder({
     setCountdownRemaining(Math.max(0, Math.round(countdownSec)));
     setError(null);
     setPhase("countdown");
-  }, [acceptedMimeTypes, countdownSec, phase, stream]);
+  }, [acceptedMimeTypes, countdownSec, phase, stream, movementId, movementIdRequired, movements, isPreparingFile]);
+
+  const selectFile = useCallback(async (file: File) => {
+    if (phase !== "idle" || isPreparingFile) return;
+    if ((movementIdRequired && !movementId) || (movementId && !movements.some((item) => item.id === movementId))) {
+      setError("Pilih target gerakan sebelum memilih video.");
+      return;
+    }
+    fileSelectionRef.current?.abort();
+    const controller = new AbortController();
+    fileSelectionRef.current = controller;
+    targetRef.current = movementId;
+    setIsPreparingFile(true);
+    setError(null);
+    try {
+      const clip = await prepareVideoFile(file, { acceptedMimeTypes, maxBytes, maxDurationSec }, controller.signal);
+      if (!mountedRef.current || controller.signal.aborted) {
+        URL.revokeObjectURL(clip.previewUrl);
+        return;
+      }
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = clip.previewUrl;
+      uploadStateRef.current = {};
+      idempotencyKeyRef.current = crypto.randomUUID();
+      setResult(clip);
+      setElapsedSec(clip.durationSec);
+      setProgress(0);
+      setPhase("recorded");
+      onRecordingCompleteRef.current?.();
+    } catch (error) {
+      if (mountedRef.current && !controller.signal.aborted) {
+        setError(error instanceof Error ? error.message : "Video gagal dibaca. Pilih video lain.");
+      }
+    } finally {
+      if (mountedRef.current && fileSelectionRef.current === controller) setIsPreparingFile(false);
+    }
+  }, [phase, isPreparingFile, movementId, movementIdRequired, movements, acceptedMimeTypes, maxBytes, maxDurationSec]);
 
   const cancelCountdown = useCallback(() => {
     setPhase("idle");
@@ -269,6 +301,10 @@ export function useMediaRecorder({
   }, []);
 
   const discard = useCallback(() => {
+    fileSelectionRef.current?.abort();
+    setIsPreparingFile(false);
+    abortRef.current?.abort();
+    uploadStateRef.current = {};
     const recorder = recorderRef.current;
     if (recorder && recorder.state !== "inactive") {
       recorder.ondataavailable = null;
@@ -365,101 +401,53 @@ export function useMediaRecorder({
       idempotencyKeyRef.current ?? crypto.randomUUID();
     idempotencyKeyRef.current = idempotencyKey;
 
-    const form = new FormData();
-    form.set("movementSlug", slug);
-    form.set(
-      "video",
-      new File([result.blob], result.fileName, {
-        type: baseMimeType(result.mimeType),
-      }),
-    );
-    if (retryOf) form.set("retryOf", retryOf);
-
-    setPhase("uploading");
-    setProgress(0);
-    setError(null);
-
-    const xhr = new XMLHttpRequest();
-    xhrRef.current = xhr;
-    xhr.open("POST", UPLOAD_ENDPOINT);
-    xhr.setRequestHeader("Idempotency-Key", idempotencyKey);
-    xhr.timeout = UPLOAD_TIMEOUT_MS;
-
-    xhr.upload.onprogress = (event) => {
-      if (!event.lengthComputable || event.total <= 0) return;
-      setProgress(
-        Math.min(99, Math.round((event.loaded / event.total) * 100)),
-      );
-    };
-
-    xhr.onload = () => {
-      xhrRef.current = null;
-      if (!mountedRef.current) return;
-
-      if (xhr.status === 202) {
-        const sessionId = readSessionId(xhr.responseText);
-        if (!sessionId) {
-          setPhase("failed");
-          setProgress(0);
-          setError("Respons server tidak dikenali. Coba unggah ulang.");
-          return;
+    setPhase("uploading"); setProgress(0); setError(null);
+    const controller = new AbortController();
+    abortRef.current = controller;
+    void (async () => {
+      try {
+        const state = uploadStateRef.current;
+        setUploadStage("Menghitung checksum rekaman");
+        if (!state.metadata) state.metadata = {
+          movementSlug: slug, movementId: targetRef.current as UploadRequest["movementId"],
+          filename: result.fileName, mimeType: baseMimeType(result.mimeType) as UploadRequest["mimeType"],
+          byteSize: result.byteSize, sha256: await checksum(result.blob), ...(retryOf ? { retryOf } : {}),
+        };
+        const accepted = await directUpload(state, state.metadata, idempotencyKey, result.blob,
+          { initAction, completeAction },
+          (ticket, blob) => putVideo(ticket, blob, (value) => { if (mountedRef.current) setProgress(value); }, controller.signal, (xhr) => { xhrRef.current = xhr; }), controller.signal, (stage) => {
+            if (mountedRef.current && !controller.signal.aborted) setUploadStage(stage === "ticket" ? "Meminta tiket unggahan" : stage === "put" ? "Mengunggah langsung ke penyimpanan" : "Mengonfirmasi unggahan");
+          });
+        if (mountedRef.current && !controller.signal.aborted) {
+          if (targetRef.current) { try { sessionStorage.setItem(`silatsense:target:${accepted.sessionId}`, targetRef.current); } catch {} }
+          setProgress(100); router.push(`/latihan/${slug}/sesi/${accepted.sessionId}`); }
+      } catch (error) {
+        if (mountedRef.current && !controller.signal.aborted) {
+          setPhase("failed"); setError(error instanceof Error ? error.message : "Unggahan gagal. Coba lagi.");
         }
+      } finally { if (abortRef.current === controller) xhrRef.current = null; }
+    })();
+  }, [maxBytes, phase, result, retryOf, router, slug, initAction, completeAction]);
 
-        setProgress(100);
-        router.push(`/latihan/${slug}/sesi/${sessionId}`);
-        return;
-      }
-
-      setPhase("failed");
-      setProgress(0);
-      setError(describeUploadFailure(xhr.status, readErrorDetail(xhr.responseText)));
-    };
-
-    xhr.onerror = () => {
-      xhrRef.current = null;
-      if (!mountedRef.current) return;
-      setPhase("failed");
-      setProgress(0);
-      setError(describeUploadFailure(null));
-    };
-
-    xhr.ontimeout = () => {
-      xhrRef.current = null;
-      if (!mountedRef.current) return;
-      setPhase("failed");
-      setProgress(0);
-      setError("Unggahan terlalu lama. Periksa koneksi lalu coba lagi.");
-    };
-
-    xhr.onabort = () => {
-      xhrRef.current = null;
-      if (!mountedRef.current) return;
-      setPhase("failed");
-      setProgress(0);
-      setError("Unggahan dibatalkan. Coba lagi.");
-    };
-
-    try {
-      xhr.send(form);
-    } catch {
-      xhrRef.current = null;
-      setPhase("failed");
-      setProgress(0);
-      setError("Tidak dapat memulai unggahan. Coba lagi.");
-    }
-  }, [maxBytes, phase, result, retryOf, router, slug]);
+  const cancelUpload = useCallback(() => {
+    abortRef.current?.abort(); setPhase("failed"); setError("Unggahan dibatalkan. Coba lagi untuk melanjutkan.");
+  }, []);
 
   return {
     phase,
     countdownRemaining,
     elapsedSec,
     progress,
+    uploadStage,
     error,
     result,
+    isPreparingFile,
+    selectFile,
     start,
     cancelCountdown,
     stop,
     discard,
     upload,
+    cancelUpload,
   };
 }

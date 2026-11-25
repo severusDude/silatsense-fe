@@ -44,7 +44,7 @@ export function ModuleCard({ module }: { module: TrainingModuleViewModel }) {
         ) : null}
         {module.scoringAvailable ? null : (
           <Badge variant="outline" className="w-fit text-muted-foreground">
-            Penilaian segera hadir
+            {module.referenceComparisonAvailable ? "Perbandingan referensi eksperimental" : "Penilaian segera hadir"}
           </Badge>
         )}
         <Link

@@ -256,6 +256,7 @@ describe("toPersiapanViewModel", () => {
 
     // Assert
     expect(vm.capability).toEqual({
+      referenceComparisonAvailable: false,
       scoringAvailable: false,
       reason: "reference_not_ready",
       method: "static-reference-pose",

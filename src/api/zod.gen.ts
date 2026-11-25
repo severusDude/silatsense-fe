@@ -6,10 +6,10 @@ import * as z from 'zod';
  * AcceptedSession
  */
 export const zAcceptedSession = z.object({
-    sessionId: z.string(),
-    processingStatus: z.literal('queued').optional().default('queued'),
-    statusUrl: z.string(),
     evaluationUrl: z.string(),
+    processingStatus: z.literal('queued').optional().default('queued'),
+    sessionId: z.string(),
+    statusUrl: z.string(),
     uploadedAt: z.iso.datetime()
 });
 
@@ -24,24 +24,24 @@ export const zAcknowledgedOut = z.object({
  * AnalysisIssue
  */
 export const zAnalysisIssue = z.object({
-    feature: z.string(),
     bodyPart: z.string(),
     deviation: z.number(),
-    unit: z.enum(['deg', 'shoulder_width']),
+    feature: z.string(),
+    feedback: z.string(),
     severity: z.enum([
         'low',
         'medium',
         'high'
     ]),
-    feedback: z.string()
+    unit: z.enum(['deg', 'shoulder_width'])
 });
 
 /**
  * AuthUser
  */
 export const zAuthUser = z.object({
-    id: z.string(),
     fullName: z.string(),
+    id: z.string(),
     identifier: z.string(),
     role: z.enum(['member', 'coach'])
 });
@@ -50,9 +50,9 @@ export const zAuthUser = z.object({
  * AuthTokens
  */
 export const zAuthTokens = z.object({
-    user: zAuthUser,
     accessToken: z.string(),
-    expiresIn: z.int()
+    expiresIn: z.int(),
+    user: zAuthUser
 });
 
 /**
@@ -60,40 +60,42 @@ export const zAuthTokens = z.object({
  */
 export const zBodyAssessment = z.object({
     bodyPart: z.string().min(1).max(80),
+    note: z.string().max(2000).nullish(),
     status: z.enum([
         'not_assessed',
         'needs_revision',
         'approved'
-    ]),
-    note: z.string().max(2000).nullish()
+    ])
 });
 
 /**
  * Body_upload_session_api_v1_member_sessions_post
  */
 export const zBodyUploadSessionApiV1MemberSessionsPost = z.object({
+    movementId: z.string().nullish(),
     movementSlug: z.string(),
-    video: z.string(),
-    retryOf: z.string().nullish()
+    retryOf: z.string().nullish(),
+    video: z.string()
 });
 
 /**
  * Capability
  */
 export const zCapability = z.object({
-    scoringAvailable: z.boolean(),
-    reason: z.literal('reference_not_ready').nullable(),
-    method: z.literal('static-reference-pose').optional().default('static-reference-pose'),
+    method: z.enum(['static-reference-pose', 'coach-reference-dtw']).optional().default('static-reference-pose'),
+    reason: z.enum(['reference_not_ready', 'correctness_not_validated']).nullable(),
+    referenceComparisonAvailable: z.boolean().optional().default(false),
     referenceVersions: z.array(z.string()),
-    repetitionCountingAvailable: z.literal(false).optional().default(false)
+    repetitionCountingAvailable: z.literal(false).optional().default(false),
+    scoringAvailable: z.boolean()
 });
 
 /**
  * CoachIdentity
  */
 export const zCoachIdentity = z.object({
-    id: z.string(),
     fullName: z.string(),
+    id: z.string(),
     title: z.string().nullable()
 });
 
@@ -101,8 +103,8 @@ export const zCoachIdentity = z.object({
  * CoachProfilePatch
  */
 export const zCoachProfilePatch = z.object({
-    fullName: z.string().max(120).nullish(),
     division: z.string().max(120).nullish(),
+    fullName: z.string().max(120).nullish(),
     title: z.string().max(120).nullish()
 });
 
@@ -111,8 +113,8 @@ export const zCoachProfilePatch = z.object({
  */
 export const zDailyActivity = z.object({
     date: z.string(),
-    sessionCount: z.int(),
-    durationSeconds: z.number()
+    durationSeconds: z.number(),
+    sessionCount: z.int()
 });
 
 /**
@@ -124,12 +126,40 @@ export const zEmailLinkRequest = z.object({
 });
 
 /**
+ * FeatureComparison
+ */
+export const zFeatureComparison = z.object({
+    color: z.enum([
+        'green',
+        'yellow',
+        'red'
+    ]).nullable(),
+    deviation: z.number().gte(0).nullable(),
+    reason: z.string().nullable(),
+    referenceValue: z.number().nullable(),
+    unit: z.enum(['deg', 'torso_length_ratio']),
+    value: z.number().nullable()
+});
+
+/**
+ * FeatureSummary
+ */
+export const zFeatureSummary = z.object({
+    colorCounts: z.record(z.string(), z.int()),
+    coverage: z.number().gte(0).lte(1),
+    maximumDeviation: z.number().gte(0).nullable(),
+    medianDeviation: z.number().gte(0).nullable(),
+    sampleCount: z.int().gte(0).lte(32),
+    unit: z.enum(['deg', 'torso_length_ratio'])
+});
+
+/**
  * GuideItem
  */
 export const zGuideItem = z.object({
     id: z.string(),
-    text: z.string().min(1),
-    source: z.string().min(1)
+    source: z.string().min(1),
+    text: z.string().min(1)
 });
 
 /**
@@ -138,6 +168,70 @@ export const zGuideItem = z.object({
 export const zIssueCount = z.object({
     feature: z.string(),
     sessionCount: z.int()
+});
+
+/**
+ * JointComparison
+ */
+export const zJointComparison = z.object({
+    color: z.enum([
+        'green',
+        'yellow',
+        'red'
+    ]).nullable(),
+    deviation: z.number().gte(0).nullable(),
+    feedbackCode: z.string().nullable(),
+    landmarkIndices: z.tuple([
+        z.int(),
+        z.int(),
+        z.int()
+    ]),
+    reason: z.string().nullable(),
+    referenceValue: z.number().nullable(),
+    unit: z.enum(['deg', 'torso_length_ratio']),
+    value: z.number().nullable()
+});
+
+/**
+ * ComparisonFrame
+ */
+export const zComparisonFrame = z.object({
+    features: z.record(z.string(), zFeatureComparison),
+    joints: z.record(z.string(), zJointComparison),
+    phase: z.string().nullable(),
+    referenceTimeSeconds: z.number().gte(0),
+    timeSeconds: z.number().gte(0)
+});
+
+/**
+ * CoachComparison
+ */
+export const zCoachComparison = z.object({
+    alignmentDistance: z.number().gte(0).nullish(),
+    correctness: z.null().optional(),
+    experimental: z.literal(true).optional().default(true),
+    features: z.record(z.string(), zFeatureSummary),
+    frames: z.array(zComparisonFrame).max(32),
+    movementId: z.enum([
+        'pukulan_depan',
+        'pukulan_melingkar',
+        'pukulan_bandul',
+        'tendangan_depan',
+        'tendangan_sabit',
+        'tendangan_t',
+        'kuda_kuda_tengah',
+        'kuda_kuda_depan',
+        'kuda_kuda_samping',
+        'tangkisan_atas',
+        'tangkisan_dalam',
+        'tangkisan_bawah'
+    ]),
+    qualityAssessmentValidated: z.literal(false).optional().default(false),
+    reason: z.string().nullish(),
+    score: z.null().optional(),
+    semanticPhasesAvailable: z.boolean().optional().default(false),
+    status: z.enum(['compared', 'not_assessable']),
+    toleranceStatus: z.string()
 });
 
 /**
@@ -153,95 +247,118 @@ export const zKeyFrame = z.object({
  */
 export const zLandmark = z.object({
     index: z.int().gte(0).lte(32),
+    visibility: z.number().gte(0).lte(1),
     x: z.number(),
     y: z.number(),
-    z: z.number(),
-    visibility: z.number().gte(0).lte(1)
+    z: z.number()
 });
 
 /**
  * Measurement
  */
 export const zMeasurement = z.object({
-    feature: z.string(),
-    bodyPart: z.string(),
-    value: z.number().nullable(),
-    unit: z.enum(['deg', 'shoulder_width']),
-    referenceMedian: z.number().nullable(),
-    referenceIqr: z.number().nullable(),
-    deviation: z.number().nullable(),
     assessment: z.enum([
         'within_reference',
         'deviates',
         'not_assessed'
     ]),
-    reason: z.string().nullable()
+    bodyPart: z.string(),
+    deviation: z.number().nullable(),
+    feature: z.string(),
+    reason: z.string().nullable(),
+    referenceIqr: z.number().nullable(),
+    referenceMedian: z.number().nullable(),
+    unit: z.enum(['deg', 'shoulder_width']),
+    value: z.number().nullable()
 });
 
 /**
  * EvaluationOut
  */
 export const zEvaluationOut = z.object({
+    analysisStatus: z.enum([
+        'experimental',
+        'reference_not_ready',
+        'insufficient_pose',
+        'insufficient_features',
+        'reference_compared'
+    ]),
+    analyzerVersion: z.string(),
+    coachComparison: zCoachComparison.nullish(),
+    deviatedRepetitions: z.null().optional(),
+    evaluatedAt: z.iso.datetime(),
+    featureVersion: z.string().nullable(),
+    featuresCompared: z.int().nullable(),
+    framesProcessed: z.int(),
     id: z.string(),
-    sessionId: z.string(),
+    issues: z.array(zAnalysisIssue),
+    keyFrame: zKeyFrame.nullable(),
+    matchedVariant: z.string().nullable(),
+    measurements: z.array(zMeasurement),
+    method: z.enum(['static-reference-pose', 'coach-reference-dtw']).optional().default('static-reference-pose'),
     movementSlug: z.enum([
         'kuda-kuda',
         'pukulan',
         'tangkisan',
         'tendangan'
     ]),
-    evaluatedAt: z.iso.datetime(),
-    analysisStatus: z.enum([
-        'experimental',
-        'reference_not_ready',
-        'insufficient_pose',
-        'insufficient_features'
-    ]),
-    score: z.number().gte(0).lte(100).nullable(),
-    scoreUnit: z.literal('similarity_points').optional().default('similarity_points'),
-    scoreReason: z.string().nullable(),
-    matchedVariant: z.string().nullable(),
-    method: z.literal('static-reference-pose').optional().default('static-reference-pose'),
-    analyzerVersion: z.string(),
-    featureVersion: z.string().nullable(),
-    referenceVersion: z.string().nullable(),
     poseStatus: z.enum(['detected', 'not_detected']),
-    framesProcessed: z.int(),
+    referenceVersion: z.string().nullable(),
+    score: z.number().gte(0).lte(100).nullable(),
+    scoreReason: z.string().nullable(),
+    scoreUnit: z.literal('similarity_points').optional().default('similarity_points'),
+    sessionId: z.string(),
+    unavailableReasons: z.array(z.string()),
     validPoseFrames: z.int(),
-    featuresCompared: z.int().nullable(),
-    keyFrame: zKeyFrame.nullable(),
-    measurements: z.array(zMeasurement),
-    issues: z.array(zAnalysisIssue),
-    validRepetitions: z.null().optional(),
-    deviatedRepetitions: z.null().optional(),
-    unavailableReasons: z.array(z.string())
+    validRepetitions: z.null().optional()
 });
 
 /**
  * MediaOut
  */
 export const zMediaOut = z.object({
+    byteSize: z.int().nullable(),
+    durationSeconds: z.number().nullable(),
+    expiresAt: z.iso.datetime().nullable(),
+    height: z.int().nullable(),
+    mimeType: z.string().nullable(),
+    playbackPath: z.string().nullable(),
     status: z.enum([
         'available',
         'expired',
         'deleted',
         'unavailable'
     ]),
-    expiresAt: z.iso.datetime().nullable(),
-    mimeType: z.string().nullable(),
-    byteSize: z.int().nullable(),
-    durationSeconds: z.number().nullable(),
-    width: z.int().nullable(),
-    height: z.int().nullable(),
-    playbackPath: z.string().nullable()
+    width: z.int().nullable()
 });
 
 /**
  * MemberProfilePatch
  */
 export const zMemberProfilePatch = z.object({
-    fullName: z.string().max(120).nullish(),
-    division: z.string().max(120).nullish()
+    division: z.string().max(120).nullish(),
+    fullName: z.string().max(120).nullish()
+});
+
+/**
+ * MovementOption
+ */
+export const zMovementOption = z.object({
+    id: z.enum([
+        'pukulan_depan',
+        'pukulan_melingkar',
+        'pukulan_bandul',
+        'tendangan_depan',
+        'tendangan_sabit',
+        'tendangan_t',
+        'kuda_kuda_tengah',
+        'kuda_kuda_depan',
+        'kuda_kuda_samping',
+        'tangkisan_atas',
+        'tangkisan_dalam',
+        'tangkisan_bawah'
+    ]),
+    name: z.string()
 });
 
 /**
@@ -256,56 +373,47 @@ export const zPasswordChange = z.object({
  * PoseData
  */
 export const zPoseData = z.object({
-    kind: z.literal('keyframe').optional().default('keyframe'),
-    frameIndex: z.int().gte(0),
-    timeSeconds: z.number().gte(0),
     coordinateSystem: z.literal('image-normalized').optional().default('image-normalized'),
-    origin: z.literal('top-left').optional().default('top-left'),
-    imageWidth: z.int().gt(0),
+    frameIndex: z.int().gte(0),
     imageHeight: z.int().gt(0),
-    landmarks: z.array(zLandmark).min(1).max(33)
-});
-
-/**
- * PoseOut
- */
-export const zPoseOut = z.object({
-    sessionId: z.string(),
-    pose: zPoseData.nullable(),
-    reason: z.string().nullable()
+    imageWidth: z.int().gt(0),
+    kind: z.literal('keyframe').optional().default('keyframe'),
+    landmarks: z.array(zLandmark).min(1).max(33),
+    origin: z.literal('top-left').optional().default('top-left'),
+    timeSeconds: z.number().gte(0)
 });
 
 /**
  * PublishInput
  */
 export const zPublishInput = z.object({
-    expectedRevision: z.int().gte(0),
-    expectedDraftVersion: z.int().gte(1)
+    expectedDraftVersion: z.int().gte(1),
+    expectedRevision: z.int().gte(0)
 });
 
 /**
  * PublishedNote
  */
 export const zPublishedNote = z.object({
-    id: z.string(),
     author: zCoachIdentity,
-    text: z.string(),
-    publishedAt: z.iso.datetime()
+    id: z.string(),
+    publishedAt: z.iso.datetime(),
+    text: z.string()
 });
 
 /**
  * PublishedReview
  */
 export const zPublishedReview = z.object({
-    id: z.string(),
-    revision: z.int(),
     author: zCoachIdentity,
-    publishedAt: z.iso.datetime(),
-    decision: z.enum(['approved', 'needs_revision']),
-    note: z.string().nullable(),
     bodyAssessments: z.array(zBodyAssessment),
-    taskIds: z.array(z.string()),
-    supersedesReviewId: z.string().nullable()
+    decision: z.enum(['approved', 'needs_revision']),
+    id: z.string(),
+    note: z.string().nullable(),
+    publishedAt: z.iso.datetime(),
+    revision: z.int(),
+    supersedesReviewId: z.string().nullable(),
+    taskIds: z.array(z.string())
 });
 
 /**
@@ -326,8 +434,8 @@ export const zRecoveryAccepted = z.object({
  * ResetConfirm
  */
 export const zResetConfirm = z.object({
-    token: z.string().min(32).max(128).regex(/^[A-Za-z0-9_-]+$/),
-    newPassword: z.string().min(8).max(128)
+    newPassword: z.string().min(8).max(128),
+    token: z.string().min(32).max(128).regex(/^[A-Za-z0-9_-]+$/)
 });
 
 /**
@@ -348,9 +456,9 @@ export const zRetryInput = z.object({
  * RetryOut
  */
 export const zRetryOut = z.object({
+    createdAt: z.iso.datetime(),
     id: z.string(),
-    sourceSessionId: z.string(),
-    createdAt: z.iso.datetime()
+    sourceSessionId: z.string()
 });
 
 /**
@@ -365,46 +473,46 @@ export const zSessionFailure = z.object({
  * SessionOut
  */
 export const zSessionOut = z.object({
+    acknowledgedAt: z.iso.datetime().nullable(),
+    analysisStatus: z.string().nullable(),
+    completedAt: z.iso.datetime().nullable(),
+    createdAt: z.iso.datetime(),
+    error: zSessionFailure.nullable(),
+    evaluationId: z.string().nullable(),
     id: z.string(),
+    media: zMediaOut,
     movementSlug: z.enum([
         'kuda-kuda',
         'pukulan',
         'tangkisan',
         'tendangan'
     ]),
-    createdAt: z.iso.datetime(),
-    uploadedAt: z.iso.datetime().nullable(),
-    startedAt: z.iso.datetime().nullable(),
-    completedAt: z.iso.datetime().nullable(),
     processingStatus: z.enum([
         'queued',
         'processing',
         'completed',
         'failed'
     ]),
-    analysisStatus: z.string().nullable(),
-    evaluationId: z.string().nullable(),
+    retryOf: z.string().nullable(),
+    reviewAvailable: z.boolean().optional().default(false),
     reviewStatus: z.enum([
         'pending',
         'approved',
         'needs_revision'
     ]).optional().default('pending'),
-    reviewAvailable: z.boolean().optional().default(false),
-    retryOf: z.string().nullable(),
-    acknowledgedAt: z.iso.datetime().nullable(),
-    error: zSessionFailure.nullable(),
-    media: zMediaOut
+    startedAt: z.iso.datetime().nullable(),
+    uploadedAt: z.iso.datetime().nullable()
 });
 
 /**
  * HistoryItem
  */
 export const zHistoryItem = z.object({
-    session: zSessionOut,
     movementName: z.string(),
+    review: zPublishedReview.nullish(),
     score: z.number().nullable(),
     scoreReason: z.string().nullable(),
-    review: zPublishedReview.nullish()
+    session: zSessionOut
 });
 
 /**
@@ -437,12 +545,12 @@ export const zSignUp = z.object({
  * SimilarityGroup
  */
 export const zSimilarityGroup = z.object({
-    movementSlug: z.string(),
-    method: z.string(),
     analyzerVersion: z.string(),
-    featureVersion: z.string(),
-    referenceVersion: z.string(),
     averageScore: z.number().nullable(),
+    featureVersion: z.string(),
+    method: z.string(),
+    movementSlug: z.string(),
+    referenceVersion: z.string(),
     sampleCount: z.int()
 });
 
@@ -451,11 +559,11 @@ export const zSimilarityGroup = z.object({
  */
 export const zActivitySummary = z.object({
     completedSessionCount: z.int(),
-    totalDurationSeconds: z.number(),
     durationSampleCount: z.int(),
-    scoredSessionCount: z.int(),
     excludedScoreCount: z.int(),
-    similarityGroups: z.array(zSimilarityGroup)
+    scoredSessionCount: z.int(),
+    similarityGroups: z.array(zSimilarityGroup),
+    totalDurationSeconds: z.number()
 });
 
 /**
@@ -463,9 +571,9 @@ export const zActivitySummary = z.object({
  */
 export const zCoachOverview = z.object({
     memberCount: z.int(),
+    recentSessions: z.array(zHistoryItem),
     reviewQueueCount: z.int(),
     statistics: zActivitySummary,
-    recentSessions: z.array(zHistoryItem),
     topIssues: z.array(zIssueCount)
 });
 
@@ -473,9 +581,6 @@ export const zCoachOverview = z.object({
  * Dashboard
  */
 export const zDashboard = z.object({
-    statistics: zActivitySummary,
-    lastSession: zHistoryItem.nullable(),
-    latestCoachNote: zPublishedNote.nullable(),
     coach: zCoachIdentity.nullish(),
     dominantMovementSlug: z.enum([
         'kuda-kuda',
@@ -483,36 +588,39 @@ export const zDashboard = z.object({
         'tangkisan',
         'tendangan'
     ]).nullable(),
-    weeklyActivity: z.array(zDailyActivity),
-    timezone: z.literal('Asia/Jakarta').optional().default('Asia/Jakarta')
+    lastSession: zHistoryItem.nullable(),
+    latestCoachNote: zPublishedNote.nullable(),
+    statistics: zActivitySummary,
+    timezone: z.literal('Asia/Jakarta').optional().default('Asia/Jakarta'),
+    weeklyActivity: z.array(zDailyActivity)
 });
 
 /**
  * ProfileOut
  */
 export const zProfileOut = z.object({
-    id: z.string(),
-    role: z.enum(['member', 'coach']),
-    fullName: z.string(),
-    npm: z.string().nullable(),
-    email: z.string().nullable(),
-    emailVerifiedAt: z.iso.datetime().nullable(),
-    division: z.string().nullable(),
-    title: z.string().nullable(),
     belt: z.string().nullable(),
     beltTarget: z.string().nullable(),
-    passwordChangedAt: z.iso.datetime().nullable(),
     coach: zCoachIdentity.nullable(),
     createdAt: z.iso.datetime(),
-    statistics: zActivitySummary.nullable()
+    division: z.string().nullable(),
+    email: z.string().nullable(),
+    emailVerifiedAt: z.iso.datetime().nullable(),
+    fullName: z.string(),
+    id: z.string(),
+    npm: z.string().nullable(),
+    passwordChangedAt: z.iso.datetime().nullable(),
+    role: z.enum(['member', 'coach']),
+    statistics: zActivitySummary.nullable(),
+    title: z.string().nullable()
 });
 
 /**
  * RosterDetail
  */
 export const zRosterDetail = z.object({
-    profile: zProfileOut,
     latestSession: zHistoryItem.nullable(),
+    profile: zProfileOut,
     statistics: zActivitySummary
 });
 
@@ -520,8 +628,8 @@ export const zRosterDetail = z.object({
  * RosterMember
  */
 export const zRosterMember = z.object({
-    profile: zProfileOut,
-    latestSession: zHistoryItem.nullable()
+    latestSession: zHistoryItem.nullable(),
+    profile: zProfileOut
 });
 
 /**
@@ -543,10 +651,10 @@ export const zTaskInput = z.object({
  * DraftInput
  */
 export const zDraftInput = z.object({
-    expectedVersion: z.int().gte(0),
-    decision: z.enum(['approved', 'needs_revision']).nullish(),
-    note: z.string().max(5000).nullish(),
     bodyAssessments: z.array(zBodyAssessment).max(33).optional(),
+    decision: z.enum(['approved', 'needs_revision']).nullish(),
+    expectedVersion: z.int().gte(0),
+    note: z.string().max(5000).nullish(),
     tasks: z.array(zTaskInput).max(20).optional()
 });
 
@@ -554,30 +662,30 @@ export const zDraftInput = z.object({
  * DraftOut
  */
 export const zDraftOut = z.object({
-    version: z.int(),
     author: zCoachIdentity,
-    updatedAt: z.iso.datetime(),
+    bodyAssessments: z.array(zBodyAssessment),
     decision: z.enum(['approved', 'needs_revision']).nullable(),
     note: z.string().nullable(),
-    bodyAssessments: z.array(zBodyAssessment),
-    tasks: z.array(zTaskInput)
+    tasks: z.array(zTaskInput),
+    updatedAt: z.iso.datetime(),
+    version: z.int()
 });
 
 /**
  * TaskOut
  */
 export const zTaskOut = z.object({
-    id: z.string(),
-    sessionId: z.string(),
-    reviewId: z.string(),
     author: zCoachIdentity,
+    createdAt: z.iso.datetime(),
+    id: z.string(),
     instruction: z.string(),
+    reviewId: z.string(),
+    sessionId: z.string(),
     status: z.enum([
         'open',
         'completed',
         'dismissed'
     ]),
-    createdAt: z.iso.datetime(),
     updatedAt: z.iso.datetime()
 });
 
@@ -585,27 +693,27 @@ export const zTaskOut = z.object({
  * CoachSessionDetail
  */
 export const zCoachSessionDetail = z.object({
-    session: zSessionOut,
-    evaluation: zEvaluationOut.nullable(),
     coach: zCoachIdentity.nullish(),
+    evaluation: zEvaluationOut.nullable(),
+    feedbackDraft: zDraftOut.nullable(),
+    followUpTasks: z.array(zTaskOut).optional(),
+    legacyNotes: z.array(zPublishedNote),
     review: zPublishedReview.nullish(),
     reviewHistory: z.array(zPublishedReview).optional(),
-    legacyNotes: z.array(zPublishedNote),
-    followUpTasks: z.array(zTaskOut).optional(),
-    feedbackDraft: zDraftOut.nullable()
+    session: zSessionOut
 });
 
 /**
  * SessionDetail
  */
 export const zSessionDetail = z.object({
-    session: zSessionOut,
-    evaluation: zEvaluationOut.nullable(),
     coach: zCoachIdentity.nullish(),
+    evaluation: zEvaluationOut.nullable(),
+    followUpTasks: z.array(zTaskOut).optional(),
+    legacyNotes: z.array(zPublishedNote),
     review: zPublishedReview.nullish(),
     reviewHistory: z.array(zPublishedReview).optional(),
-    legacyNotes: z.array(zPublishedNote),
-    followUpTasks: z.array(zTaskOut).optional()
+    session: zSessionOut
 });
 
 /**
@@ -613,6 +721,47 @@ export const zSessionDetail = z.object({
  */
 export const zTaskPatch = z.object({
     status: z.enum(['completed', 'dismissed'])
+});
+
+/**
+ * TimelineLandmark
+ */
+export const zTimelineLandmark = z.object({
+    index: z.int().gte(0).lte(32),
+    visibility: z.number().gte(0).lte(1),
+    x: z.number().gte(0).lte(1),
+    y: z.number().gte(0).lte(1)
+});
+
+/**
+ * TimelineFrame
+ */
+export const zTimelineFrame = z.object({
+    frameIndex: z.int().gte(0),
+    landmarks: z.array(zTimelineLandmark).min(1).max(33),
+    timeSeconds: z.number().gte(0)
+});
+
+/**
+ * PoseTimeline
+ */
+export const zPoseTimeline = z.object({
+    coordinateSystem: z.literal('image-normalized').optional().default('image-normalized'),
+    frames: z.array(zTimelineFrame).max(900),
+    imageHeight: z.int().gt(0),
+    imageWidth: z.int().gt(0),
+    maximumInterpolationGapSeconds: z.number().optional().default(0.15),
+    origin: z.literal('top-left').optional().default('top-left')
+});
+
+/**
+ * PoseOut
+ */
+export const zPoseOut = z.object({
+    pose: zPoseData.nullable(),
+    reason: z.string().nullable(),
+    sessionId: z.string(),
+    timeline: zPoseTimeline.nullish()
 });
 
 /**
@@ -626,18 +775,18 @@ export const zTokenConfirm = z.object({
  * TrainingModule
  */
 export const zTrainingModule = z.object({
+    capability: zCapability,
+    description: z.string().nullable(),
+    estimatedDurationSeconds: z.int().nullable(),
+    level: z.string().nullable(),
+    name: z.string(),
+    order: z.int(),
     slug: z.enum([
         'kuda-kuda',
         'pukulan',
         'tangkisan',
         'tendangan'
-    ]),
-    name: z.string(),
-    order: z.int(),
-    description: z.string().nullable(),
-    level: z.string().nullable(),
-    estimatedDurationSeconds: z.int().nullable(),
-    capability: zCapability
+    ])
 });
 
 /**
@@ -652,71 +801,88 @@ export const zTrainingCatalog = z.object({
  * TrainingPrep
  */
 export const zTrainingPrep = z.object({
-    module: zTrainingModule,
     checklist: z.array(zGuideItem),
-    guides: z.array(zGuideItem)
+    guides: z.array(zGuideItem),
+    module: zTrainingModule
 });
 
 /**
  * UploadConfig
  */
 export const zUploadConfig = z.object({
+    acceptedMimeTypes: z.array(z.string()),
+    analysisMethod: z.enum(['static-reference-pose', 'coach-reference-dtw']).optional().default('static-reference-pose'),
+    maxBytes: z.int(),
+    maxDurationSeconds: z.int(),
+    movementIdRequired: z.boolean().optional().default(false),
     movementSlug: z.enum([
         'kuda-kuda',
         'pukulan',
         'tangkisan',
         'tendangan'
     ]),
-    acceptedMimeTypes: z.array(z.string()),
-    maxBytes: z.int(),
-    maxDurationSeconds: z.int(),
-    retentionSeconds: z.literal(86400).optional().default(86400),
-    recommendedDurationSeconds: z.int().nullable()
+    movements: z.array(zMovementOption).optional(),
+    recommendedDurationSeconds: z.int().nullable(),
+    retentionSeconds: z.literal(86400).optional().default(86400)
 });
 
 /**
  * UploadRequest
  */
 export const zUploadRequest = z.object({
-    movementSlug: z.enum([
-        'kuda-kuda',
-        'pukulan',
-        'tangkisan',
-        'tendangan'
-    ]),
+    byteSize: z.int().gt(0),
     filename: z.string().min(1).max(255),
     mimeType: z.enum([
         'video/mp4',
         'video/quicktime',
         'video/webm'
     ]),
-    byteSize: z.int().gt(0),
-    sha256: z.string().regex(/^[0-9a-f]{64}$/),
-    retryOf: z.string().nullish()
+    movementId: z.enum([
+        'pukulan_depan',
+        'pukulan_melingkar',
+        'pukulan_bandul',
+        'tendangan_depan',
+        'tendangan_sabit',
+        'tendangan_t',
+        'kuda_kuda_tengah',
+        'kuda_kuda_depan',
+        'kuda_kuda_samping',
+        'tangkisan_atas',
+        'tangkisan_dalam',
+        'tangkisan_bawah'
+    ]).nullish(),
+    movementSlug: z.enum([
+        'kuda-kuda',
+        'pukulan',
+        'tangkisan',
+        'tendangan'
+    ]),
+    retryOf: z.string().nullish(),
+    sha256: z.string().regex(/^[0-9a-f]{64}$/)
 });
 
 /**
  * UploadTicket
  */
 export const zUploadTicket = z.object({
-    uploadId: z.string(),
-    uploadUrl: z.string().nullable(),
-    method: z.literal('PUT').optional().default('PUT'),
-    headers: z.record(z.string(), z.string()),
-    expiresAt: z.iso.datetime(),
+    acceptedSession: zAcceptedSession.nullish(),
     completePath: z.string(),
-    acceptedSession: zAcceptedSession.nullish()
+    expiresAt: z.iso.datetime(),
+    headers: z.record(z.string(), z.string()),
+    method: z.literal('PUT').optional().default('PUT'),
+    uploadId: z.string(),
+    uploadUrl: z.string().nullable()
 });
 
 /**
  * ValidationError
  */
 export const zValidationError = z.object({
+    ctx: z.record(z.string(), z.unknown()).optional(),
+    input: z.unknown().optional(),
     loc: z.array(z.union([z.string(), z.int()])),
     msg: z.string(),
-    type: z.string(),
-    input: z.unknown().optional(),
-    ctx: z.record(z.string(), z.unknown()).optional()
+    type: z.string()
 });
 
 /**
@@ -738,30 +904,58 @@ export const zValidationIssue = z.object({
  * DomainErrorOut
  */
 export const zDomainErrorOut = z.object({
-    detail: z.string(),
     code: z.string(),
-    requestId: z.string(),
-    errors: z.array(zValidationIssue).nullish()
+    detail: z.string(),
+    errors: z.array(zValidationIssue).nullish(),
+    requestId: z.string()
 });
 
-export const zSignUpApiV1AuthSignUpPostBody = zSignUp;
+export const zLinkConfirmApiV1AuthEmailLinkConfirmPostBody = zTokenConfirm;
 
 /**
  * Successful Response
  */
-export const zSignUpApiV1AuthSignUpPostResponse = zAuthTokens;
+export const zLinkConfirmApiV1AuthEmailLinkConfirmPostResponse = z.void();
 
-export const zSignInApiV1AuthSignInPostBody = zSignIn;
-
-/**
- * Successful Response
- */
-export const zSignInApiV1AuthSignInPostResponse = zAuthTokens;
+export const zEmailLinkApiV1AuthEmailLinkRequestPostBody = zEmailLinkRequest;
 
 /**
  * Successful Response
  */
-export const zAuthSessionApiV1AuthSessionGetResponse = zAuthUser;
+export const zEmailLinkApiV1AuthEmailLinkRequestPostResponse = zRecoveryAccepted;
+
+export const zVerifyConfirmApiV1AuthEmailVerificationConfirmPostBody = zTokenConfirm;
+
+/**
+ * Successful Response
+ */
+export const zVerifyConfirmApiV1AuthEmailVerificationConfirmPostResponse = z.void();
+
+export const zEmailVerifyApiV1AuthEmailVerificationRequestPostBody = zReauthenticate;
+
+/**
+ * Successful Response
+ */
+export const zEmailVerifyApiV1AuthEmailVerificationRequestPostResponse = zRecoveryAccepted;
+
+/**
+ * Successful Response
+ */
+export const zLogoutApiV1AuthLogoutPostResponse = z.void();
+
+export const zResetConfirmApiV1AuthPasswordResetConfirmPostBody = zResetConfirm;
+
+/**
+ * Successful Response
+ */
+export const zResetConfirmApiV1AuthPasswordResetConfirmPostResponse = z.void();
+
+export const zResetRequestApiV1AuthPasswordResetRequestPostBody = zResetRequest;
+
+/**
+ * Successful Response
+ */
+export const zResetRequestApiV1AuthPasswordResetRequestPostResponse = zRecoveryAccepted;
 
 /**
  * Successful Response
@@ -771,19 +965,33 @@ export const zRefreshApiV1AuthRefreshSessionPostResponse = zAuthTokens;
 /**
  * Successful Response
  */
-export const zLogoutApiV1AuthLogoutPostResponse = z.void();
+export const zAuthSessionApiV1AuthSessionGetResponse = zAuthUser;
+
+export const zSignInApiV1AuthSignInPostBody = zSignIn;
 
 /**
  * Successful Response
  */
-export const zMemberProfileApiV1MemberProfileGetResponse = zProfileOut;
+export const zSignInApiV1AuthSignInPostResponse = zAuthTokens;
 
-export const zUpdateMemberProfileApiV1MemberProfilePatchBody = zMemberProfilePatch;
+export const zSignUpApiV1AuthSignUpPostBody = zSignUp;
 
 /**
  * Successful Response
  */
-export const zUpdateMemberProfileApiV1MemberProfilePatchResponse = zProfileOut;
+export const zSignUpApiV1AuthSignUpPostResponse = zAuthTokens;
+
+/**
+ * Successful Response
+ */
+export const zOverviewApiV1CoachOverviewGetResponse = zCoachOverview;
+
+export const zCoachPasswordApiV1CoachPasswordPatchBody = zPasswordChange;
+
+/**
+ * Successful Response
+ */
+export const zCoachPasswordApiV1CoachPasswordPatchResponse = z.void();
 
 /**
  * Successful Response
@@ -796,180 +1004,6 @@ export const zUpdateCoachProfileApiV1CoachProfilePatchBody = zCoachProfilePatch;
  * Successful Response
  */
 export const zUpdateCoachProfileApiV1CoachProfilePatchResponse = zProfileOut;
-
-export const zMemberPasswordApiV1MemberPasswordPatchBody = zPasswordChange;
-
-/**
- * Successful Response
- */
-export const zMemberPasswordApiV1MemberPasswordPatchResponse = z.void();
-
-export const zCoachPasswordApiV1CoachPasswordPatchBody = zPasswordChange;
-
-/**
- * Successful Response
- */
-export const zCoachPasswordApiV1CoachPasswordPatchResponse = z.void();
-
-/**
- * Successful Response
- */
-export const zModulesApiV1MemberTrainingModulesGetResponse = zTrainingCatalog;
-
-export const zPrepApiV1MemberTrainingPrepSlugGetPath = z.object({
-    slug: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zPrepApiV1MemberTrainingPrepSlugGetResponse = zTrainingPrep;
-
-export const zRecordConfigApiV1MemberRecordConfigSlugGetPath = z.object({
-    slug: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zRecordConfigApiV1MemberRecordConfigSlugGetResponse = zUploadConfig;
-
-export const zUploadSessionApiV1MemberSessionsPostBody = zBodyUploadSessionApiV1MemberSessionsPost;
-
-export const zUploadSessionApiV1MemberSessionsPostHeaders = z.object({
-    'Idempotency-Key': z.string().min(1).max(128)
-});
-
-/**
- * Successful Response
- */
-export const zUploadSessionApiV1MemberSessionsPostResponse = zAcceptedSession;
-
-export const zRemoveSessionApiV1MemberSessionsSessionIdDeletePath = z.object({
-    session_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zRemoveSessionApiV1MemberSessionsSessionIdDeleteResponse = z.void();
-
-export const zSessionStatusApiV1MemberSessionsSessionIdGetPath = z.object({
-    session_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zSessionStatusApiV1MemberSessionsSessionIdGetResponse = zSessionOut;
-
-export const zEvaluationApiV1MemberSessionsSessionIdEvaluationGetPath = z.object({
-    session_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zEvaluationApiV1MemberSessionsSessionIdEvaluationGetResponse = zEvaluationOut;
-
-export const zPoseApiV1MemberSessionsSessionIdPoseGetPath = z.object({
-    session_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zPoseApiV1MemberSessionsSessionIdPoseGetResponse = zPoseOut;
-
-export const zVideoApiV1MemberSessionsSessionIdVideoGetHeaders = z.object({
-    Range: z.string().nullish()
-});
-
-export const zVideoApiV1MemberSessionsSessionIdVideoGetPath = z.object({
-    session_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zVideoApiV1MemberSessionsSessionIdVideoGetResponse = z.string();
-
-export const zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostPath = z.object({
-    session_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse = zAcknowledgedOut;
-
-export const zInitiateApiV1MemberUploadsPostBody = zUploadRequest;
-
-export const zInitiateApiV1MemberUploadsPostHeaders = z.object({
-    'Idempotency-Key': z.string().min(1).max(128)
-});
-
-/**
- * Successful Response
- */
-export const zInitiateApiV1MemberUploadsPostResponse = zUploadTicket;
-
-export const zCompleteApiV1MemberUploadsUploadIdCompletePostPath = z.object({
-    upload_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zCompleteApiV1MemberUploadsUploadIdCompletePostResponse = zAcceptedSession;
-
-export const zHistoryApiV1MemberHistoryGetQuery = z.object({
-    limit: z.int().gte(1).lte(100).optional().default(20),
-    cursor: z.string().nullish(),
-    movementSlug: z.enum([
-        'kuda-kuda',
-        'pukulan',
-        'tangkisan',
-        'tendangan'
-    ]).nullish(),
-    processingStatus: z.enum([
-        'queued',
-        'processing',
-        'completed',
-        'failed'
-    ]).nullish(),
-    reviewStatus: z.enum([
-        'pending',
-        'needs_revision',
-        'approved'
-    ]).nullish(),
-    from: z.iso.datetime().nullish(),
-    to: z.iso.datetime().nullish()
-});
-
-/**
- * Successful Response
- */
-export const zHistoryApiV1MemberHistoryGetResponse = zHistoryPage;
-
-export const zDetailApiV1MemberHistorySessionIdGetPath = z.object({
-    session_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zDetailApiV1MemberHistorySessionIdGetResponse = zSessionDetail;
-
-/**
- * Successful Response
- */
-export const zDashboardApiV1MemberDashboardGetResponse = zDashboard;
-
-/**
- * Successful Response
- */
-export const zOverviewApiV1CoachOverviewGetResponse = zCoachOverview;
 
 export const zRosterApiV1CoachRosterGetQuery = z.object({
     limit: z.int().gte(1).lte(100).optional().default(20),
@@ -1033,28 +1067,6 @@ export const zSessionDetailApiV1CoachSessionsSessionIdGetPath = z.object({
  */
 export const zSessionDetailApiV1CoachSessionsSessionIdGetResponse = zCoachSessionDetail;
 
-export const zPoseApiV1CoachSessionsSessionIdPoseGetPath = z.object({
-    session_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zPoseApiV1CoachSessionsSessionIdPoseGetResponse = zPoseOut;
-
-export const zVideoApiV1CoachSessionsSessionIdVideoGetHeaders = z.object({
-    Range: z.string().nullish()
-});
-
-export const zVideoApiV1CoachSessionsSessionIdVideoGetPath = z.object({
-    session_id: z.string()
-});
-
-/**
- * Successful Response
- */
-export const zVideoApiV1CoachSessionsSessionIdVideoGetResponse = z.string();
-
 export const zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutBody = zDraftInput;
 
 export const zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutPath = z.object({
@@ -1065,6 +1077,15 @@ export const zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutPath = z.object({
  * Successful Response
  */
 export const zDraftApiV1CoachSessionsSessionIdFeedbackDraftPutResponse = zDraftOut;
+
+export const zPoseApiV1CoachSessionsSessionIdPoseGetPath = z.object({
+    session_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zPoseApiV1CoachSessionsSessionIdPoseGetResponse = zPoseOut;
 
 export const zPublishApiV1CoachSessionsSessionIdReviewsPostBody = zPublishInput;
 
@@ -1081,6 +1102,148 @@ export const zPublishApiV1CoachSessionsSessionIdReviewsPostPath = z.object({
  */
 export const zPublishApiV1CoachSessionsSessionIdReviewsPostResponse = zPublishedReview;
 
+export const zVideoApiV1CoachSessionsSessionIdVideoGetHeaders = z.object({
+    Range: z.string().nullish()
+});
+
+export const zVideoApiV1CoachSessionsSessionIdVideoGetPath = z.object({
+    session_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zVideoApiV1CoachSessionsSessionIdVideoGetResponse = z.string();
+
+/**
+ * Successful Response
+ */
+export const zDashboardApiV1MemberDashboardGetResponse = zDashboard;
+
+export const zTaskApiV1MemberFollowUpTasksTaskIdPatchBody = zTaskPatch;
+
+export const zTaskApiV1MemberFollowUpTasksTaskIdPatchPath = z.object({
+    task_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zTaskApiV1MemberFollowUpTasksTaskIdPatchResponse = zTaskOut;
+
+export const zHistoryApiV1MemberHistoryGetQuery = z.object({
+    limit: z.int().gte(1).lte(100).optional().default(20),
+    cursor: z.string().nullish(),
+    movementSlug: z.enum([
+        'kuda-kuda',
+        'pukulan',
+        'tangkisan',
+        'tendangan'
+    ]).nullish(),
+    processingStatus: z.enum([
+        'queued',
+        'processing',
+        'completed',
+        'failed'
+    ]).nullish(),
+    reviewStatus: z.enum([
+        'pending',
+        'needs_revision',
+        'approved'
+    ]).nullish(),
+    from: z.iso.datetime().nullish(),
+    to: z.iso.datetime().nullish()
+});
+
+/**
+ * Successful Response
+ */
+export const zHistoryApiV1MemberHistoryGetResponse = zHistoryPage;
+
+export const zDetailApiV1MemberHistorySessionIdGetPath = z.object({
+    session_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zDetailApiV1MemberHistorySessionIdGetResponse = zSessionDetail;
+
+export const zMemberPasswordApiV1MemberPasswordPatchBody = zPasswordChange;
+
+/**
+ * Successful Response
+ */
+export const zMemberPasswordApiV1MemberPasswordPatchResponse = z.void();
+
+/**
+ * Successful Response
+ */
+export const zMemberProfileApiV1MemberProfileGetResponse = zProfileOut;
+
+export const zUpdateMemberProfileApiV1MemberProfilePatchBody = zMemberProfilePatch;
+
+/**
+ * Successful Response
+ */
+export const zUpdateMemberProfileApiV1MemberProfilePatchResponse = zProfileOut;
+
+export const zRecordConfigApiV1MemberRecordConfigSlugGetPath = z.object({
+    slug: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zRecordConfigApiV1MemberRecordConfigSlugGetResponse = zUploadConfig;
+
+export const zUploadSessionApiV1MemberSessionsPostBody = zBodyUploadSessionApiV1MemberSessionsPost;
+
+export const zUploadSessionApiV1MemberSessionsPostHeaders = z.object({
+    'Idempotency-Key': z.string().min(1).max(128)
+});
+
+/**
+ * Successful Response
+ */
+export const zUploadSessionApiV1MemberSessionsPostResponse = zAcceptedSession;
+
+export const zRemoveSessionApiV1MemberSessionsSessionIdDeletePath = z.object({
+    session_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zRemoveSessionApiV1MemberSessionsSessionIdDeleteResponse = z.void();
+
+export const zSessionStatusApiV1MemberSessionsSessionIdGetPath = z.object({
+    session_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zSessionStatusApiV1MemberSessionsSessionIdGetResponse = zSessionOut;
+
+export const zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostPath = z.object({
+    session_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zAcknowledgeSessionApiV1MemberSessionsSessionIdAcknowledgePostResponse = zAcknowledgedOut;
+
+export const zEvaluationApiV1MemberSessionsSessionIdEvaluationGetPath = z.object({
+    session_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zEvaluationApiV1MemberSessionsSessionIdEvaluationGetResponse = zEvaluationOut;
+
 export const zRetryApiV1MemberSessionsSessionIdFollowUpsPostBody = zRetryInput;
 
 export const zRetryApiV1MemberSessionsSessionIdFollowUpsPostHeaders = z.object({
@@ -1096,55 +1259,58 @@ export const zRetryApiV1MemberSessionsSessionIdFollowUpsPostPath = z.object({
  */
 export const zRetryApiV1MemberSessionsSessionIdFollowUpsPostResponse = zRetryOut;
 
-export const zTaskApiV1MemberFollowUpTasksTaskIdPatchBody = zTaskPatch;
-
-export const zTaskApiV1MemberFollowUpTasksTaskIdPatchPath = z.object({
-    task_id: z.string()
+export const zPoseApiV1MemberSessionsSessionIdPoseGetPath = z.object({
+    session_id: z.string()
 });
 
 /**
  * Successful Response
  */
-export const zTaskApiV1MemberFollowUpTasksTaskIdPatchResponse = zTaskOut;
+export const zPoseApiV1MemberSessionsSessionIdPoseGetResponse = zPoseOut;
 
-export const zEmailLinkApiV1AuthEmailLinkRequestPostBody = zEmailLinkRequest;
+export const zVideoApiV1MemberSessionsSessionIdVideoGetHeaders = z.object({
+    Range: z.string().nullish()
+});
 
-/**
- * Successful Response
- */
-export const zEmailLinkApiV1AuthEmailLinkRequestPostResponse = zRecoveryAccepted;
-
-export const zEmailVerifyApiV1AuthEmailVerificationRequestPostBody = zReauthenticate;
-
-/**
- * Successful Response
- */
-export const zEmailVerifyApiV1AuthEmailVerificationRequestPostResponse = zRecoveryAccepted;
-
-export const zResetRequestApiV1AuthPasswordResetRequestPostBody = zResetRequest;
+export const zVideoApiV1MemberSessionsSessionIdVideoGetPath = z.object({
+    session_id: z.string()
+});
 
 /**
  * Successful Response
  */
-export const zResetRequestApiV1AuthPasswordResetRequestPostResponse = zRecoveryAccepted;
-
-export const zLinkConfirmApiV1AuthEmailLinkConfirmPostBody = zTokenConfirm;
+export const zVideoApiV1MemberSessionsSessionIdVideoGetResponse = z.string();
 
 /**
  * Successful Response
  */
-export const zLinkConfirmApiV1AuthEmailLinkConfirmPostResponse = z.void();
+export const zModulesApiV1MemberTrainingModulesGetResponse = zTrainingCatalog;
 
-export const zVerifyConfirmApiV1AuthEmailVerificationConfirmPostBody = zTokenConfirm;
-
-/**
- * Successful Response
- */
-export const zVerifyConfirmApiV1AuthEmailVerificationConfirmPostResponse = z.void();
-
-export const zResetConfirmApiV1AuthPasswordResetConfirmPostBody = zResetConfirm;
+export const zPrepApiV1MemberTrainingPrepSlugGetPath = z.object({
+    slug: z.string()
+});
 
 /**
  * Successful Response
  */
-export const zResetConfirmApiV1AuthPasswordResetConfirmPostResponse = z.void();
+export const zPrepApiV1MemberTrainingPrepSlugGetResponse = zTrainingPrep;
+
+export const zInitiateApiV1MemberUploadsPostBody = zUploadRequest;
+
+export const zInitiateApiV1MemberUploadsPostHeaders = z.object({
+    'Idempotency-Key': z.string().min(1).max(128)
+});
+
+/**
+ * Successful Response
+ */
+export const zInitiateApiV1MemberUploadsPostResponse = zUploadTicket;
+
+export const zCompleteApiV1MemberUploadsUploadIdCompletePostPath = z.object({
+    upload_id: z.string()
+});
+
+/**
+ * Successful Response
+ */
+export const zCompleteApiV1MemberUploadsUploadIdCompletePostResponse = zAcceptedSession;

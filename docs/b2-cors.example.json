@@ -1,0 +1,22 @@
+{
+  "CORSRules": [
+    {
+      "ID": "silatsense-browser-video-put",
+      "AllowedOrigins": [
+        "https://REPLACE-WITH-FRONTEND-ORIGIN.example",
+        "http://localhost:3000",
+        "http://localhost:3101"
+      ],
+      "AllowedMethods": [
+        "PUT"
+      ],
+      "AllowedHeaders": [
+        "content-type"
+      ],
+      "ExposeHeaders": [
+        "ETag"
+      ],
+      "MaxAgeSeconds": 300
+    }
+  ]
+}
