@@ -204,37 +204,6 @@ export const zComparisonFrame = z.object({
 });
 
 /**
- * CoachComparison
- */
-export const zCoachComparison = z.object({
-    alignmentDistance: z.number().gte(0).nullish(),
-    correctness: z.null().optional(),
-    experimental: z.literal(true).optional().default(true),
-    features: z.record(z.string(), zFeatureSummary),
-    frames: z.array(zComparisonFrame).max(32),
-    movementId: z.enum([
-        'pukulan_depan',
-        'pukulan_melingkar',
-        'pukulan_bandul',
-        'tendangan_depan',
-        'tendangan_sabit',
-        'tendangan_t',
-        'kuda_kuda_tengah',
-        'kuda_kuda_depan',
-        'kuda_kuda_samping',
-        'tangkisan_atas',
-        'tangkisan_dalam',
-        'tangkisan_bawah'
-    ]),
-    qualityAssessmentValidated: z.literal(false).optional().default(false),
-    reason: z.string().nullish(),
-    score: z.null().optional(),
-    semanticPhasesAvailable: z.boolean().optional().default(false),
-    status: z.enum(['compared', 'not_assessable']),
-    toleranceStatus: z.string()
-});
-
-/**
  * KeyFrame
  */
 export const zKeyFrame = z.object({
@@ -270,47 +239,6 @@ export const zMeasurement = z.object({
     referenceMedian: z.number().nullable(),
     unit: z.enum(['deg', 'shoulder_width']),
     value: z.number().nullable()
-});
-
-/**
- * EvaluationOut
- */
-export const zEvaluationOut = z.object({
-    analysisStatus: z.enum([
-        'experimental',
-        'reference_not_ready',
-        'insufficient_pose',
-        'insufficient_features',
-        'reference_compared'
-    ]),
-    analyzerVersion: z.string(),
-    coachComparison: zCoachComparison.nullish(),
-    deviatedRepetitions: z.null().optional(),
-    evaluatedAt: z.iso.datetime(),
-    featureVersion: z.string().nullable(),
-    featuresCompared: z.int().nullable(),
-    framesProcessed: z.int(),
-    id: z.string(),
-    issues: z.array(zAnalysisIssue),
-    keyFrame: zKeyFrame.nullable(),
-    matchedVariant: z.string().nullable(),
-    measurements: z.array(zMeasurement),
-    method: z.enum(['static-reference-pose', 'coach-reference-dtw']).optional().default('static-reference-pose'),
-    movementSlug: z.enum([
-        'kuda-kuda',
-        'pukulan',
-        'tangkisan',
-        'tendangan'
-    ]),
-    poseStatus: z.enum(['detected', 'not_detected']),
-    referenceVersion: z.string().nullable(),
-    score: z.number().gte(0).lte(100).nullable(),
-    scoreReason: z.string().nullable(),
-    scoreUnit: z.literal('similarity_points').optional().default('similarity_points'),
-    sessionId: z.string(),
-    unavailableReasons: z.array(z.string()),
-    validPoseFrames: z.int(),
-    validRepetitions: z.null().optional()
 });
 
 /**
@@ -381,6 +309,108 @@ export const zPoseData = z.object({
     landmarks: z.array(zLandmark).min(1).max(33),
     origin: z.literal('top-left').optional().default('top-left'),
     timeSeconds: z.number().gte(0)
+});
+
+/**
+ * PostureAspect
+ */
+export const zPostureAspect = z.object({
+    correctionCode: z.string().nullable(),
+    id: z.string(),
+    points: z.int().gte(0).lte(100).nullable(),
+    reason: z.string().nullable(),
+    unit: z.enum(['deg', 'torso_length_ratio'])
+});
+
+/**
+ * PostureAssessment
+ *
+ * Experimental reference points; separate from similarity/manual Coach scores.
+ */
+export const zPostureAssessment = z.object({
+    aspects: z.array(zPostureAspect),
+    maxPoints: z.literal(100).optional().default(100),
+    points: z.number().gte(0).lte(100).nullable(),
+    reason: z.string().nullable(),
+    rubricVersion: z.literal('posture-reference-v1').optional().default('posture-reference-v1'),
+    status: z.enum([
+        'assessed',
+        'partial',
+        'not_assessable'
+    ])
+});
+
+/**
+ * CoachComparison
+ */
+export const zCoachComparison = z.object({
+    alignmentDistance: z.number().gte(0).nullish(),
+    correctness: z.null().optional(),
+    experimental: z.literal(true).optional().default(true),
+    features: z.record(z.string(), zFeatureSummary),
+    frames: z.array(zComparisonFrame).max(32),
+    movementId: z.enum([
+        'pukulan_depan',
+        'pukulan_melingkar',
+        'pukulan_bandul',
+        'tendangan_depan',
+        'tendangan_sabit',
+        'tendangan_t',
+        'kuda_kuda_tengah',
+        'kuda_kuda_depan',
+        'kuda_kuda_samping',
+        'tangkisan_atas',
+        'tangkisan_dalam',
+        'tangkisan_bawah'
+    ]),
+    postureAssessment: zPostureAssessment.nullish(),
+    qualityAssessmentValidated: z.literal(false).optional().default(false),
+    reason: z.string().nullish(),
+    score: z.null().optional(),
+    semanticPhasesAvailable: z.boolean().optional().default(false),
+    status: z.enum(['compared', 'not_assessable']),
+    toleranceStatus: z.string()
+});
+
+/**
+ * EvaluationOut
+ */
+export const zEvaluationOut = z.object({
+    analysisStatus: z.enum([
+        'experimental',
+        'reference_not_ready',
+        'insufficient_pose',
+        'insufficient_features',
+        'reference_compared'
+    ]),
+    analyzerVersion: z.string(),
+    coachComparison: zCoachComparison.nullish(),
+    deviatedRepetitions: z.null().optional(),
+    evaluatedAt: z.iso.datetime(),
+    featureVersion: z.string().nullable(),
+    featuresCompared: z.int().nullable(),
+    framesProcessed: z.int(),
+    id: z.string(),
+    issues: z.array(zAnalysisIssue),
+    keyFrame: zKeyFrame.nullable(),
+    matchedVariant: z.string().nullable(),
+    measurements: z.array(zMeasurement),
+    method: z.enum(['static-reference-pose', 'coach-reference-dtw']).optional().default('static-reference-pose'),
+    movementSlug: z.enum([
+        'kuda-kuda',
+        'pukulan',
+        'tangkisan',
+        'tendangan'
+    ]),
+    poseStatus: z.enum(['detected', 'not_detected']),
+    referenceVersion: z.string().nullable(),
+    score: z.number().gte(0).lte(100).nullable(),
+    scoreReason: z.string().nullable(),
+    scoreUnit: z.literal('similarity_points').optional().default('similarity_points'),
+    sessionId: z.string(),
+    unavailableReasons: z.array(z.string()),
+    validPoseFrames: z.int(),
+    validRepetitions: z.null().optional()
 });
 
 /**
