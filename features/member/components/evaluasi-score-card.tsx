@@ -17,6 +17,7 @@ const STATUS_VARIANTS: Record<
   "success" | "warning" | "destructive" | "outline"
 > = {
   experimental: "warning",
+  reference_compared: "outline",
   reference_not_ready: "outline",
   insufficient_pose: "destructive",
   insufficient_features: "destructive",

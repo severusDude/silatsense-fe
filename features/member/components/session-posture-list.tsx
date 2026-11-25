@@ -15,10 +15,7 @@ export function SessionPostureList({
 }: {
   session: SessionDetailViewModel;
 }) {
-  const postures =
-    session.aiPostures.length > 0
-      ? session.aiPostures
-      : session.coachBodyAssessments;
+  const postures = session.coachBodyAssessments;
 
   const empty = postures.length === 0;
   const sesuai = postures.filter((p) => p.status === "sesuai").length;

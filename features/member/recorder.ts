@@ -1,4 +1,3 @@
-import { MEMBER_UPLOAD_MAX_BYTES } from "@/lib/upload-limits";
 
 /**
  * Picks a MediaRecorder MIME type that the backend accepts and the current
@@ -58,10 +57,7 @@ export function baseMimeType(mimeType: string): string {
 }
 
 export function effectiveUploadMaxBytes(configMaxBytes: number): number {
-  if (!Number.isFinite(configMaxBytes)) {
-    return MEMBER_UPLOAD_MAX_BYTES;
-  }
-  return Math.max(0, Math.min(configMaxBytes, MEMBER_UPLOAD_MAX_BYTES));
+  return Number.isFinite(configMaxBytes) ? Math.max(0, configMaxBytes) : 0;
 }
 
 /**

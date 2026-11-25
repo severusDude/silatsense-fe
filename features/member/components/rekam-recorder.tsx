@@ -1,24 +1,51 @@
 "use client";
 
+import { useState, useSyncExternalStore } from "react";
+import { Camera, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { UploadActions } from "@/features/member/direct-upload";
 import { qualityLabel } from "@/features/member/camera-format";
 import { RecordingControls } from "@/features/member/components/recording-controls";
 import { RekamViewport } from "@/features/member/components/rekam-viewport";
+import { VideoFileInput } from "@/features/member/components/video-file-input";
 import { formatBytes } from "@/features/member/data/format";
 import { useCamera } from "@/features/member/hooks/use-camera";
 import { useMediaRecorder } from "@/features/member/hooks/use-media-recorder";
 import { effectiveUploadMaxBytes } from "@/features/member/recorder";
 import type { RekamViewModel } from "@/features/member/types";
 
+const subscribeTarget = () => () => {};
+
 export function RekamRecorder({
   detail,
   retryOf,
+  initialMovementId,
+  initialSource = "camera",
+  initAction,
+  completeAction,
 }: {
   detail: RekamViewModel;
   retryOf: string | null;
+  initialMovementId?: string;
+  initialSource?: "camera" | "file";
+  initAction: UploadActions["initAction"];
+  completeAction: UploadActions["completeAction"];
 }) {
+  const savedTarget = useSyncExternalStore(subscribeTarget, () => {
+    try { return retryOf ? sessionStorage.getItem(`silatsense:target:${retryOf}`) ?? "" : ""; } catch { return ""; }
+  }, () => "");
+  const [selectedTarget, setMovementId] = useState<string | null>(null);
+  const [source, setSource] = useState<"camera" | "file">(initialSource);
+  const candidate = selectedTarget ?? initialMovementId ?? savedTarget;
+  const movementId = detail.movements?.some((item) => item.id === candidate) ? candidate : "";
   const camera = useCamera();
   const recorder = useMediaRecorder({
     slug: detail.slug,
+    movementId: movementId || undefined,
+    movements: detail.movements,
+    movementIdRequired: detail.movementIdRequired,
+    initAction,
+    completeAction,
     stream: camera.stream,
     countdownSec: detail.countdownSec,
     maxDurationSec: detail.maxDurationSec,
@@ -32,7 +59,10 @@ export function RekamRecorder({
     ? qualityLabel(camera.live.width, camera.live.height, camera.live.fps)
     : null;
   const uploadLimit = effectiveUploadMaxBytes(detail.maxBytes);
+  const targetReady = !detail.movementIdRequired || Boolean(movementId);
+  const sourceLocked = recorder.phase !== "idle" || recorder.isPreparingFile;
   const canStart =
+    (!detail.movementIdRequired || Boolean(detail.movements?.some((item) => item.id === movementId))) &&
     camera.status === "live" &&
     Boolean(camera.stream) &&
     recorder.phase === "idle";
@@ -44,7 +74,14 @@ export function RekamRecorder({
 
   function handleDiscard() {
     recorder.discard();
-    void camera.scan();
+    if (source === "camera") void camera.scan();
+  }
+
+  function changeSource(next: "camera" | "file") {
+    if (sourceLocked || next === source) return;
+    camera.stop();
+    recorder.discard();
+    setSource(next);
   }
 
   return (
@@ -58,7 +95,36 @@ export function RekamRecorder({
         </p>
       ) : null}
 
-      <RekamViewport
+      <div role="group" aria-label="Sumber video" className="grid grid-cols-2 gap-1 rounded-full border bg-secondary/50 p-1">
+        <Button type="button" variant={source === "camera" ? "default" : "ghost"}
+          className="min-w-0 rounded-full" aria-pressed={source === "camera"}
+          disabled={sourceLocked} onClick={() => changeSource("camera")}>
+          <Camera data-icon="inline-start" /> Rekam Kamera
+        </Button>
+        <Button type="button" variant={source === "file" ? "default" : "ghost"}
+          className="min-w-0 rounded-full" aria-pressed={source === "file"}
+          disabled={sourceLocked} onClick={() => changeSource("file")}>
+          <Upload data-icon="inline-start" /> Upload Video
+        </Button>
+      </div>
+
+      {detail.movements?.length ? (
+        <label className="flex min-w-0 flex-col gap-2 text-sm">Target gerakan
+          <select className="w-full min-w-0 rounded-lg border bg-background p-3" value={movementId}
+            disabled={sourceLocked} onChange={(event) => setMovementId(event.target.value)}>
+            <option value="">Pilih gerakan</option>
+            {detail.movements.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+          </select>
+          <span className="text-xs text-muted-foreground">Pilih gerakan yang dilakukan dalam video. Target dikunci setelah video dipilih atau direkam.</span>
+        </label>
+      ) : null}
+      {recorder.phase === "uploading" ? <p role="status" className="text-xs">{recorder.uploadStage}</p> : null}
+      {recorder.phase === "uploading" ? <button type="button" onClick={recorder.cancelUpload} className="text-sm underline">Batalkan unggahan</button> : null}
+      {source === "file" ? (
+        <VideoFileInput acceptedMimeTypes={detail.acceptedMimeTypes} maxBytes={uploadLimit}
+          maxDurationSec={detail.maxDurationSec} disabled={!targetReady} loading={recorder.isPreparingFile}
+          clip={recorder.result} error={recorder.error} onSelect={(file) => { void recorder.selectFile(file); }} />
+      ) : <RekamViewport
         trainingName={detail.trainingName}
         targetDurationSec={detail.targetDurationSec}
         maxDurationSec={detail.maxDurationSec}
@@ -78,9 +144,9 @@ export function RekamRecorder({
         onScanCamera={() => {
           void camera.scan();
         }}
-      />
+      />}
 
-      <RecordingControls
+      {source === "camera" || recorder.result ? <RecordingControls
         phase={recorder.phase}
         countdownRemaining={recorder.countdownRemaining}
         elapsedSec={recorder.elapsedSec}
@@ -96,7 +162,7 @@ export function RekamRecorder({
         onStop={recorder.stop}
         onDiscard={handleDiscard}
         onUpload={recorder.upload}
-      />
+      /> : null}
     </div>
   );
 }

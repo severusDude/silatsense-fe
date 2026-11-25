@@ -7,7 +7,6 @@ import {
   readRetryOf,
   recordingFileName,
 } from "@/features/member/recorder";
-import { MEMBER_UPLOAD_MAX_BYTES } from "@/lib/upload-limits";
 
 describe("pickRecorderMimeType", () => {
   it("prefers an accepted base type the browser can encode", () => {
@@ -96,16 +95,16 @@ describe("baseMimeType", () => {
 });
 
 describe("effectiveUploadMaxBytes", () => {
-  it("uses the tighter of the backend config and the deployment cap", () => {
+  it("uses the backend limit for direct storage uploads", () => {
     // Arrange + Act + Assert
-    expect(effectiveUploadMaxBytes(10_000_000)).toBe(MEMBER_UPLOAD_MAX_BYTES);
+    expect(effectiveUploadMaxBytes(10_000_000)).toBe(10_000_000);
     expect(effectiveUploadMaxBytes(1_500_000)).toBe(1_500_000);
   });
 
   it("keeps an explicit zero and ignores a non-finite config", () => {
     // Arrange + Act + Assert
     expect(effectiveUploadMaxBytes(0)).toBe(0);
-    expect(effectiveUploadMaxBytes(Number.NaN)).toBe(MEMBER_UPLOAD_MAX_BYTES);
+    expect(effectiveUploadMaxBytes(Number.NaN)).toBe(0);
   });
 });
 

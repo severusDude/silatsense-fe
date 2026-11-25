@@ -19,7 +19,7 @@ import {
   formatScore,
   humanizeIdentifier,
 } from "@/features/member/data/format";
-import { toSessionDetailViewModel } from "@/features/member/data/history-mapper";
+import { formatScoreReason, toSessionDetailViewModel } from "@/features/member/data/history-mapper";
 import type {
   CoachBadgeVariant,
   CoachMemberDetailViewModel,
@@ -129,7 +129,7 @@ export function toCoachMemberListItems(
 
     const score = item.latestSession?.score ?? null;
     const scoreLabel =
-      score !== null ? `${formatScore(score)} poin` : "Belum dinilai";
+      score !== null ? `${formatScore(score)} poin` : item.latestSession?.session.analysisStatus === "reference_compared" ? "Perbandingan selesai · tanpa skor" : "Belum dinilai";
 
     const slug = item.latestSession?.session?.movementSlug as
       | PilarSlug
@@ -323,7 +323,7 @@ export function toCoachMemberEvaluationViewModel(
   const evaluation = sessionDetail.evaluation;
   const slug = sessionDetail.session.movementSlug as PilarSlug | undefined;
   const baseName = (slug ? PILAR_NAMES[slug] : undefined) ?? sessionDetail.session.movementSlug;
-  const techniqueName = evaluation.matchedVariant
+  const techniqueName = evaluation.coachComparison ? humanizeIdentifier(evaluation.coachComparison.movementId) : evaluation.matchedVariant
     ? `${baseName} (${evaluation.matchedVariant})`
     : baseName;
 
@@ -342,7 +342,7 @@ export function toCoachMemberEvaluationViewModel(
   const scoreAvailable = scoreValue !== null;
   const scoreLabel = scoreAvailable
     ? `${formatScore(scoreValue)} poin`
-    : "Belum dinilai";
+    : evaluation.analysisStatus === "reference_compared" ? "Perbandingan selesai · tanpa skor" : "Belum dinilai";
 
   const analysisMetrics = [
     {
@@ -357,7 +357,7 @@ export function toCoachMemberEvaluationViewModel(
     },
     {
       label: "Fitur Dibandingkan",
-      value: String(evaluation.featuresCompared ?? 0),
+      value: evaluation.featuresCompared == null ? "—" : String(evaluation.featuresCompared),
       sub: "Titik pengukuran",
     },
     {
@@ -386,16 +386,10 @@ export function toCoachMemberEvaluationViewModel(
     }
   >();
 
-  for (const ap of mapped.aiPostures ?? []) {
-    postureMap.set(ap.id, {
-      id: ap.id,
-      name: ap.name,
-      status: ap.status,
-      statusLabel: ap.statusLabel,
-      reading: ap.reading,
-      note: ap.coachNote ?? ap.detail,
-    });
-  }
+  const aiPostures = (mapped.aiPostures ?? []).map((ap) => ({
+    id: ap.id, name: ap.name, status: ap.status, statusLabel: ap.statusLabel,
+    reading: ap.reading, note: ap.detail,
+  }));
 
   for (const ba of mapped.coachBodyAssessments ?? []) {
     postureMap.set(ba.id, {
@@ -410,6 +404,7 @@ export function toCoachMemberEvaluationViewModel(
 
   return {
     available: true,
+    coachComparison: evaluation.coachComparison ?? null,
     techniqueName,
     metaLabel,
     score: {
@@ -423,6 +418,7 @@ export function toCoachMemberEvaluationViewModel(
     },
     analysisMetrics,
     measurements,
+    aiPostures,
     postures: Array.from(postureMap.values()),
     session: mapped.session,
   };
@@ -443,11 +439,11 @@ export function toCoachMemberHistoryItem(
     "Sesi Latihan";
 
   const subtitle =
-    item.review?.note ?? item.scoreReason ?? "Sesi selesai dianalisis";
+    item.review?.note ?? formatScoreReason(item.scoreReason) ?? "Sesi selesai dianalisis";
 
   const score = item.score;
   const scoreLabel =
-    score !== null ? `${formatScore(score)} poin` : "Belum dinilai";
+    score !== null ? `${formatScore(score)} poin` : item.session.analysisStatus === "reference_compared" ? "Perbandingan selesai · tanpa skor" : "Belum dinilai";
 
   const { status, label: statusLabel, variant: statusVariant } =
     toCoachMemberStatus(item.session.reviewStatus, item.session.processingStatus);

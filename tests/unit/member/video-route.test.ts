@@ -1,3 +1,4 @@
+vi.mock("@/features/auth/data/authenticated-request", () => ({ authenticatedRequest: (request: (token: string) => unknown) => request("token-1") }));
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getAccessToken } = vi.hoisted(() => ({ getAccessToken: vi.fn() }));

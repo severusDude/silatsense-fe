@@ -1,3 +1,4 @@
+import { coordinatedRefresh } from "@/features/auth/data/refresh-coordinator";
 import { NextResponse, type NextRequest } from "next/server";
 import {
   AUTH_ACCESS_TOKEN_COOKIE,
@@ -23,6 +24,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.delete("x-silatsense-access");
 
+  let refreshRevoked = false;
   let accessToken = request.cookies.get(AUTH_ACCESS_TOKEN_COOKIE)?.value;
   const refreshToken = request.cookies.get(AUTH_REFRESH_TOKEN_COOKIE)?.value;
   const expStr = request.cookies.get(AUTH_EXPIRY_COOKIE)?.value;
@@ -39,14 +41,8 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   // Proactive refresh
   if (shouldRefresh({ accessToken, refreshToken, expiresAt })) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://silatsense-be.vercel.app";
     try {
-      const res = await fetch(`${apiUrl}/api/v1/auth/refresh-session`, {
-        method: "POST",
-        headers: {
-          Cookie: `refresh_token=${refreshToken}`,
-        },
-      });
+      const res = await coordinatedRefresh(refreshToken!);
 
       if (res.ok) {
         const body = (await res.json()) as {
@@ -91,6 +87,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
         }
       } else if (res.status === 401) {
         // Refresh token invalid or revoked
+        refreshRevoked = true;
         accessToken = undefined;
         response.cookies.delete({ name: AUTH_ACCESS_TOKEN_COOKIE, ...baseCookieOptions });
         response.cookies.delete({ name: AUTH_REFRESH_TOKEN_COOKIE, ...baseCookieOptions });
@@ -103,7 +100,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   }
 
   // Optimistic redirect checks
-  const hasValidAuth = Boolean(accessToken || refreshToken);
+  const hasValidAuth = Boolean(accessToken || (refreshToken && !refreshRevoked));
 
   if (isProtectedRoute(pathname) && !hasValidAuth) {
     const signInUrl = new URL("/sign-in", request.url);
