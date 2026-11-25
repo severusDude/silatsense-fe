@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/card";
 import { ScoreRing } from "@/features/member/components/evaluasi-posture-list";
 import { SessionPostureItem } from "@/features/member/components/session-posture-item";
+import { CoachComparisonDetails } from "@/features/member/components/coach-comparison";
+import { formatPosturePoints, PostureAssessmentContent } from "@/features/member/components/posture-assessment";
 import type { SessionDetailViewModel } from "@/features/member/types";
 
 export function SessionPostureList({
@@ -16,6 +18,8 @@ export function SessionPostureList({
   session: SessionDetailViewModel;
 }) {
   const postures = session.coachBodyAssessments;
+  const comparison = session.evaluation?.coachComparison;
+  const assessment = comparison?.postureAssessment;
 
   const empty = postures.length === 0;
   const sesuai = postures.filter((p) => p.status === "sesuai").length;
@@ -23,6 +27,22 @@ export function SessionPostureList({
 
   return (
     <section aria-label="Catatan pelatih" className="flex flex-col gap-2">
+      {comparison && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Penilaian Postur</CardTitle>
+            {assessment?.points != null && (
+              <CardDescription>
+                Poin postur eksperimental · {formatPosturePoints(assessment.points)}/{assessment.maxPoints ?? 100} poin
+              </CardDescription>
+            )}
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            {assessment && <PostureAssessmentContent assessment={assessment} />}
+            <CoachComparisonDetails comparison={comparison} />
+          </CardContent>
+        </Card>
+      )}
       <Card>
         <CardHeader>
           <CardTitle>Catatan Pelatih</CardTitle>

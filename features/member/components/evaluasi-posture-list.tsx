@@ -7,6 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { EvaluasiPostureItem } from "@/features/member/components/evaluasi-posture-item";
+import { CoachComparisonDetails } from "@/features/member/components/coach-comparison";
+import { PostureAssessmentContent } from "@/features/member/components/posture-assessment";
 import type {
   EvaluationViewModel,
   PostureStatusViewModel,
@@ -63,9 +65,11 @@ export function ScoreRing({ sesuai, total }: { sesuai: number; total: number }) 
 export function EvaluasiPostureList({
   evaluation,
 }: {
-  evaluation: EvaluationViewModel;
+  evaluation: Pick<EvaluationViewModel, "postures" | "coachComparison">;
 }) {
   const { postures } = evaluation;
+  const comparison = evaluation.coachComparison;
+  const assessment = comparison?.postureAssessment;
   const ordered = [...postures].sort(
     (a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status],
   );
@@ -80,8 +84,12 @@ export function EvaluasiPostureList({
         <CardHeader>
           <CardTitle>Penilaian Postur</CardTitle>
           <CardDescription>
-            {postures.length > 0
+            {assessment
+              ? "Poin per aspek dan koreksi berdasarkan referensi Coach."
+              : postures.length > 0
               ? `${postures.length} parameter postur dinilai dari rekaman ini.`
+              : comparison
+              ? "Lihat detail pengukuran yang tersedia dari rekaman ini."
               : "Belum ada parameter postur yang dinilai."}
           </CardDescription>
           {postures.length > 0 ? (
@@ -91,15 +99,17 @@ export function EvaluasiPostureList({
           ) : null}
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
+          {assessment && <PostureAssessmentContent assessment={assessment} />}
           {ordered.length > 0 ? (
             ordered.map((posture) => (
               <EvaluasiPostureItem key={posture.id} posture={posture} />
             ))
-          ) : (
+          ) : !comparison ? (
             <p className="rounded-xl bg-secondary/50 p-3 text-xs leading-relaxed text-muted-foreground">
               Analisis tidak menghasilkan pengukuran postur untuk rekaman ini.
             </p>
-          )}
+          ) : null}
+          <CoachComparisonDetails comparison={comparison} />
         </CardContent>
       </Card>
     </section>
