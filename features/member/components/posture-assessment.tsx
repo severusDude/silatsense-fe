@@ -77,17 +77,15 @@ function lookup(labels: Record<string, string>, code: string, fallback: string) 
   return Object.hasOwn(labels, code) ? labels[code] : fallback;
 }
 
-export function PostureAssessmentPanel({ assessment }: { assessment: PostureAssessment }) {
+export function formatPosturePoints(points: number) {
+  return pointFormat.format(points);
+}
+
+export function PostureAssessmentContent({ assessment }: { assessment: PostureAssessment }) {
   return (
-    <section aria-label="Poin postur eksperimental" className="min-w-0 space-y-3 rounded-lg bg-secondary/50 p-3">
+    <div className="min-w-0 space-y-3">
       <div className="space-y-1">
-        <h3 className="font-semibold">Poin postur eksperimental</h3>
         <p className="text-xs text-muted-foreground">{STATUS_LABELS[assessment.status]}</p>
-        {assessment.points !== null && (
-          <p className="text-xl font-bold">
-            {pointFormat.format(assessment.points)}/{assessment.maxPoints ?? 100} poin
-          </p>
-        )}
         {assessment.reason && (
           <p className="text-xs text-muted-foreground">
             {lookup(REASONS, assessment.reason, "Poin postur belum dapat ditampilkan untuk rekaman ini.")}
@@ -102,7 +100,7 @@ export function PostureAssessmentPanel({ assessment }: { assessment: PostureAsse
                 {lookup(ASPECT_LABELS, aspect.id, humanizeIdentifier(aspect.id))}
               </p>
               <p className="text-xs font-medium">
-                {aspect.points === null ? "Belum dapat dinilai" : `${pointFormat.format(aspect.points)}/100 poin`}
+                {aspect.points === null ? "Belum dapat dinilai" : `${formatPosturePoints(aspect.points)}/100 poin`}
               </p>
               {aspect.correctionCode && (
                 <p className="text-xs">
@@ -118,6 +116,6 @@ export function PostureAssessmentPanel({ assessment }: { assessment: PostureAsse
           ))}
         </ul>
       )}
-    </section>
+    </div>
   );
 }
