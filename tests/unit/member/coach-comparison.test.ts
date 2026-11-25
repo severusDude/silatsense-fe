@@ -2,26 +2,25 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, it, expect } from "vitest";
 import { CoachComparisonPanel } from "@/features/member/components/coach-comparison";
-import type { CoachComparison } from "@/api";
+import type { CoachComparison, PostureAssessment } from "@/api";
+import { zCoachComparison } from "@/api/zod.gen";
 
-function sideStance(samples: Array<[number | null, number | null, number]>) {
-  const feature = (value: number | null, unit: "deg" | "torso_length_ratio") => ({
-    value, unit, referenceValue: null, deviation: null, color: null, reason: null,
+function renderAssessment(postureAssessment?: PostureAssessment | null) {
+  const comparison = zCoachComparison.parse({
+    movementId: "tangkisan_bawah", status: "compared", toleranceStatus: "ready",
+    features: {}, frames: [], postureAssessment,
   });
-  const comparison: CoachComparison = {
-    movementId: "kuda_kuda_samping", status: "compared", toleranceStatus: "ready",
-    features: {},
-    frames: samples.map(([left, right, width], index) => ({
-      timeSeconds: index / 10, referenceTimeSeconds: index / 10, phase: null, joints: {},
-      features: {
-        left_knee_deg: feature(left, "deg"),
-        right_knee_deg: feature(right, "deg"),
-        stance_width_torso: feature(width, "torso_length_ratio"),
-      },
-    })),
-  };
   return renderToStaticMarkup(createElement(CoachComparisonPanel, { comparison }));
 }
+
+const elbow = {
+  id: "elbow_bend", unit: "deg", points: 85,
+  correctionCode: "elbow_bend_insufficient", reason: null,
+} as const;
+const unavailable = {
+  id: "wrist_end_position", unit: "torso_length_ratio", points: null,
+  correctionCode: null, reason: "camera_or_pose_inadequate",
+} as const;
 
 describe("temporal comparison presentation", () => {
  it("renders null measurements, torso ratios, sample coverage and feedback without fabricating a score", () => {
@@ -30,18 +29,43 @@ describe("temporal comparison presentation", () => {
   expect(html).toContain("Perbandingan referensi selesai"); expect(html).toContain("12 sampel"); expect(html).toContain("37.5%"); expect(html).toContain("rasio panjang torso"); expect(html).toContain("Tidak terukur"); expect(html).toContain("Lebih menekuk"); expect(html).not.toContain("37%"); expect(html).not.toContain("sentimeter"); expect(html).not.toContain("shoulder_width");
  });
  it("does not replace static measurements when comparison is absent", () => { expect(renderToStaticMarkup(createElement(CoachComparisonPanel, {}))).toBe(""); });
- it("gives the reference stance full knee points without a correction", () => {
-  const html = sideStance([[178, 178, 0.3], [132, 104, 1.93], [133, 110, 2], [134, 110, 1.99]]);
-  expect(html).toContain("100/100 poin");
-  expect(html).not.toContain("Tekuk sedikit lagi");
+ it("displays backend total, a real zero, and a localized correction for another movement", () => {
+  const html = renderAssessment({
+    status: "assessed", points: 42.5, maxPoints: 100, reason: null,
+    aspects: [elbow, { ...unavailable, points: 0, reason: null }],
+  });
+  expect(html).toContain("Poin postur eksperimental");
+  expect(html).toContain("Penilaian selesai");
+  expect(html).toContain("42,5/100 poin");
+  expect(html).toContain(">0/100 poin<");
+  expect(html).toContain("85/100 poin");
+  expect(html).toContain("Tekukan siku");
+  expect(html).toContain("Siku kurang menekuk dibanding referensi Coach.");
+  expect(html).not.toContain("elbow_bend_insufficient");
  });
- it("gives fewer points and a correction when the opposite knee bends too little", () => {
-  const html = sideStance([[137, 146, 1.35], [137, 143, 1.36], [137, 146, 1.43], [135, 145, 1.43]]);
-  expect(html).toContain("83/100 poin");
-  expect(html).toContain("Tekuk sedikit lagi lutut");
+ it("explains a partial assessment and shows only the available aspect points", () => {
+  const html = renderAssessment({
+    status: "partial", points: null, reason: "required_aspect_unavailable", aspects: [elbow, unavailable],
+  });
+  expect(html).toContain("Dinilai sebagian");
+  expect(html).toContain("Sebagian atau seluruh aspek utama belum dapat dinilai.");
+  expect(html).toContain("Belum dapat dinilai");
+  expect(html).toContain("Pose atau sudut kamera belum cukup jelas untuk dinilai.");
+  expect(html.match(/\/100 poin/g)).toEqual(["/100 poin"]);
  });
- it("withholds points when pose data is missing or the stance is not visible", () => {
-  expect(sideStance([[110, 150, 1.5], [null, 150, 1.5], [110, 150, 1.5]])).toContain("belum bisa dinilai");
-  expect(sideStance([[110, 150, 0.4], [110, 150, 0.4], [110, 150, 0.4]])).not.toContain("/100 poin");
+ it("withholds all points when the posture cannot be assessed", () => {
+  const html = renderAssessment({
+    status: "not_assessable", points: null, reason: "comparison_not_assessable", aspects: [unavailable],
+  });
+  expect(html).toContain("Belum dapat dinilai");
+  expect(html).toContain("Perbandingan dengan referensi Coach belum bisa digunakan.");
+  expect(html).not.toContain("/100 poin");
+ });
+ it("keeps the existing comparison visible when an older backend omits posture assessment", () => {
+  for (const assessment of [undefined, null]) {
+    const html = renderAssessment(assessment);
+    expect(html).toContain("Perbandingan referensi selesai");
+    expect(html).not.toContain("Poin postur eksperimental");
+  }
  });
 });

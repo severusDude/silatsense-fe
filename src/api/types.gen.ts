@@ -238,6 +238,10 @@ export type CoachComparison = {
      */
     movementId: 'pukulan_depan' | 'pukulan_melingkar' | 'pukulan_bandul' | 'tendangan_depan' | 'tendangan_sabit' | 'tendangan_t' | 'kuda_kuda_tengah' | 'kuda_kuda_depan' | 'kuda_kuda_samping' | 'tangkisan_atas' | 'tangkisan_dalam' | 'tangkisan_bawah';
     /**
+     * Computed on evaluation read from stored paired frames. Experimental equal-weight points, not an official correctness verdict or manual Coach assessment.
+     */
+    postureAssessment?: PostureAssessment | null;
+    /**
      * Qualityassessmentvalidated
      */
     qualityAssessmentValidated?: false;
@@ -1028,6 +1032,64 @@ export type PoseTimeline = {
      * Origin
      */
     origin?: 'top-left';
+};
+
+/**
+ * PostureAspect
+ */
+export type PostureAspect = {
+    /**
+     * Correctioncode
+     */
+    correctionCode: string | null;
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Points
+     */
+    points: number | null;
+    /**
+     * Reason
+     */
+    reason: string | null;
+    /**
+     * Unit
+     */
+    unit: 'deg' | 'torso_length_ratio';
+};
+
+/**
+ * PostureAssessment
+ *
+ * Experimental reference points; separate from similarity/manual Coach scores.
+ */
+export type PostureAssessment = {
+    /**
+     * Aspects
+     */
+    aspects: Array<PostureAspect>;
+    /**
+     * Maxpoints
+     */
+    maxPoints?: 100;
+    /**
+     * Points
+     */
+    points: number | null;
+    /**
+     * Reason
+     */
+    reason: string | null;
+    /**
+     * Rubricversion
+     */
+    rubricVersion?: 'posture-reference-v1';
+    /**
+     * Status
+     */
+    status: 'assessed' | 'partial' | 'not_assessable';
 };
 
 /**
