@@ -1,6 +1,5 @@
 import { getPose } from "@/features/member/data/get-pose";
 import { PoseVideoPlayer } from "@/features/member/components/pose-video-player";
-import { CoachComparisonPanel } from "@/features/member/components/coach-comparison";
 import { AlertCircle } from "lucide-react";
 import {
   Card,
@@ -48,7 +47,6 @@ export async function SessionVideoPlaceholder({
           )}
         </CardContent>
       </Card>
-      <CoachComparisonPanel comparison={session.evaluation?.coachComparison} />
     </section>
   );
 }

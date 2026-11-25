@@ -1,6 +1,5 @@
 import { getPose } from "@/features/member/data/get-pose";
 import { PoseVideoPlayer } from "@/features/member/components/pose-video-player";
-import { CoachComparisonPanel } from "@/features/member/components/coach-comparison";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -38,7 +37,6 @@ export async function EvaluasiPlayback({
           )}
         </CardContent>
       </Card>
-      <CoachComparisonPanel comparison={evaluation.coachComparison} />
     </section>
   );
 }
